@@ -1,0 +1,26 @@
+{
+  "name": "aspect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "asp --verbose",
+    "test:ci": "asp --summary --nologo",
+    "asbuild:untouched": "asc assembly/index.ts --target debug",
+    "asbuild:optimized": "asc assembly/index.ts --target release",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
+    "tsrun": "ts-node ts/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@as-pect/cli": "^5.0.0",
+    "@types/node": "^14.14.13",
+    "assemblyscript": "0.17.5",
+    "ts-node": "^9.1.1"
+  },
+  "dependencies": {
+    "@assemblyscript/loader": "^0.17.5",
+    "typescript": "^4.1.3"
+  }
+}
