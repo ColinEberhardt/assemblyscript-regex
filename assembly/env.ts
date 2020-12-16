@@ -1,0 +1,1 @@
+export declare function log(number: i32): void

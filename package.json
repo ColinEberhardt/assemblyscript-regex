@@ -1,11 +1,11 @@
 {
-  "name": "aspect",
-  "version": "1.0.0",
-  "description": "",
+  "name": "as-regex",
+  "version": "0.0.1",
+  "description": "A regex engine built with AssemblyScript",
   "main": "index.js",
   "scripts": {
-    "test": "asp --verbose",
-    "test:ci": "asp --summary --nologo",
+    "test": "npm run asbuild:untouched && jest test/index.test.js",
+    "test:suite": "npm run asbuild:untouched && jest test/data.test.js --reporter=jest-summary-reporter",
     "asbuild:untouched": "asc assembly/index.ts --target debug",
     "asbuild:optimized": "asc assembly/index.ts --target release",
     "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
@@ -14,9 +14,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@as-pect/cli": "^5.0.0",
     "@types/node": "^14.14.13",
     "assemblyscript": "0.17.5",
+    "jest": "^26.6.3",
+    "jest-summary-reporter": "0.0.2",
+    "text-encoding": "^0.7.0",
     "ts-node": "^9.1.1"
   },
   "dependencies": {
