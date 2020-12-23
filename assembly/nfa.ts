@@ -42,9 +42,13 @@ function insertExplicitConcatOperator(exp: string): string[] {
     }
     // character set
     if (token == "[") {
-      while (exp.charAt(i) != "]") {
+      let loop: bool = true;
+      while (loop) {
         i++;
         token += exp.charAt(i);
+        if (exp.charAt(i) == "]" && token.length > 2) {
+          loop = false;
+        }
       }
     }
 
@@ -224,19 +228,27 @@ export class CharacterSetMatchState extends State {
     this.set = set.substring(1, set.length - 1);
   }
 
-  matches(symbol: string): State | null {
-    const char = symbol.charCodeAt(0);
-    for (let i = 0; i < this.set.length; i++) {
+  matchesSet(set: string, char: i32): bool {
+    for (let i = 0; i < set.length; i++) {
       // TODO - perform the set parsing logic in the constructor
-      if (i < this.set.length - 2 && this.set.charAt(i + 1) == "-") {
-        const from = this.set.charCodeAt(i);
-        const to = this.set.charCodeAt(i + 2);
-        if (char >= from && char <= to) return this.next;
+      if (i < set.length - 2 && set.charAt(i + 1) == "-") {
+        const from = set.charCodeAt(i);
+        const to = set.charCodeAt(i + 2);
+        if (char >= from && char <= to) return true;
       } else {
-        if (this.set.charCodeAt(i) == char) return this.next;
+        if (set.charCodeAt(i) == char) return true;
       }
     }
-    return null;
+    return false;
+  }
+
+  matches(symbol: string): State | null {
+    const char = symbol.charCodeAt(0);
+    if (this.set.startsWith("^")) {
+      return !this.matchesSet(this.set.substr(1), char) ? this.next : null;
+    } else {
+      return this.matchesSet(this.set, char) ? this.next : null;
+    }
   }
 }
 

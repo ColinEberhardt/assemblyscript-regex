@@ -5,4 +5,4 @@ import { firstMatch } from "../assembly/index";
 const globalAny: any = global;
 globalAny.log = console.log;
 
-console.log(firstMatch("[-abc]", "a"));
+console.log(firstMatch("[a]]", "]"));

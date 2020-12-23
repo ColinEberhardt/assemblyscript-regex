@@ -74,6 +74,22 @@ describe("character sets", () => {
     expectNotMatch("[0-9]", ["a", "A"]);
   });
 
+  it("matches multiple ranges", () => {
+    expectMatch("[a-ce-f]", ["a", "b", "c", "e", "f"]);
+    expectNotMatch("[a-ce-f]", ["d"]);
+  });
+  
+  it("supports closing brackets", () => {
+    expectMatch("[]a]", ["]", "a"]);
+  });
+
+  it("supports negated sets", () => {
+    expectNotMatch("[^a-c]", ["a", "b", "c"]);
+    expectMatch("[^a-c]", ["d", "e"]);
+    expectNotMatch("[^a-ce-f]", ["a", "b", "c", "e", "f"]);
+    expectMatch("[^a-ce-f]", ["d"]);
+  });
+
   it("treats - as a literal", () => {
     expectMatch("[-abc]", ["-", "a", "b", "c"]);
     expectMatch("[abc-]", ["-", "a", "b", "c"]);
