@@ -29,6 +29,7 @@ const characterClasses: string[] = [
   "f"
 ];
 
+// splits the regex into atoms, which will either become states, and operators
 function insertExplicitConcatOperator(exp: string): string[] {
   let output = new Array<string>();
 
@@ -39,6 +40,14 @@ function insertExplicitConcatOperator(exp: string): string[] {
       i++;
       token += exp.charAt(i);
     }
+    // character set
+    if (token == "[") {
+      while (exp.charAt(i) != "]") {
+        i++;
+        token += exp.charAt(i);
+      }
+    }
+
     output.push(token);
 
     if (token == "(" || token == "|") {
@@ -205,6 +214,32 @@ export class CharacterClassMatchState extends State {
   }
 }
 
+export class CharacterSetMatchState extends State {
+  next: State;
+  set: string;
+
+  constructor(set: string, next: State) {
+    super();
+    this.next = next;
+    this.set = set.substring(1, set.length - 1);
+  }
+
+  matches(symbol: string): State | null {
+    const char = symbol.charCodeAt(0);
+    for (let i = 0; i < this.set.length; i++) {
+      // TODO - perform the set parsing logic in the constructor
+      if (i < this.set.length - 2 && this.set.charAt(i + 1) == "-") {
+        const from = this.set.charCodeAt(i);
+        const to = this.set.charCodeAt(i + 2);
+        if (char >= from && char <= to) return this.next;
+      } else {
+        if (this.set.charCodeAt(i) == char) return this.next;
+      }
+    }
+    return null;
+  }
+}
+
 export class Automata {
   start: State;
   end: State; // accepting state
@@ -218,6 +253,12 @@ function fromEpsilon(): Automata {
   const start = new State();
   const end = new State(true);
   start.epsilonTransitions.push(end);
+  return new Automata(start, end);
+}
+
+function fromCharacterSet(set: string): Automata {
+  const end = new State(true);
+  const start = new CharacterSetMatchState(set, end);
   return new Automata(start, end);
 }
 
@@ -306,6 +347,8 @@ export function toNFA(exp: string): Automata {
       const right = stack.pop();
       const left = stack.pop();
       stack.push(concat(left, right));
+    } else if (token.startsWith("[")) {
+      stack.push(fromCharacterSet(token));
     } else if (token.startsWith("\\")) {
       const escapedToken = token.substr(1);
       if (characterClasses.includes(escapedToken)) {

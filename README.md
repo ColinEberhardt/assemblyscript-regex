@@ -47,7 +47,7 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
 ### Groups and ranges
 
  - [x] x|y
- - [ ] [xyz][a-c]
+ - [x] [xyz][a-c]
  - [ ] [^xyz][^a-c]
  - [ ] (x)
  - [ ] \n
@@ -63,3 +63,9 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [ ] x{n,}
  - [ ] x{n,m}
  - [ ] x*? / x+? / ...
+
+## Testing
+
+Currently passes 78 of the 217 tests from the Rust regex test suite:
+
+https://raw.githubusercontent.com/rust-lang/regex/master/src/testdata/basic.dat

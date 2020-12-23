@@ -1,4 +1,4 @@
-const matches = require("./util").matches;
+const { matches, matchValue } = require("./util");
 
 const expectMatch = (regex, arr) => {
   arr.forEach(value => expect(matches(regex, value)).toBeTruthy());
@@ -44,6 +44,10 @@ describe("Quantifiers", () => {
     expectMatch("a*b", ["b", "ab", "aaaab"]);
     expectNotMatch("a*b", ["aaaad"]);
   });
+
+  it.skip("quantifiers are greedy", () => {
+    expect(matchValue("a*", "aaaaa")).toEqual("aaaaa");
+  });
 });
 
 describe("Groups and ranges", () => {
@@ -52,6 +56,27 @@ describe("Groups and ranges", () => {
     expectNotMatch("a|b", ["c"]);
     expectMatch("a|br", ["br", "a"]);
     expectNotMatch("a|br", ["b", "c"]);
+  });
+});
+
+describe("character sets", () => {
+  it("matches discrete characters", () => {
+    expectMatch("[abce]", ["a", "b", "c", "e"]);
+    expectNotMatch("[abce]", ["", "f", "h"]);
+  });
+
+  it("matches character ranges", () => {
+    expectMatch("[a-c]", ["a", "b", "c"]);
+    expectNotMatch("[a-c]", ["d", "e", ""]);
+    expectMatch("[K-M]", ["K", "L", "M"]);
+    expectNotMatch("[K-M]", ["9", "J"]);
+    expectMatch("[0-9]", ["0", "9"]);
+    expectNotMatch("[0-9]", ["a", "A"]);
+  });
+
+  it("treats - as a literal", () => {
+    expectMatch("[-abc]", ["-", "a", "b", "c"]);
+    expectMatch("[abc-]", ["-", "a", "b", "c"]);
   });
 });
 
