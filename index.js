@@ -14,6 +14,7 @@ const {
   __release
 } = wasmModule.exports;
 
+// TODO: update this file
 const regex = "ab|a",
   value = "xabc";
 const aPtr = __retain(__newString(regex));

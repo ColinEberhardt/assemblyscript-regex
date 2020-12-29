@@ -8,7 +8,7 @@ const expectNotMatch = (regex, arr) => {
   arr.forEach(value => expect(matches(regex, value)).toBeFalsy());
 };
 
-describe("Characteres", () => {
+describe("Characters", () => {
   it("single character", () => {
     expectMatch("a", ["a"]);
     expectNotMatch("a", ["fish", ""]);
@@ -57,6 +57,13 @@ describe("Groups and ranges", () => {
     expectMatch("a|br", ["br", "a"]);
     expectNotMatch("a|br", ["b", "c"]);
   });
+
+  it("or multi-term", () => {
+    expectMatch("a|b|c", ["b", "a", "c"]);
+    expectNotMatch("a|b|c", ["d"]);
+    expectMatch("a|br|pc", ["br", "a", "pc"]);
+    expectNotMatch("a|br|pc", ["b", "pr"]);
+  });
 });
 
 describe("character sets", () => {
@@ -93,6 +100,11 @@ describe("character sets", () => {
   it("treats - as a literal", () => {
     expectMatch("[-abc]", ["-", "a", "b", "c"]);
     expectMatch("[abc-]", ["-", "a", "b", "c"]);
+  });
+
+  it("treats - as a literal in negated sets", () => {
+    expectNotMatch("[^-abc]", ["-", "a", "b", "c"]);
+    expectMatch("[^-abc]", ["1", "A"]);
   });
 });
 
@@ -151,16 +163,17 @@ describe("boundary assertions", () => {
   it("matches end of string", () => {
     expectMatch("a$", ["ba"]);
     expectNotMatch("a$", ["ab"]);
-    // unless escaped
-    expectMatch("a\\$", ["a$"]);
   });
 
   it("matches start of string", () => {
     expectMatch("^a", ["a"]);
     expectNotMatch("^a", ["ba"]);
-    // unless escaped
-    expectMatch("\\^a", ["^a"]);
   });
+
+  it("handles escaped boundaries", () => {
+    expectMatch("\\^a", ["^a"]);
+    expectMatch("a\\$", ["a$"]);
+  })
 });
 
 describe("use cases", () => {

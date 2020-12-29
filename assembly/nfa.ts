@@ -1,126 +1,14 @@
-import { log } from "./env";
-import { peek } from "./util";
 import {
-  isDigit,
-  isUnderscore,
-  isUppercaseAlpha,
-  isLowercaseAlpha,
-  isWhitespace
-} from "./characters";
-
-const operatorPrecedence = new Map<string, i8>();
-operatorPrecedence.set("|", 0);
-operatorPrecedence.set(":", 1);
-operatorPrecedence.set("?", 2);
-operatorPrecedence.set("*", 2);
-operatorPrecedence.set("+", 2);
-
-const characterClasses: string[] = [
-  "d",
-  "D",
-  "w",
-  "W",
-  "s",
-  "S",
-  "t",
-  "r",
-  "n",
-  "v",
-  "f"
-];
-
-// splits the regex into atoms, which will either become states, and operators
-function insertExplicitConcatOperator(exp: string): string[] {
-  let output = new Array<string>();
-
-  for (let i = 0; i < exp.length; i++) {
-    let token = exp.charAt(i);
-    // escaped characters
-    if (token == "\\") {
-      i++;
-      token += exp.charAt(i);
-    }
-    // character set
-    if (token == "[") {
-      let loop: bool = true;
-      while (loop) {
-        i++;
-        token += exp.charAt(i);
-        if (exp.charAt(i) == "]" && token.length > 2) {
-          loop = false;
-        }
-      }
-    }
-
-    output.push(token);
-
-    if (token == "(" || token == "|") {
-      continue;
-    }
-
-    if (i < exp.length - 1) {
-      const lookahead = exp.charAt(i + 1);
-
-      if (
-        lookahead == "*" ||
-        lookahead == "?" ||
-        lookahead == "+" ||
-        lookahead == "|" ||
-        lookahead == ")"
-      ) {
-        continue;
-      }
-
-      output.push(":");
-    }
-  }
-
-  return output;
-}
-
-function toPostfix(exp: string[]): string[] {
-  const output = new Array<string>();
-  const operatorStack = new Array<string>();
-
-  for (let i = 0; i < exp.length; i++) {
-    const token = exp[i];
-    if (
-      token == ":" ||
-      token == "|" ||
-      token == "*" ||
-      token == "?" ||
-      token == "+"
-    ) {
-      while (
-        operatorStack.length &&
-        peek(operatorStack) != "(" &&
-        operatorPrecedence.get(peek(operatorStack)) >=
-          operatorPrecedence.get(token)
-      ) {
-        output.push(operatorStack.pop());
-      }
-
-      operatorStack.push(token);
-    } else if (token == "(" || token == ")") {
-      if (token == "(") {
-        operatorStack.push(token);
-      } else {
-        while (peek(operatorStack) != "(") {
-          output.push(operatorStack.pop());
-        }
-        operatorStack.pop();
-      }
-    } else {
-      output.push(token);
-    }
-  }
-
-  while (operatorStack.length) {
-    output.push(operatorStack.pop());
-  }
-
-  return output;
-}
+  AST,
+  CharacterNode,
+  Node,
+  ConcatenationNode,
+  RepetitionNode,
+  AlternationNode,
+  CharacterSetNode,
+  CharacterClassNode
+} from "./parser";
+import { Matcher } from "./matcher";
 
 export class State {
   isEnd: bool;
@@ -136,119 +24,18 @@ export class State {
   }
 }
 
-export class SymbolMatchState extends State {
-  symbol: string;
+export class MatcherState<T extends Matcher> extends State {
+  matcher: T;
   next: State;
 
-  constructor(symbol: string, next: State) {
+  constructor(matcher: T, next: State) {
     super();
-    this.symbol = symbol;
+    this.matcher = matcher;
     this.next = next;
   }
 
-  matches(symbol: string): State | null {
-    return this.symbol == symbol ? this.next : null;
-  }
-}
-
-export class CharacterClassMatchState extends State {
-  next: State;
-  charClass: string;
-
-  constructor(charClass: string, next: State) {
-    super();
-    this.next = next;
-    this.charClass = charClass;
-  }
-
-  matches(symbol: string): State | null {
-    const code = symbol.charCodeAt(0);
-    if (this.charClass == "d") {
-      return isDigit(code) ? this.next : null;
-    }
-    if (this.charClass == "D") {
-      return !isDigit(code) ? this.next : null;
-    }
-    if (this.charClass == ".") {
-      return code != 13 && code != 10 && code != 8232 && code != 8233
-        ? this.next
-        : null;
-    }
-    if (this.charClass == "w") {
-      return isLowercaseAlpha(code) ||
-        isUppercaseAlpha(code) ||
-        isUnderscore(code) ||
-        isDigit(code)
-        ? this.next
-        : null;
-    }
-    if (this.charClass == "W") {
-      return !(
-        isLowercaseAlpha(code) ||
-        isUppercaseAlpha(code) ||
-        isUnderscore(code) ||
-        isDigit(code)
-      )
-        ? this.next
-        : null;
-    }
-    if (this.charClass == "s") {
-      return isWhitespace(code) ? this.next : null;
-    }
-    if (this.charClass == "S") {
-      return !isWhitespace(code) ? this.next : null;
-    }
-    if (this.charClass == "t") {
-      return code == 9 ? this.next : null;
-    }
-    if (this.charClass == "r") {
-      return code == 13 ? this.next : null;
-    }
-    if (this.charClass == "n") {
-      return code == 10 ? this.next : null;
-    }
-    if (this.charClass == "v") {
-      return code == 11 ? this.next : null;
-    }
-    if (this.charClass == "f") {
-      return code == 12 ? this.next : null;
-    }
-    // TODO: throw an error
-    return null;
-  }
-}
-
-export class CharacterSetMatchState extends State {
-  next: State;
-  set: string;
-
-  constructor(set: string, next: State) {
-    super();
-    this.next = next;
-    this.set = set.substring(1, set.length - 1);
-  }
-
-  matchesSet(set: string, char: i32): bool {
-    for (let i = 0; i < set.length; i++) {
-      // TODO - perform the set parsing logic in the constructor
-      if (i < set.length - 2 && set.charAt(i + 1) == "-") {
-        const from = set.charCodeAt(i);
-        const to = set.charCodeAt(i + 2);
-        if (char >= from && char <= to) return true;
-      } else {
-        if (set.charCodeAt(i) == char) return true;
-      }
-    }
-    return false;
-  }
-
-  matches(symbol: string): State | null {
-    const char = symbol.charCodeAt(0);
-    if (this.set.startsWith("^")) {
-      return !this.matchesSet(this.set.substr(1), char) ? this.next : null;
-    } else {
-      return this.matchesSet(this.set, char) ? this.next : null;
-    }
+  matches(value: string): State | null {
+    return this.matcher.matches(value) ? this.next : null;
   }
 }
 
@@ -259,31 +46,19 @@ export class Automata {
     this.start = start;
     this.end = end;
   }
-}
 
-function fromEpsilon(): Automata {
-  const start = new State();
-  const end = new State(true);
-  start.epsilonTransitions.push(end);
-  return new Automata(start, end);
-}
+  static fromEpsilon(): Automata {
+    const start = new State();
+    const end = new State(true);
+    start.epsilonTransitions.push(end);
+    return new Automata(start, end);
+  }
 
-function fromCharacterSet(set: string): Automata {
-  const end = new State(true);
-  const start = new CharacterSetMatchState(set, end);
-  return new Automata(start, end);
-}
-
-function fromCharacterClass(charClass: string): Automata {
-  const end = new State(true);
-  const start = new CharacterClassMatchState(charClass, end);
-  return new Automata(start, end);
-}
-
-function fromSymbol(symbol: string): Automata {
-  const end = new State(true);
-  const start = new SymbolMatchState(symbol, end);
-  return new Automata(start, end);
+  static fromMatcher<T extends Matcher>(matcher: T): Automata {
+    const end = new State(true);
+    const start = new MatcherState<T>(matcher, end);
+    return new Automata(start, end);
+  }
 }
 
 function concat(first: Automata, second: Automata): Automata {
@@ -335,45 +110,46 @@ function oneOrMore(nfa: Automata): Automata {
   return new Automata(start, end);
 }
 
-export function toNFA(exp: string): Automata {
-  const postfixExp = toPostfix(insertExplicitConcatOperator(exp));
-
-  if (postfixExp.length == 0) {
-    return fromEpsilon();
-  }
-
-  const stack = new Array<Automata>();
-  for (let i = 0; i < postfixExp.length; i++) {
-    const token = postfixExp[i];
-    if (token == "*") {
-      stack.push(closure(stack.pop()));
-    } else if (token == "?") {
-      stack.push(zeroOrOne(stack.pop()));
-    } else if (token == "+") {
-      stack.push(oneOrMore(stack.pop()));
-    } else if (token == "|") {
-      const right = stack.pop();
-      const left = stack.pop();
-      stack.push(union(left, right));
-    } else if (token == ":") {
-      const right = stack.pop();
-      const left = stack.pop();
-      stack.push(concat(left, right));
-    } else if (token.startsWith("[")) {
-      stack.push(fromCharacterSet(token));
-    } else if (token.startsWith("\\")) {
-      const escapedToken = token.substr(1);
-      if (characterClasses.includes(escapedToken)) {
-        stack.push(fromCharacterClass(escapedToken));
-      } else {
-        stack.push(fromSymbol(escapedToken));
-      }
-    } else if (token == ".") {
-      stack.push(fromCharacterClass("."));
+// recursively builds an automata for the given AST
+function automataForNode(expression: Node): Automata {
+  if (RepetitionNode.is(expression)) {
+    const c = expression as RepetitionNode;
+    let auto = automataForNode(c.expression);
+    if (c.quantifier == "?") {
+      return zeroOrOne(auto);
+    } else if (c.quantifier == "+") {
+      return oneOrMore(auto);
+    } else if (c.quantifier == "*") {
+      return closure(auto);
     } else {
-      stack.push(fromSymbol(token));
+      throw new Error("unsupported quantifier - " + c.quantifier);
     }
+  } else if (CharacterNode.is(expression)) {
+    return Automata.fromMatcher(
+      Matcher.fromCharacterNode(expression as CharacterNode)
+    );
+  } else if (ConcatenationNode.is(expression)) {
+    const c = expression as ConcatenationNode;
+    let auto = automataForNode(c.expressions[0]);
+    for (let i = 1; i < c.expressions.length; i++) {
+      auto = concat(auto, automataForNode(c.expressions[i]));
+    }
+    return auto;
+  } else if (AlternationNode.is(expression)) {
+    const c = expression as AlternationNode;
+    return union(automataForNode(c.left), automataForNode(c.right));
+  } else if (CharacterSetNode.is(expression)) {
+    return Automata.fromMatcher(
+      Matcher.fromCharacterSetNode(expression as CharacterSetNode)
+    );
+  } else if (CharacterClassNode.is(expression)) {
+    return Automata.fromMatcher(
+      Matcher.fromCharacterClassNode(expression as CharacterClassNode)
+    );
   }
+  return Automata.fromEpsilon();
+}
 
-  return stack.pop();
+export function toNFAFromAST(ast: AST): Automata {
+  return automataForNode(ast.body);
 }

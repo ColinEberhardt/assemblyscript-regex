@@ -39,20 +39,20 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 ### Other assertions
 
- - [ ] x(?=y)
- - [ ] x(?!y)
- - [ ] (?<=y)x
- - [ ] (?<!y)x
+ - [ ] x(?=y) Lookahead assertion
+ - [ ] x(?!y) Negative lookahead assertion
+ - [ ] (?<=y)x Lookbehind assertion
+ - [ ] (?<!y)x Negative lookbehind assertion
 
 ### Groups and ranges
 
  - [x] x|y
  - [x] [xyz][a-c]
  - [x] [^xyz][^a-c]
- - [ ] (x)
- - [ ] \n
- - [ ] (?<Name>x)
- - [ ] (?:x)
+ - [ ] (x) capturing group
+ - [ ] \n back reference
+ - [ ] (?<Name>x) named capturing group
+ - [ ] (?:x) Non-capturing group
 
 ### Quantifiers
 
@@ -63,6 +63,10 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [ ] x{n,}
  - [ ] x{n,m}
  - [ ] x*? / x+? / ...
+
+### Runtime
+
+ - [ ] multiline
 
 ## Testing
 
