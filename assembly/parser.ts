@@ -68,7 +68,10 @@ export class AssertionNode extends Node {
   }
 
   static is(node: Node, kind: string = ""): bool {
-    return node.type == "Assertion" && ((node as AssertionNode).kind == kind || kind == "");
+    return (
+      node.type == "Assertion" &&
+      ((node as AssertionNode).kind == kind || kind == "")
+    );
   }
 }
 
@@ -117,11 +120,16 @@ export class Parser {
   cursor: u32 = 0;
   input: string;
 
-  constructor(input: string) {
+  private constructor(input: string) {
     this.input = input;
   }
 
-  eatToken(value: string = ""): string {
+  static toAST(input: string): AST {
+    const parser = new Parser(input);
+    return parser.toAST();
+  }
+
+  private eatToken(value: string = ""): string {
     if (value != "" && this.currentToken != value) {
       throw new Error("invalid token");
     }
@@ -133,22 +141,22 @@ export class Parser {
     return current;
   }
 
-  more(): bool {
+  private more(): bool {
     return this.currentToken != "";
   }
 
-  resetCursor(): void {
+  private resetCursor(): void {
     this.cursor = 0;
     this.currentToken = this.input.substr(this.cursor, 1);
   }
 
-  toAST(): AST {
+  private toAST(): AST {
     this.resetCursor();
     const body = this.parseTerms();
     return new AST(body);
   }
 
-  parseTerms(): Node {
+  private parseTerms(): Node {
     const term = this.parseSequence();
     if (this.more() && this.currentToken == "|") {
       this.eatToken("|");
@@ -157,7 +165,7 @@ export class Parser {
     return term;
   }
 
-  parseCharacter(): Node {
+  private parseCharacter(): Node {
     if (this.currentToken == "\\") {
       this.eatToken("\\");
       // TODO: strangely without this we get a TS2367 error!
@@ -184,7 +192,7 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
-  parseSequence(): Node {
+  private parseSequence(): Node {
     const nodes = new Array<Node>();
     while (this.more() && this.currentToken != "|") {
       if (isQuantifier(this.currentToken)) {
@@ -201,7 +209,7 @@ export class Parser {
     return nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
   }
 
-  parseCharacterSet(): CharacterSetNode {
+  private parseCharacterSet(): CharacterSetNode {
     let chars = "";
     this.eatToken("[");
     const negated = this.currentToken == "^";
@@ -219,14 +227,5 @@ export class Parser {
     }
     this.eatToken("]");
     return new CharacterSetNode(chars, negated);
-  }
-
-  parseNumber(): u32 {
-    let numStr = "";
-    while (isDigit(this.currentToken.charCodeAt(0))) {
-      numStr += this.currentToken;
-      this.eatToken();
-    }
-    return u32(parseInt(numStr));
   }
 }

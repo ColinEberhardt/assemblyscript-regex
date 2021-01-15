@@ -37,7 +37,7 @@ function walkNode(
         .concat(c.expressions.slice(index + 1));
       c.expressions = subset;
     } else {
-      // TODO: error
+      throw new Error("cannot delete a node that doesn't have a ConcatenationNode parent");
     }
   }
 }

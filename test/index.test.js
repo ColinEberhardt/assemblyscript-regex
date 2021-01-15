@@ -1,11 +1,11 @@
-const { matches, matchValue } = require("./util");
+const { matches } = require("./util");
 
 const expectMatch = (regex, arr) => {
-  arr.forEach(value => expect(matches(regex, value)).toBeTruthy());
+  arr.forEach(value => expect(matches(regex, value)).not.toBeNull());
 };
 
 const expectNotMatch = (regex, arr) => {
-  arr.forEach(value => expect(matches(regex, value)).toBeFalsy());
+  arr.forEach(value => expect(matches(regex, value)).toBeNull());
 };
 
 describe("Characters", () => {
@@ -21,14 +21,14 @@ describe("Characters", () => {
 });
 
 describe("Quantifiers", () => {
-  it.skip("matches empty strings", () => {
+  it("matches empty strings", () => {
     expectMatch("a?", [""]);
     expectMatch("a*", [""]);
   });
 
   it("zero or one", () => {
     expectMatch("a?", ["a"]);
-    expectNotMatch("a?", ["bc"]);
+    // expectNotMatch("a?", ["bc"]);
   });
 
   it("one or more", () => {
@@ -47,6 +47,7 @@ describe("Quantifiers", () => {
 
   it.skip("quantifiers are greedy", () => {
     expect(matchValue("a*", "aaaaa")).toEqual("aaaaa");
+    expect(matchValue("a+", "aaaaa")).toEqual("aaaaa");
   });
 });
 
@@ -85,7 +86,7 @@ describe("character sets", () => {
     expectMatch("[a-ce-f]", ["a", "b", "c", "e", "f"]);
     expectNotMatch("[a-ce-f]", ["d"]);
   });
-  
+
   it("supports closing brackets", () => {
     expectMatch("[]a]", ["]", "a"]);
   });
@@ -173,7 +174,16 @@ describe("boundary assertions", () => {
   it("handles escaped boundaries", () => {
     expectMatch("\\^a", ["^a"]);
     expectMatch("a\\$", ["a$"]);
-  })
+  });
+});
+
+describe("regexp", () => {
+  it("match returns correct substring", () => {
+    const match = matches("\\d", "asd123asd");
+    expect(match.index).toEqual(3);
+    expect(match.input).toEqual("asd123asd");
+    expect(match.value).toEqual("1");
+  });
 });
 
 describe("use cases", () => {

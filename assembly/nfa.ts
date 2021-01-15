@@ -82,10 +82,12 @@ function union(first: Automata, second: Automata): Automata {
 function closure(nfa: Automata): Automata {
   const start = new State();
   const end = new State(true);
-  start.epsilonTransitions.push(end);
+  // to ensure greedy matches, the epsilon transitions that loop-back
+  // need to be first in the list
   start.epsilonTransitions.push(nfa.start);
-  nfa.end.epsilonTransitions.push(end);
+  start.epsilonTransitions.push(end);
   nfa.end.epsilonTransitions.push(nfa.start);
+  nfa.end.epsilonTransitions.push(end);
   nfa.end.isEnd = false;
   return new Automata(start, end);
 }
@@ -93,8 +95,8 @@ function closure(nfa: Automata): Automata {
 function zeroOrOne(nfa: Automata): Automata {
   const start = new State();
   const end = new State(true);
-  start.epsilonTransitions.push(end);
   start.epsilonTransitions.push(nfa.start);
+  start.epsilonTransitions.push(end);
   nfa.end.epsilonTransitions.push(end);
   nfa.end.isEnd = false;
   return new Automata(start, end);

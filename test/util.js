@@ -9,22 +9,42 @@ const wasmModule = loader.instantiateSync(
   }
 );
 
-const matches = (regex, value) => {
+const matches = (regexStr, str) => {
   const {
-    firstMatch,
+    RegExp,
+    Match,
+    createRegExp,
     __getString,
     __newString,
     __retain,
     __release
   } = wasmModule.exports;
-  let aPtr = __retain(__newString(regex));
-  let bPtr = __retain(__newString(value));
-  const match = __getString(firstMatch(aPtr, bPtr));
-  const doesMatch = match !== "";
-  __release(aPtr);
-  __release(bPtr);
+
+  // create the regexp
+  const regexPtr = __retain(__newString(regexStr));
+  const regex = RegExp.wrap(createRegExp(regexPtr));
+  __release(regexPtr);
+
+  // execute
+  const strPtr = __retain(__newString(str));
+  const match = Match.wrap(regex.exec(strPtr));
+  if (match == 0) return null;
+  __release(strPtr);
+  const valuePtr = match.value;
+  const inputPtr = match.input;
+
+  // create a new JS object based on the wasm object
+  const matchValue = {
+    value: __getString(valuePtr),
+    index: match.index,
+    input: __getString(inputPtr)
+  };
+
+  __release(valuePtr);
+  __release(inputPtr);
   __release(match);
-  return doesMatch;
+  __release(regex);
+  return matchValue;
 };
 
 const matchValue = (regex, value) => {
