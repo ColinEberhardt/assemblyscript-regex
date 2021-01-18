@@ -1,12 +1,12 @@
 import "assemblyscript/std/portable/index";
 
-import { RegExp } from "../assembly/regexp";
-
 const globalAny: any = global;
 globalAny.log = console.log;
 
-const regexObj = new RegExp("a*");
-const match = regexObj.exec("aaaaa");
+import { RegExp } from "../assembly/regexp";
+
+const regexObj = new RegExp("a?");
+const match = regexObj.exec("aa");
 
 console.log(match);
 

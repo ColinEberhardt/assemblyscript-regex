@@ -1,1 +1,1 @@
-export declare function log(number: i32): void
+export declare function log(str: string): void

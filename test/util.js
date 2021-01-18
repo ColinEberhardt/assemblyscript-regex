@@ -5,7 +5,14 @@ const loader = require("@assemblyscript/loader/umd/index");
 const wasmModule = loader.instantiateSync(
   fs.readFileSync("./build/untouched.wasm"),
   {
-    env: { log: value => console.log(value) }
+    env: {
+      log: strPtr => {
+        const { __getString, __release } = wasmModule.exports;
+        str = __getString(strPtr);
+        console.log(str);
+        __release(strPtr);
+      }
+    }
   }
 );
 

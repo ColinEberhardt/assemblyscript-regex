@@ -115,6 +115,18 @@ export class AlternationNode extends Node {
   }
 }
 
+export class GroupNode extends Node {
+  expression: Node;
+  constructor(expression: Node) {
+    super("Group");
+    this.expression = expression;
+  }
+
+  static is(node: Node): bool {
+    return node.type == "Group";
+  }
+}
+
 export class Parser {
   currentToken: string = "";
   cursor: u32 = 0;
@@ -135,7 +147,7 @@ export class Parser {
     }
 
     const current = this.currentToken;
-    
+
     this.cursor++;
     this.currentToken = this.input.substr(this.cursor, 1);
     return current;
@@ -192,10 +204,18 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
+  // parses a sequence of chars, optionally separated by pipes
   private parseSequence(): Node {
     const nodes = new Array<Node>();
-    while (this.more() && this.currentToken != "|") {
-      if (isQuantifier(this.currentToken)) {
+    while (
+      this.more() &&
+      this.currentToken != "|" &&
+      this.currentToken != ")"
+    ) {
+      if (this.currentToken == "(") {
+        this.eatToken("(");
+        nodes.push(new GroupNode(this.parseSequence()));
+      } else if (isQuantifier(this.currentToken)) {
         const expression = nodes.pop();
         // TODO: add parseRepitition function
         nodes.push(new RepetitionNode(expression, this.currentToken));
@@ -206,6 +226,9 @@ export class Parser {
         nodes.push(this.parseCharacter());
       }
     }
+
+    if (this.currentToken == ")") this.eatToken(")");
+
     return nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
   }
 

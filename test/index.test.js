@@ -45,9 +45,17 @@ describe("Quantifiers", () => {
     expectNotMatch("a*b", ["aaaad"]);
   });
 
-  it.skip("quantifiers are greedy", () => {
-    expect(matchValue("a*", "aaaaa")).toEqual("aaaaa");
-    expect(matchValue("a+", "aaaaa")).toEqual("aaaaa");
+  it("zero or more is greedy", () => {
+    let match = matches("a*", "aaaaa");
+    expect(match).not.toBeNull();
+    expect(match.value).toEqual("aaaaa");
+  });
+
+  it("one or more is greedy", () => {
+    let match = matches("a+", "aaaaa");
+    console.log(match);
+    expect(match).not.toBeNull();
+    expect(match.value).toEqual("aaaaa");
   });
 });
 

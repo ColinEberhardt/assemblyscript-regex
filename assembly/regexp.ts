@@ -2,6 +2,7 @@ import { State, Automata, toNFAFromAST as buildNFA } from "./nfa";
 import { Parser, ConcatenationNode, AssertionNode } from "./parser";
 import { first, last } from "./util";
 import { walk } from "./walker";
+import { log } from "./env";
 
 let st: State = new State();
 
@@ -28,7 +29,7 @@ function recursiveBacktrackingSearch(
   state: State,
   visited: State[],
   input: string,
-  position: u32
+  position: i32
 ): Match | null {
   // prevent endless loops when following epsilon transitions
   // if (visited.includes(state)) {
@@ -40,12 +41,10 @@ function recursiveBacktrackingSearch(
     return new Match(input.substring(0, position), position, input);
   }
 
-  // check whether this state transition works
-  const nextState = state.matches(input.charAt(position));
+  // check whether this state transition matches
+  const nextState =
+    position < input.length ? state.matches(input.charAt(position)) : null;
   if (nextState) {
-    if (position == input.length) {
-      return null;
-    }
     return recursiveBacktrackingSearch(nextState, [], input, position + 1);
   } else {
     for (let i = 0; i < state.epsilonTransitions.length; i++) {

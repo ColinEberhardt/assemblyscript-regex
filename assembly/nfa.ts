@@ -106,8 +106,10 @@ function oneOrMore(nfa: Automata): Automata {
   const start = new State();
   const end = new State(true);
   start.epsilonTransitions.push(nfa.start);
-  nfa.end.epsilonTransitions.push(end);
+  // to ensure greedy matches, the epsilon transitions that loop-back
+  // need to be first in the list
   nfa.end.epsilonTransitions.push(nfa.start);
+  nfa.end.epsilonTransitions.push(end);
   nfa.end.isEnd = false;
   return new Automata(start, end);
 }
@@ -148,8 +150,9 @@ function automataForNode(expression: Node): Automata {
     return Automata.fromMatcher(
       Matcher.fromCharacterClassNode(expression as CharacterClassNode)
     );
+  } else {
+    throw new Error("un-recognised AST node");
   }
-  return Automata.fromEpsilon();
 }
 
 export function toNFAFromAST(ast: AST): Automata {
