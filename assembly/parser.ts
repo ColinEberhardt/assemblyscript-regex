@@ -8,6 +8,25 @@ function isAssertion(char: string): bool {
   return char == "$" || char == "^";
 }
 
+function isSpecialCharacter(char: string): bool {
+  return (
+    char == "\\" ||
+    char == "^" ||
+    char == "$" ||
+    char == "." ||
+    char == "|" ||
+    char == "?" ||
+    char == "*" ||
+    char == "+" ||
+    char == "(" ||
+    char == "[" ||
+    char == "{" ||
+    char == ")" ||
+    char == "]" ||
+    char == "}"
+  );
+}
+
 export abstract class Node {
   type: string;
   constructor(type: string) {
@@ -168,23 +187,15 @@ export class Parser {
     return new AST(body);
   }
 
-  // private parseTerms(): Node {
-  //   const term = this.parseSequence();
-  //   if (this.more() && this.currentToken == "|") {
-  //     this.eatToken("|");
-  //     return new AlternationNode(term, this.parseTerms());
-  //   }
-  //   return term;
-  // }
-
   private parseCharacter(): Node {
     if (this.currentToken == "\\") {
       this.eatToken("\\");
       // TODO: strangely without this we get a TS2367 error!
       this.currentToken = this.currentToken;
-      if (this.currentToken == ".") {
+      if (isSpecialCharacter(this.currentToken)) {
+        const char = this.currentToken;
         this.eatToken();
-        return new CharacterNode(".");
+        return new CharacterNode(char);
       } else if (isAssertion(this.currentToken)) {
         return new CharacterNode(this.eatToken());
       } else {
@@ -207,10 +218,7 @@ export class Parser {
   // parses a sequence of chars
   private parseSequence(): Node {
     let nodes = new Array<Node>();
-    while (
-      this.more() &&
-      this.currentToken != ")"
-    ) {
+    while (this.more() && this.currentToken != ")") {
       if (this.currentToken == "|") {
         this.eatToken("|");
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
