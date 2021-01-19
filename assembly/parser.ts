@@ -164,18 +164,18 @@ export class Parser {
 
   private toAST(): AST {
     this.resetCursor();
-    const body = this.parseTerms();
+    const body = this.parseSequence();
     return new AST(body);
   }
 
-  private parseTerms(): Node {
-    const term = this.parseSequence();
-    if (this.more() && this.currentToken == "|") {
-      this.eatToken("|");
-      return new AlternationNode(term, this.parseTerms());
-    }
-    return term;
-  }
+  // private parseTerms(): Node {
+  //   const term = this.parseSequence();
+  //   if (this.more() && this.currentToken == "|") {
+  //     this.eatToken("|");
+  //     return new AlternationNode(term, this.parseTerms());
+  //   }
+  //   return term;
+  // }
 
   private parseCharacter(): Node {
     if (this.currentToken == "\\") {
@@ -204,17 +204,22 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
-  // parses a sequence of chars, optionally separated by pipes
+  // parses a sequence of chars
   private parseSequence(): Node {
-    const nodes = new Array<Node>();
+    let nodes = new Array<Node>();
     while (
       this.more() &&
-      this.currentToken != "|" &&
       this.currentToken != ")"
     ) {
-      if (this.currentToken == "(") {
+      if (this.currentToken == "|") {
+        this.eatToken("|");
+        const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
+        nodes = new Array<Node>();
+        nodes.push(new AlternationNode(left, this.parseSequence()));
+      } else if (this.currentToken == "(") {
         this.eatToken("(");
         nodes.push(new GroupNode(this.parseSequence()));
+        this.eatToken(")");
       } else if (isQuantifier(this.currentToken)) {
         const expression = nodes.pop();
         // TODO: add parseRepitition function
@@ -226,8 +231,6 @@ export class Parser {
         nodes.push(this.parseCharacter());
       }
     }
-
-    if (this.currentToken == ")") this.eatToken(")");
 
     return nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
   }
