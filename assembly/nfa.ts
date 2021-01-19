@@ -6,7 +6,8 @@ import {
   RepetitionNode,
   AlternationNode,
   CharacterSetNode,
-  CharacterClassNode
+  CharacterClassNode,
+  GroupNode
 } from "./parser";
 import { Matcher } from "./matcher";
 
@@ -22,6 +23,40 @@ export class State {
   matches(char: string): State | null {
     return null;
   }
+
+  snapshot(input: string, position: u32): void {}
+
+  reachableStates(): State[] {
+    return this.epsilonTransitions;
+  }
+}
+
+export class GroupStartMarkerState extends State {
+  location: i32;
+
+  constructor() {
+    super();
+    this.location = -1;
+  }
+
+  snapshot(input: string, position: u32): void {
+    this.location = position;
+  }
+}
+
+export class GroupEndMarkerState extends State {
+  startMarker: GroupStartMarkerState;
+  capture: string;
+
+  constructor(startMarker: GroupStartMarkerState, isEnd: bool = false) {
+    super(isEnd);
+    this.startMarker = startMarker;
+    this.capture = "";
+  }
+
+  snapshot(input: string, position: u32): void {
+    this.capture = input.substring(this.startMarker.location, position);
+  }
 }
 
 export class MatcherState<T extends Matcher> extends State {
@@ -36,6 +71,13 @@ export class MatcherState<T extends Matcher> extends State {
 
   matches(value: string): State | null {
     return this.matcher.matches(value) ? this.next : null;
+  }
+
+  reachableStates(): State[] {
+    this.next;
+    const next = new Array<State>();
+    next.push(this.next);
+    return this.epsilonTransitions.slice(0).concat(next);
   }
 }
 
@@ -114,11 +156,22 @@ function oneOrMore(nfa: Automata): Automata {
   return new Automata(start, end);
 }
 
+function group(nfa: Automata): Automata {
+  // groups are implemented by wrapping the automata with 
+  // a pair of markers that record matches
+  const start = new GroupStartMarkerState();
+  const end = new GroupEndMarkerState(start, true);
+  start.epsilonTransitions.push(nfa.start);
+  nfa.end.epsilonTransitions.push(end);
+  nfa.end.isEnd = false;
+  return new Automata(start, end);
+}
+
 // recursively builds an automata for the given AST
 function automataForNode(expression: Node): Automata {
   if (RepetitionNode.is(expression)) {
     const c = expression as RepetitionNode;
-    let auto = automataForNode(c.expression);
+    const auto = automataForNode(c.expression);
     if (c.quantifier == "?") {
       return zeroOrOne(auto);
     } else if (c.quantifier == "+") {
@@ -150,6 +203,10 @@ function automataForNode(expression: Node): Automata {
     return Automata.fromMatcher(
       Matcher.fromCharacterClassNode(expression as CharacterClassNode)
     );
+  } else if (GroupNode.is(expression)) {
+    const c = expression as GroupNode;
+    const auto = automataForNode(c.expression);
+    return group(auto);
   } else {
     throw new Error("un-recognised AST node");
   }
@@ -157,4 +214,18 @@ function automataForNode(expression: Node): Automata {
 
 export function toNFAFromAST(ast: AST): Automata {
   return automataForNode(ast.body);
+}
+
+export function walker(
+  state: State,
+  visitor: (state: State) => void,
+  visited: State[] = []
+): void {
+  visitor(state);
+  if (visited.includes(state)) return;
+  visited.push(state);
+  const nextStates = state.reachableStates();
+  for (let i = 0; i < nextStates.length; i++) {
+    walker(nextStates[i], visitor, visited);
+  }
 }

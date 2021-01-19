@@ -1,4 +1,4 @@
-const { matchValue } = require("./util");
+const { matches } = require("./util");
 const fs = require("fs");
 const { fail } = require("assert");
 
@@ -22,7 +22,9 @@ describe("test data", () => {
         const expected = str.substring(Number(match[1]), Number(match[2]));
 
         it(`matches ${regex} against ${str}`, () => {
-          expect(matchValue(regex, str)).toEqual(expected);
+          const match = matches(regex, str);
+          expect(match).not.toBeNull();
+          expect(match.value).toEqual(expected);
         });
       }
     } catch {

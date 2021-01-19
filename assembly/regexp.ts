@@ -1,35 +1,14 @@
-import { State, Automata, toNFAFromAST as buildNFA } from "./nfa";
+import { State, Automata, toNFAFromAST, walker, GroupEndMarkerState } from "./nfa";
 import { Parser, ConcatenationNode, AssertionNode } from "./parser";
 import { first, last } from "./util";
 import { walk } from "./walker";
 import { log } from "./env";
 
-let st: State = new State();
-
-// follows epsilon transitions, adding the states that are reached
-function followEpsilonTransitions(
-  state: State,
-  nextStates: Array<State>,
-  visited: Array<State> = []
-): void {
-  if (state.epsilonTransitions.length > 0) {
-    for (let i = 0; i < state.epsilonTransitions.length; i++) {
-      st = state.epsilonTransitions[i];
-      if (visited.findIndex(vs => vs == st) == -1) {
-        visited.push(st);
-        followEpsilonTransitions(st, nextStates, visited);
-      }
-    }
-  } else {
-    nextStates.push(state);
-  }
-}
-
 function recursiveBacktrackingSearch(
   state: State,
-  visited: State[],
   input: string,
-  position: i32
+  visited: State[] = [],
+  position: i32 = 0
 ): Match | null {
   // prevent endless loops when following epsilon transitions
   // if (visited.includes(state)) {
@@ -37,21 +16,23 @@ function recursiveBacktrackingSearch(
   // }
   // visited.push(state);
 
+  state.snapshot(input, position);
+
   if (state.isEnd) {
-    return new Match(input.substring(0, position), position, input);
+    return Match.fromMatch(input.substring(0, position), position, input);
   }
 
   // check whether this state transition matches
   const nextState =
     position < input.length ? state.matches(input.charAt(position)) : null;
   if (nextState) {
-    return recursiveBacktrackingSearch(nextState, [], input, position + 1);
+    return recursiveBacktrackingSearch(nextState, input, [], position + 1);
   } else {
     for (let i = 0; i < state.epsilonTransitions.length; i++) {
       const match = recursiveBacktrackingSearch(
         state.epsilonTransitions[i],
-        visited,
         input,
+        visited,
         position
       );
       if (match != null) {
@@ -62,25 +43,30 @@ function recursiveBacktrackingSearch(
   return null;
 }
 
-function recursiveBacktrack(nfa: Automata, word: string): Match | null {
-  return recursiveBacktrackingSearch(nfa.start, new Array<State>(), word, 0);
-}
-
 export class Match {
-  value: string;
+  matches: string[];
   index: i32;
   input: string;
-  constructor(value: string, index: i32, input: string) {
-    this.value = value;
+  constructor(matches: string[], index: i32, input: string) {
+    this.matches = matches;
     this.index = index;
     this.input = input;
   }
+
+  static fromMatch(match: string, index: i32, input: string): Match {
+    const matches = new Array<string>();
+    matches.push(match);
+    return new Match(matches, index, input);
+  }
 }
+
+let gm: GroupEndMarkerState[] = new Array<GroupEndMarkerState>(); 
 
 export class RegExp {
   nfa: Automata;
   endOfInput: bool;
   startOfInput: bool;
+  groupMarkers: GroupEndMarkerState[];
 
   constructor(regex: string) {
     const ast = Parser.toAST(regex);
@@ -91,18 +77,29 @@ export class RegExp {
       this.endOfInput = AssertionNode.is(last(c.expressions), "$");
     }
 
+    // remove assertion nodes
     walk(ast, nodeVisitor => {
       if (AssertionNode.is(nodeVisitor.node)) {
         nodeVisitor.delete();
       }
     });
 
-    this.nfa = buildNFA(ast);
+    this.nfa = toNFAFromAST(ast);
+
+    // find all the group marker states
+    gm = new Array<GroupEndMarkerState>();
+    walker(this.nfa.start, (state: State) => {
+      if (state instanceof GroupEndMarkerState) {
+        gm.push(state as GroupEndMarkerState);
+      }
+    });
+    this.groupMarkers = gm;
   }
 
   exec(str: string): Match | null {
+    // TODO - remove all previous group marker results?
     if (str == "") {
-      return recursiveBacktrack(this.nfa, "");
+      return recursiveBacktrackingSearch(this.nfa.start, "");
     }
     // search for a match at each index within the string
     for (
@@ -111,14 +108,14 @@ export class RegExp {
       matchIndex++
     ) {
       // search for a match in this substring
-      const match = recursiveBacktrack(this.nfa, str.substr(matchIndex));
+      const match = recursiveBacktrackingSearch(this.nfa.start, str.substr(matchIndex));
       if (match != null) {
         // update match index to the correct location in the source string
         match.index = matchIndex;
         match.input = str;
         if (this.endOfInput) {
           // check that this match reaches the end of the string
-          if (match.index + match.value.length == str.length) {
+          if (match.index + match.matches[0].length == str.length) {
             return match;
           }
         } else {

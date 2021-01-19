@@ -1,7 +1,11 @@
 const { matches } = require("./util");
 
 const expectMatch = (regex, arr) => {
-  arr.forEach(value => expect(matches(regex, value)).not.toBeNull());
+  arr.forEach(value => {
+    const match = matches(regex, value);
+    expect(match).not.toBeNull();
+    expect(match.matches[0]).toEqual(value);
+  });
 };
 
 const expectNotMatch = (regex, arr) => {
@@ -48,14 +52,14 @@ describe("Quantifiers", () => {
   it("zero or more is greedy", () => {
     let match = matches("a*", "aaaaa");
     expect(match).not.toBeNull();
-    expect(match.value).toEqual("aaaaa");
+    expect(match.matches[0]).toEqual("aaaaa");
   });
 
   it("one or more is greedy", () => {
     let match = matches("a+", "aaaaa");
     console.log(match);
     expect(match).not.toBeNull();
-    expect(match.value).toEqual("aaaaa");
+    expect(match.matches[0]).toEqual("aaaaa");
   });
 });
 
@@ -170,7 +174,9 @@ describe("character classes", () => {
 
 describe("boundary assertions", () => {
   it("matches end of string", () => {
-    expectMatch("a$", ["ba"]);
+    const match = matches("a$", "ba");
+    expect(match.index).toEqual(1);
+    expect(match.matches[0]).toEqual("a");
     expectNotMatch("a$", ["ab"]);
   });
 
@@ -190,7 +196,7 @@ describe("regexp", () => {
     const match = matches("\\d", "asd123asd");
     expect(match.index).toEqual(3);
     expect(match.input).toEqual("asd123asd");
-    expect(match.value).toEqual("1");
+    expect(match.matches[0]).toEqual("1");
   });
 });
 
