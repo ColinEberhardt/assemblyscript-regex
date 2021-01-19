@@ -70,6 +70,6 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 ## Testing
 
-Currently passes 83 of the 217 tests from the Rust regex test suite:
+Currently passes 93 of the 217 tests from the Rust regex test suite:
 
 https://raw.githubusercontent.com/rust-lang/regex/master/src/testdata/basic.dat
