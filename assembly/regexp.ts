@@ -1,4 +1,10 @@
-import { State, Automata, toNFAFromAST, walker, GroupEndMarkerState } from "./nfa";
+import {
+  State,
+  Automata,
+  toNFAFromAST,
+  walker,
+  GroupEndMarkerState
+} from "./nfa";
 import { Parser, ConcatenationNode, AssertionNode } from "./parser";
 import { first, last } from "./util";
 import { walk } from "./walker";
@@ -60,7 +66,7 @@ export class Match {
   }
 }
 
-let gm: GroupEndMarkerState[] = new Array<GroupEndMarkerState>(); 
+let gm: GroupEndMarkerState[] = new Array<GroupEndMarkerState>();
 
 export class RegExp {
   nfa: Automata;
@@ -108,11 +114,18 @@ export class RegExp {
       matchIndex++
     ) {
       // search for a match in this substring
-      const match = recursiveBacktrackingSearch(this.nfa.start, str.substr(matchIndex));
+      const match = recursiveBacktrackingSearch(
+        this.nfa.start,
+        str.substr(matchIndex)
+      );
       if (match != null) {
         // update match index to the correct location in the source string
         match.index = matchIndex;
         match.input = str;
+        // access all capture groups
+        for (let i=0;i<this.groupMarkers.length;i++) {
+          match.matches.push(this.groupMarkers[i].capture);
+        }
         if (this.endOfInput) {
           // check that this match reaches the end of the string
           if (match.index + match.matches[0].length == str.length) {
@@ -127,7 +140,8 @@ export class RegExp {
   }
 }
 
-// TODO: do we need this factory function, or can we invoke the ctr via the loader?
+// TODO: do we need this factory function, or can we invoke
+// the ctr via the loader?
 export function createRegExp(regex: string): RegExp {
   return new RegExp(regex);
 }

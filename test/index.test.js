@@ -198,6 +198,33 @@ describe("regexp", () => {
     expect(match.input).toEqual("asd123asd");
     expect(match.matches[0]).toEqual("1");
   });
+
+  it("supports capture groups", () => {
+    let match = matches("a(\\d)a", "a3a");
+    expect(match.index).toEqual(0);
+    expect(match.input).toEqual("a3a");
+    expect(match.matches[0]).toEqual("a3a");
+    expect(match.matches[1]).toEqual("3");
+
+    match = matches("a(\\d)a", "  a3a");
+    expect(match.index).toEqual(2);
+    expect(match.input).toEqual("  a3a");
+    expect(match.matches[0]).toEqual("a3a");
+    expect(match.matches[1]).toEqual("3");
+
+    match = matches("a(\\d*)a", "a3456a");
+    expect(match.index).toEqual(0);
+    expect(match.input).toEqual("a3456a");
+    expect(match.matches[0]).toEqual("a3456a");
+    expect(match.matches[1]).toEqual("3456");
+
+    match = matches("a*(\\d*)(a*)", "aaa456aaa");
+    expect(match.index).toEqual(0);
+    expect(match.input).toEqual("aaa456aaa");
+    expect(match.matches[0]).toEqual("aaa456aaa");
+    expect(match.matches[1]).toEqual("456");
+    expect(match.matches[2]).toEqual("aaa");
+  });
 });
 
 describe("use cases", () => {
@@ -210,5 +237,14 @@ describe("use cases", () => {
     const regex = ".+@.+\\..+";
     expect(matches(regex, "colin@gmail.com")).toBeTruthy();
     expect(matches(regex, "gmail")).toBeFalsy();
+
+    const capturingRegex = "(.+)@(.+)\\.(.+)";
+    expect(matches(capturingRegex, "colin@gmail.com")).toBeTruthy();
+
+    match = matches(capturingRegex, "colin@gmail.com");
+    expect(match.matches[0]).toEqual("colin@gmail.com");
+    expect(match.matches[1]).toEqual("colin");
+    expect(match.matches[2]).toEqual("gmail");
+    expect(match.matches[3]).toEqual("com");
   });
 });
