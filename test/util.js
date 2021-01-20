@@ -2,8 +2,6 @@ global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
 const loader = require("@assemblyscript/loader/umd/index");
 
-
-
 const matches = (regexStr, str) => {
   const wasmModule = loader.instantiateSync(
     fs.readFileSync("./build/untouched.wasm"),
@@ -18,7 +16,7 @@ const matches = (regexStr, str) => {
       }
     }
   );
-  
+
   const {
     RegExp,
     Match,

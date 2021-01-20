@@ -1,5 +1,11 @@
-import { AssertionNode, AST, ConcatenationNode, Node, RangeRepetitionNode } from "./node";
-import { toArray } from "./util";
+import {
+  AssertionNode,
+  AST,
+  ConcatenationNode,
+  Node,
+  RangeRepetitionNode
+} from "./node";
+import { toArray } from "../util";
 
 export class NodeVisitor {
   node: Node;
@@ -73,6 +79,11 @@ export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
   }
 }
 
+// range quantifiers are implemented via 'expansion', which significantly
+// increases the size of the AST. This imposes a hard limit to prevent
+// memory-related issues
+const QUANTIFIER_LIMIT = 1000;
+
 function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
   let concatNode: ConcatenationNode | null = null;
   if (!ConcatenationNode.is(visitor.parentNode)) {
@@ -90,6 +101,12 @@ export function expandRepetitions(visitor: NodeVisitor): void {
   if (RangeRepetitionNode.is(visitor.node)) {
     // find the parent
     const rangeRepNode = visitor.node as RangeRepetitionNode;
+
+    if (rangeRepNode.to > QUANTIFIER_LIMIT) {
+      throw new Error(
+        "Cannot handle range quantifiers > " + QUANTIFIER_LIMIT.toString()
+      );
+    }
     const concatNode = parentAsConcatNode(visitor);
 
     // locate the original index

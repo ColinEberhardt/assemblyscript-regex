@@ -4,16 +4,11 @@ import {
   toNFAFromAST,
   walker,
   GroupEndMarkerState
-} from "./nfa";
-import {
-  ConcatenationNode,
-  AssertionNode,
-  RangeRepetitionNode,
-  Node
-} from "./node";
-import { Parser } from "./parser";
+} from "./nfa/nfa";
+import { ConcatenationNode, AssertionNode } from "./parser/node";
+import { Parser } from "./parser/parser";
 import { first, last, toArray } from "./util";
-import { walk as astWalk, expandRepetitions } from "./walker";
+import { walk as astWalk, expandRepetitions } from "./parser/walker";
 
 function recursiveBacktrackingSearch(
   state: State,

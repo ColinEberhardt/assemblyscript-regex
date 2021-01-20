@@ -9,7 +9,7 @@ import {
   CharacterClassNode,
   GroupNode,
   AssertionNode
-} from "./node";
+} from "../parser/node";
 import { Matcher } from "./matcher";
 
 export class State {

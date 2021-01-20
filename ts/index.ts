@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("a|b|c|d|e");
+const regexObj = new RegExp("a{1238712938}");
 const match = regexObj.exec("e");
 
 console.log(match);

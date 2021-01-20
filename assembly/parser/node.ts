@@ -1,4 +1,4 @@
-import { replaceAtIndex, toArray } from "./util";
+import { replaceAtIndex, toArray } from "../util";
 
 const emptyNodeArray = new Array<Node>();
 

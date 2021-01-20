@@ -1,4 +1,4 @@
-import { isDigit } from "./characters";
+import { isDigit } from "../nfa/characters";
 import {
   AST,
   RangeRepetitionNode,
