@@ -5,7 +5,7 @@ import {
   isLowercaseAlpha,
   isWhitespace
 } from "./characters";
-import { CharacterClassNode, CharacterNode, CharacterSetNode } from "./parser";
+import { CharacterClassNode, CharacterNode, CharacterSetNode } from "./node";
 
 export abstract class Matcher {
   abstract matches(value: string): bool;

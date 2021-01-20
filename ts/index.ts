@@ -5,8 +5,8 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("a{2}");
-const match = regexObj.exec("ab");
+const regexObj = new RegExp("a|b|c|d|e");
+const match = regexObj.exec("e");
 
 console.log(match);
 

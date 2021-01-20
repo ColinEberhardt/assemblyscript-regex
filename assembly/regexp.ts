@@ -5,9 +5,15 @@ import {
   walker,
   GroupEndMarkerState
 } from "./nfa";
-import { Parser, ConcatenationNode, AssertionNode, RangeRepetitionNode } from "./parser";
+import {
+  ConcatenationNode,
+  AssertionNode,
+  RangeRepetitionNode,
+  Node
+} from "./node";
+import { Parser } from "./parser";
 import { first, last, toArray } from "./util";
-// import { walk as astWalk, NodeVisitor } from "./walker";
+import { walk as astWalk, expandRepetitions } from "./walker";
 
 function recursiveBacktrackingSearch(
   state: State,
@@ -83,6 +89,8 @@ export class RegExp {
       this.startOfInput = AssertionNode.is(first(c.expressions), "^");
       this.endOfInput = AssertionNode.is(last(c.expressions), "$");
     }
+
+    astWalk(ast, expandRepetitions);
 
     this.nfa = toNFAFromAST(ast);
 

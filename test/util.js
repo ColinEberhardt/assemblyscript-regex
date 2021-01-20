@@ -2,21 +2,23 @@ global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
 const loader = require("@assemblyscript/loader/umd/index");
 
-const wasmModule = loader.instantiateSync(
-  fs.readFileSync("./build/untouched.wasm"),
-  {
-    env: {
-      log: strPtr => {
-        const { __getString, __release } = wasmModule.exports;
-        str = __getString(strPtr);
-        console.log(str);
-        __release(strPtr);
-      }
-    }
-  }
-);
+
 
 const matches = (regexStr, str) => {
+  const wasmModule = loader.instantiateSync(
+    fs.readFileSync("./build/untouched.wasm"),
+    {
+      env: {
+        log: strPtr => {
+          const { __getString, __release } = wasmModule.exports;
+          str = __getString(strPtr);
+          console.log(str);
+          __release(strPtr);
+        }
+      }
+    }
+  );
+  
   const {
     RegExp,
     Match,

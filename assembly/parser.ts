@@ -1,5 +1,17 @@
 import { isDigit } from "./characters";
-import { toArray } from "./util";
+import {
+  AST,
+  RangeRepetitionNode,
+  GroupNode,
+  AssertionNode,
+  CharacterClassNode,
+  CharacterNode,
+  Node,
+  AlternationNode,
+  ConcatenationNode,
+  RepetitionNode,
+  CharacterSetNode
+} from "./node";
 
 function isQuantifier(char: string): bool {
   return char == "?" || char == "+" || char == "*";
@@ -26,172 +38,6 @@ function isSpecialCharacter(char: string): bool {
     char == "]" ||
     char == "}"
   );
-}
-
-const emptyNodeArray = new Array<Node>();
-
-export abstract class Node {
-  type: string;
-  constructor(type: string) {
-    this.type = type;
-  }
-
-  children(): Node[] {
-    return emptyNodeArray;
-  }
-}
-
-export class AST extends Node {
-  body: Node | null;
-
-  constructor(body: Node) {
-    super("AST");
-    this.body = body;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "AST";
-  }
-
-  children(): Node[] {
-    return this.body != null ? toArray(this.body as Node) : emptyNodeArray;
-  }
-}
-
-export class ConcatenationNode extends Node {
-  expressions: Node[];
-  constructor(expressions: Node[]) {
-    super("Concatenation");
-    this.expressions = expressions;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "Concatenation";
-  }
-
-  children(): Node[] {
-    return this.expressions;
-  }
-}
-
-export class CharacterSetNode extends Node {
-  chars: string;
-  negated: bool;
-  constructor(chars: string, negated: bool) {
-    super("CharacterSet");
-    this.chars = chars;
-    this.negated = negated;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "CharacterSet";
-  }
-}
-
-export class CharacterNode extends Node {
-  char: string;
-  constructor(char: string) {
-    super("Char");
-    this.char = char;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "Char";
-  }
-}
-
-export class AssertionNode extends Node {
-  kind: string;
-  constructor(kind: string) {
-    super("Assertion");
-    this.kind = kind;
-  }
-
-  static is(node: Node, kind: string = ""): bool {
-    return (
-      node.type == "Assertion" &&
-      ((node as AssertionNode).kind == kind || kind == "")
-    );
-  }
-}
-
-export class CharacterClassNode extends Node {
-  charClass: string;
-  constructor(charClass: string) {
-    super("CharacterClass");
-    this.charClass = charClass;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "CharacterClass";
-  }
-}
-
-export class RepetitionNode extends Node {
-  expression: Node;
-  quantifier: string;
-  constructor(expression: Node, quantifier: string) {
-    super("Repetition");
-    this.quantifier = quantifier;
-    this.expression = expression;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "Repetition";
-  }
-}
-
-export class RangeRepetitionNode extends Node {
-  expression: Node;
-  from: u32;
-  to: u32;
-  constructor(expression: Node, from: u32, to: u32) {
-    super("RangeRepetition");
-    this.from = from;
-    this.to = to;
-    this.expression = expression;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "RangeRepetition";
-  }
-}
-
-export class AlternationNode extends Node {
-  left: Node;
-  right: Node;
-  constructor(left: Node, right: Node) {
-    super("Alternation");
-    this.left = left;
-    this.right = right;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "Alternation";
-  }
-
-  children(): Node[] {
-    const arr = new Array<Node>();
-    arr.push(this.left);
-    arr.push(this.right);
-    return arr;
-  }
-}
-
-export class GroupNode extends Node {
-  expression: Node;
-  constructor(expression: Node) {
-    super("Group");
-    this.expression = expression;
-  }
-
-  static is(node: Node): bool {
-    return node.type == "Group";
-  }
-
-  children(): Node[] {
-    return toArray(this.expression);
-  }
 }
 
 export class Parser {
@@ -344,7 +190,6 @@ export class Parser {
               range.length == 1 ? range[0] : range[1]
             )
           );
-          this.eatToken();
         }
       } else if (isQuantifier(this.currentToken)) {
         const expression = nodes.pop();

@@ -236,6 +236,23 @@ describe("capture groups", () => {
   })
 });
 
+describe("range quantifiers", () => {
+  it("handles single quantifier", () => {
+    expectMatch("a{2}", ["aa"]);
+    expectMatch("ba{2}", ["baa"]);
+    expectMatch("ba{1}b", ["bab"]);
+  });
+
+  it("handles zero value quantifier", () => {
+    expectMatch("ba{0}b", ["bb"]);
+  });
+
+  it("handles quantifiers within alternates", () => {
+    expectMatch("a{2}|b{2}", ["bb", "aa"]);
+    expectNotMatch("a{2}|b{2}", ["cc"]);
+  });
+});
+
 describe("use cases", () => {
   it("matches combinations", () => {
     expectMatch("\\s\\w*", [" bar"]);

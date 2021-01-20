@@ -59,7 +59,7 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [x] x*
  - [x] x+
  - [x] x?
- - [ ] x{n}
+ - [x] x{n}
  - [ ] x{n,}
  - [ ] x{n,m}
  - [ ] x*? / x+? / ...
@@ -70,6 +70,6 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 ## Testing
 
-Currently passes 107 of the 217 tests from the Rust regex test suite:
+Currently passes 180 of the 217 tests from the Rust regex test suite:
 
 https://raw.githubusercontent.com/rust-lang/regex/master/src/testdata/basic.dat

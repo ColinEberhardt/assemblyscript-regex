@@ -1,6 +1,7 @@
-import { AssertionNode, AST, ConcatenationNode, Node } from "./parser";
+import { AssertionNode, AST, ConcatenationNode, Node, RangeRepetitionNode } from "./node";
+import { toArray } from "./util";
 
-class NodeVisitor {
+export class NodeVisitor {
   node: Node;
   parentNode: Node;
   _delete: bool;
@@ -40,7 +41,7 @@ function walkNode(
       c.expressions = subset;
     } else if (parentNode != null && AST.is(parentNode)) {
       const c = parentNode as AST;
-      c.body = null;
+      // c.body = null;
     } else {
       throw new Error(
         "cannot delete a node that doesn't have a ConcatenationNode parent"
@@ -69,5 +70,42 @@ export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
     if (c.expressions.length == 0) {
       nodeVisitor.delete();
     }
+  }
+}
+
+function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
+  let concatNode: ConcatenationNode | null = null;
+  if (!ConcatenationNode.is(visitor.parentNode)) {
+    concatNode = new ConcatenationNode(toArray(visitor.node));
+    visitor.parentNode.replace(visitor.node, concatNode);
+  } else {
+    concatNode = visitor.parentNode as ConcatenationNode;
+  }
+  return concatNode as ConcatenationNode;
+}
+
+// take each range repetition and replace with a concatenation
+// of cloned nodes, e.g. a{2} becomes aa
+export function expandRepetitions(visitor: NodeVisitor): void {
+  if (RangeRepetitionNode.is(visitor.node)) {
+    // find the parent
+    const rangeRepNode = visitor.node as RangeRepetitionNode;
+    const concatNode = parentAsConcatNode(visitor);
+
+    // locate the original index
+    const index = concatNode.expressions.indexOf(rangeRepNode);
+
+    // create multiple clones
+    const clones = new Array<Node>();
+    const from = rangeRepNode.from;
+    for (let i = 0; i < from; i++) {
+      clones.push(rangeRepNode.expression.clone());
+    }
+
+    // replace the rangeRepNode with the clones
+    concatNode.expressions = concatNode.expressions
+      .slice(0, index)
+      .concat(clones)
+      .concat(concatNode.expressions.slice(index + 1));
   }
 }

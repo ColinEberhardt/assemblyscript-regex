@@ -11,3 +11,10 @@ export function toArray<T>(item: T): T[] {
   arr.push(item);
   return arr;
 }
+
+export function replaceAtIndex<T>(arr: T[], index: u32, item: T): T[] {
+  return arr
+    .slice(0, index)
+    .concat(toArray(item))
+    .concat(arr.slice(index + 1));
+}
