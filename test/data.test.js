@@ -16,11 +16,14 @@ describe("test data", () => {
 
       it(`matches ${regex} against ${str}`, () => {
         const match = matches(regex, str);
-        const captures = parts[3].match(/\((\d{1,2}),(\d{1,2})\)+/g);
-        
+        const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
+
         captures.forEach((capture, index) => {
-          const digits = capture.match(/\((\d{1,2}),(\d{1,2})\)/);
-          const expected = str.substring(Number(digits[1]), Number(digits[2]));
+          const digits = capture.match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)/);
+          const expected =
+            digits[0] == "?"
+              ? ""
+              : str.substring(Number(digits[1]), Number(digits[2]));
           expect(match.matches[index]).toEqual(expected);
         });
       });

@@ -25,6 +25,8 @@ export class State {
     return null;
   }
 
+  // a slightly hacky was to implement capture groups, the GroupEndMarkerState subclass
+  // uses this method to store the matched substring during the regex search
   snapshot(input: string, position: u32): void {}
 
   reachableStates(): State[] {
@@ -47,6 +49,7 @@ export class GroupStartMarkerState extends State {
 
 export class GroupEndMarkerState extends State {
   startMarker: GroupStartMarkerState;
+  // a bit yucky - storing transient state in the state machine!
   capture: string;
 
   constructor(startMarker: GroupStartMarkerState, isEnd: bool = false) {

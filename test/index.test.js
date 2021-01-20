@@ -198,7 +198,9 @@ describe("regexp", () => {
     expect(match.input).toEqual("asd123asd");
     expect(match.matches[0]).toEqual("1");
   });
+})
 
+describe("capture groups", () => {
   it("supports capture groups", () => {
     let match = matches("a(\\d)a", "a3a");
     expect(match.index).toEqual(0);
@@ -225,6 +227,13 @@ describe("regexp", () => {
     expect(match.matches[1]).toEqual("456");
     expect(match.matches[2]).toEqual("aaa");
   });
+
+  it("should not return captured values for non-matching alternations", () => {
+    const match = matches("(a|b)c|a(b|c)", "ab");
+    expect(match.matches[0]).toEqual("ab");
+    expect(match.matches[1]).toEqual("");
+    expect(match.matches[2]).toEqual("b");
+  })
 });
 
 describe("use cases", () => {

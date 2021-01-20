@@ -5,17 +5,16 @@ import {
   walker,
   GroupEndMarkerState
 } from "./nfa";
-import { Parser, ConcatenationNode, AssertionNode } from "./parser";
-import { first, last } from "./util";
-import { deleteAssertionNodes, deleteEmptyConcatenationNodes, walk } from "./walker";
-import { log } from "./env";
+import { Parser, ConcatenationNode, AssertionNode, RangeRepetitionNode } from "./parser";
+import { first, last, toArray } from "./util";
+// import { walk as astWalk, NodeVisitor } from "./walker";
 
 function recursiveBacktrackingSearch(
   state: State,
   input: string,
   visited: State[] = [],
   position: i32 = 0
-): Match | null {
+): string | null {
   // prevent endless loops when following epsilon transitions
   // if (visited.includes(state)) {
   //   return null;
@@ -25,7 +24,7 @@ function recursiveBacktrackingSearch(
   state.snapshot(input, position);
 
   if (state.isEnd) {
-    return Match.fromMatch(input.substring(0, position), position, input);
+    return input.substring(0, position);
   }
 
   // check whether this state transition matches
@@ -77,6 +76,7 @@ export class RegExp {
   constructor(regex: string) {
     const ast = Parser.toAST(regex);
 
+    // look for start / end assertions
     const body = ast.body;
     if (body != null && ConcatenationNode.is(body)) {
       const c = ast.body as ConcatenationNode;
@@ -99,7 +99,10 @@ export class RegExp {
   exec(str: string): Match | null {
     // TODO - remove all previous group marker results?
     if (str == "") {
-      return recursiveBacktrackingSearch(this.nfa.start, "");
+      const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
+      return matchStr != null
+        ? new Match(toArray(matchStr as string), 0, str)
+        : null;
     }
     // search for a match at each index within the string
     for (
@@ -108,18 +111,18 @@ export class RegExp {
       matchIndex++
     ) {
       // search for a match in this substring
-      const match = recursiveBacktrackingSearch(
+      const matchStr = recursiveBacktrackingSearch(
         this.nfa.start,
         str.substr(matchIndex)
       );
-      if (match != null) {
-        // update match index to the correct location in the source string
-        match.index = matchIndex;
-        match.input = str;
-        // access all capture groups
-        for (let i = 0; i < this.groupMarkers.length; i++) {
-          match.matches.push(this.groupMarkers[i].capture);
-        }
+      if (matchStr != null) {
+        const match = new Match(
+          toArray(matchStr as string).concat(
+            this.groupMarkers.map<string>(m => m.capture)
+          ),
+          matchIndex,
+          str
+        );
         if (this.endOfInput) {
           // check that this match reaches the end of the string
           if (match.index + match.matches[0].length == str.length) {

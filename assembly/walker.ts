@@ -1,16 +1,13 @@
-import {
-  AssertionNode,
-  AST,
-  ConcatenationNode,
-  Node
-} from "./parser";
+import { AssertionNode, AST, ConcatenationNode, Node } from "./parser";
 
 class NodeVisitor {
   node: Node;
+  parentNode: Node;
   _delete: bool;
 
-  constructor(node: Node) {
+  constructor(node: Node, parentNode: Node) {
     this.node = node;
+    this.parentNode = parentNode;
     this._delete = false;
   }
 
@@ -21,7 +18,7 @@ class NodeVisitor {
 
 function walkNode(
   node: Node,
-  parentNode: Node | null,
+  parentNode: Node,
   visitor: (node: NodeVisitor) => void
 ): void {
   const children = node.children();
@@ -29,8 +26,10 @@ function walkNode(
     walkNode(children[i], node, visitor);
   }
 
-  const nodeVisitor = new NodeVisitor(node);
+  const nodeVisitor = new NodeVisitor(node, parentNode);
   visitor(nodeVisitor);
+
+  // TODO - the delete function is a bit half-baked, it needs to crawl up the tree
   if (nodeVisitor._delete) {
     if (parentNode != null && ConcatenationNode.is(parentNode)) {
       const c = parentNode as ConcatenationNode;

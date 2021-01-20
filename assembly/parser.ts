@@ -1,3 +1,4 @@
+import { isDigit } from "./characters";
 import { toArray } from "./util";
 
 function isQuantifier(char: string): bool {
@@ -140,6 +141,22 @@ export class RepetitionNode extends Node {
   }
 }
 
+export class RangeRepetitionNode extends Node {
+  expression: Node;
+  from: u32;
+  to: u32;
+  constructor(expression: Node, from: u32, to: u32) {
+    super("RangeRepetition");
+    this.from = from;
+    this.to = to;
+    this.expression = expression;
+  }
+
+  static is(node: Node): bool {
+    return node.type == "RangeRepetition";
+  }
+}
+
 export class AlternationNode extends Node {
   left: Node;
   right: Node;
@@ -246,6 +263,60 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
+  private maybeParseRepetitionRange(): u32[] {
+    // snapshot
+    const previousCursor = this.cursor;
+    this.eatToken("{");
+
+    let firstDigit = true;
+    let fromStr = "",
+      toStr = "";
+    const rangeValues = new Array<u32>();
+    while (this.more() && this.currentToken != ")") {
+      if (firstDigit) {
+        if (isDigit(this.currentToken.charCodeAt(0))) {
+          // if it is a digit, keep eating
+          fromStr += this.currentToken;
+        } else {
+          rangeValues.push(<u32>parseInt(fromStr));
+          if (this.currentToken == ",") {
+            // if we meet a comma, start parsing the next digit
+            firstDigit = false;
+          } else if (this.currentToken == "}") {
+            this.eatToken("}");
+            // close brace, this is a single value range
+            return rangeValues;
+          } else {
+            // anything else, we got a problem
+            break;
+          }
+        }
+      } else {
+        if (isDigit(this.currentToken.charCodeAt(0))) {
+          // if it is a digit, keep eating
+          toStr += this.currentToken;
+        } else {
+          rangeValues.push(<u32>parseInt(toStr));
+          if (this.currentToken == "}") {
+            this.eatToken("}");
+            // close brace, this is a double value range
+            return rangeValues;
+          } else {
+            // anything else, we got a problem
+            break;
+          }
+        }
+      }
+      this.eatToken();
+    }
+
+    // repetition not found - reset state
+    this.cursor = previousCursor;
+    this.currentToken = this.input.substr(this.cursor, 1);
+
+    return rangeValues;
+  }
+
   // parses a sequence of chars
   private parseSequence(): Node {
     let nodes = new Array<Node>();
@@ -259,6 +330,22 @@ export class Parser {
         this.eatToken("(");
         nodes.push(new GroupNode(this.parseSequence()));
         this.eatToken(")");
+      } else if (this.currentToken == "{") {
+        const range = this.maybeParseRepetitionRange();
+        if (range.length == 0) {
+          // this is not the start of a repetition, it's just a char!
+          nodes.push(this.parseCharacter());
+        } else {
+          const expression = nodes.pop();
+          nodes.push(
+            new RangeRepetitionNode(
+              expression,
+              range[0],
+              range.length == 1 ? range[0] : range[1]
+            )
+          );
+          this.eatToken();
+        }
       } else if (isQuantifier(this.currentToken)) {
         const expression = nodes.pop();
         // TODO: add parseRepitition function
