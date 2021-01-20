@@ -7,7 +7,7 @@ import {
 } from "./nfa";
 import { Parser, ConcatenationNode, AssertionNode } from "./parser";
 import { first, last } from "./util";
-import { walk } from "./walker";
+import { deleteAssertionNodes, deleteEmptyConcatenationNodes, walk } from "./walker";
 import { log } from "./env";
 
 function recursiveBacktrackingSearch(
@@ -77,18 +77,12 @@ export class RegExp {
   constructor(regex: string) {
     const ast = Parser.toAST(regex);
 
-    if (ConcatenationNode.is(ast.body)) {
+    const body = ast.body;
+    if (body != null && ConcatenationNode.is(body)) {
       const c = ast.body as ConcatenationNode;
       this.startOfInput = AssertionNode.is(first(c.expressions), "^");
       this.endOfInput = AssertionNode.is(last(c.expressions), "$");
     }
-
-    // remove assertion nodes
-    walk(ast, nodeVisitor => {
-      if (AssertionNode.is(nodeVisitor.node)) {
-        nodeVisitor.delete();
-      }
-    });
 
     this.nfa = toNFAFromAST(ast);
 
@@ -123,7 +117,7 @@ export class RegExp {
         match.index = matchIndex;
         match.input = str;
         // access all capture groups
-        for (let i=0;i<this.groupMarkers.length;i++) {
+        for (let i = 0; i < this.groupMarkers.length; i++) {
           match.matches.push(this.groupMarkers[i].capture);
         }
         if (this.endOfInput) {

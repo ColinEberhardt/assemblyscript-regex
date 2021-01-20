@@ -12,7 +12,7 @@ describe("test data", () => {
       if (parts.length < 4) return;
 
       const regex = parts[1];
-      const str = parts[2];
+      const str = parts[2] !== "NULL" ? parts[2] : "";
 
       it(`matches ${regex} against ${str}`, () => {
         const match = matches(regex, str);

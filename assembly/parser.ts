@@ -1,4 +1,4 @@
-import { isDigit } from "./characters";
+import { toArray } from "./util";
 
 function isQuantifier(char: string): bool {
   return char == "?" || char == "+" || char == "*";
@@ -27,17 +27,33 @@ function isSpecialCharacter(char: string): bool {
   );
 }
 
+const emptyNodeArray = new Array<Node>();
+
 export abstract class Node {
   type: string;
   constructor(type: string) {
     this.type = type;
   }
+
+  children(): Node[] {
+    return emptyNodeArray;
+  }
 }
 
-export class AST {
-  body: Node;
+export class AST extends Node {
+  body: Node | null;
+
   constructor(body: Node) {
+    super("AST");
     this.body = body;
+  }
+
+  static is(node: Node): bool {
+    return node.type == "AST";
+  }
+
+  children(): Node[] {
+    return this.body != null ? toArray(this.body as Node) : emptyNodeArray;
   }
 }
 
@@ -50,6 +66,10 @@ export class ConcatenationNode extends Node {
 
   static is(node: Node): bool {
     return node.type == "Concatenation";
+  }
+
+  children(): Node[] {
+    return this.expressions;
   }
 }
 
@@ -132,6 +152,13 @@ export class AlternationNode extends Node {
   static is(node: Node): bool {
     return node.type == "Alternation";
   }
+
+  children(): Node[] {
+    const arr = new Array<Node>();
+    arr.push(this.left);
+    arr.push(this.right);
+    return arr;
+  }
 }
 
 export class GroupNode extends Node {
@@ -143,6 +170,10 @@ export class GroupNode extends Node {
 
   static is(node: Node): bool {
     return node.type == "Group";
+  }
+
+  children(): Node[] {
+    return toArray(this.expression);
   }
 }
 

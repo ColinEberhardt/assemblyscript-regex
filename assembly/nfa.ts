@@ -7,7 +7,8 @@ import {
   AlternationNode,
   CharacterSetNode,
   CharacterClassNode,
-  GroupNode
+  GroupNode,
+  AssertionNode
 } from "./parser";
 import { Matcher } from "./matcher";
 
@@ -168,8 +169,10 @@ function group(nfa: Automata): Automata {
 }
 
 // recursively builds an automata for the given AST
-function automataForNode(expression: Node): Automata {
-  if (RepetitionNode.is(expression)) {
+function automataForNode(expression: Node | null): Automata {
+  if (expression == null) {
+    return Automata.fromEpsilon();
+  } else if (RepetitionNode.is(expression)) {
     const c = expression as RepetitionNode;
     const auto = automataForNode(c.expression);
     if (c.quantifier == "?") {
@@ -187,6 +190,9 @@ function automataForNode(expression: Node): Automata {
     );
   } else if (ConcatenationNode.is(expression)) {
     const c = expression as ConcatenationNode;
+    if (c.expressions.length == 0) {
+      return Automata.fromEpsilon();
+    }
     let auto = automataForNode(c.expressions[0]);
     for (let i = 1; i < c.expressions.length; i++) {
       auto = concat(auto, automataForNode(c.expressions[i]));
@@ -207,6 +213,9 @@ function automataForNode(expression: Node): Automata {
     const c = expression as GroupNode;
     const auto = automataForNode(c.expression);
     return group(auto);
+  } else if (AssertionNode.is(expression)) {
+    // assertion nodes are ignored
+    return Automata.fromEpsilon();
   } else {
     throw new Error("un-recognised AST node");
   }

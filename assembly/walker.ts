@@ -1,4 +1,9 @@
-import { AST, ConcatenationNode, Node } from "./parser";
+import {
+  AssertionNode,
+  AST,
+  ConcatenationNode,
+  Node
+} from "./parser";
 
 class NodeVisitor {
   node: Node;
@@ -19,11 +24,9 @@ function walkNode(
   parentNode: Node | null,
   visitor: (node: NodeVisitor) => void
 ): void {
-  if (ConcatenationNode.is(node)) {
-    const c = node as ConcatenationNode;
-    for (let i = c.expressions.length - 1; i >= 0; i--) {
-      walkNode(c.expressions[i], node, visitor);
-    }
+  const children = node.children();
+  for (let i = children.length - 1; i >= 0; i--) {
+    walkNode(children[i], node, visitor);
   }
 
   const nodeVisitor = new NodeVisitor(node);
@@ -36,13 +39,36 @@ function walkNode(
         .slice(0, index)
         .concat(c.expressions.slice(index + 1));
       c.expressions = subset;
+    } else if (parentNode != null && AST.is(parentNode)) {
+      const c = parentNode as AST;
+      c.body = null;
     } else {
-      throw new Error("cannot delete a node that doesn't have a ConcatenationNode parent");
+      throw new Error(
+        "cannot delete a node that doesn't have a ConcatenationNode parent"
+      );
     }
   }
 }
 
 // depth first, right-left walker
 export function walk(ast: AST, visitor: (node: NodeVisitor) => void): void {
-  walkNode(ast.body, null, visitor);
+  let node = ast.body;
+  if (node != null) {
+    walkNode(node, ast, visitor);
+  }
+}
+
+export function deleteAssertionNodes(nodeVisitor: NodeVisitor): void {
+  if (AssertionNode.is(nodeVisitor.node)) {
+    nodeVisitor.delete();
+  }
+}
+
+export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
+  if (ConcatenationNode.is(nodeVisitor.node)) {
+    const c = nodeVisitor.node as ConcatenationNode;
+    if (c.expressions.length == 0) {
+      nodeVisitor.delete();
+    }
+  }
 }

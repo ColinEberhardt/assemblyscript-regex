@@ -5,8 +5,8 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("\\)");
-const match = regexObj.exec("()");
+const regexObj = new RegExp("a($)");
+const match = regexObj.exec("aa");
 
 console.log(match);
 
