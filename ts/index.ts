@@ -5,8 +5,8 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("a{0}b");
-const match = regexObj.exec("ab");
+const regexObj = new RegExp(unescape("\na"));
+const match = regexObj.exec(unescape("\na"));
 
 console.log(match);
 
