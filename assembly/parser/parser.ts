@@ -40,6 +40,15 @@ function isSpecialCharacter(char: string): bool {
   );
 }
 
+class Range {
+  from: i32;
+  to: i32;
+  constructor() {
+    this.from = -1;
+    this.to = -1;
+  }
+}
+
 export class Parser {
   currentToken: string = "";
   cursor: u32 = 0;
@@ -109,29 +118,32 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
-  private maybeParseRepetitionRange(): u32[] {
+  private maybeParseRepetitionRange(): Range {
     // snapshot
     const previousCursor = this.cursor;
     this.eatToken("{");
 
+    let range = new Range();
+
     let firstDigit = true;
-    let fromStr = "",
-      toStr = "";
-    const rangeValues = new Array<u32>();
+    let digitStr = "";
     while (this.more() && this.currentToken != ")") {
       if (firstDigit) {
         if (isDigit(this.currentToken.charCodeAt(0))) {
           // if it is a digit, keep eating
-          fromStr += this.currentToken;
+          digitStr += this.currentToken;
         } else {
-          rangeValues.push(<u32>parseInt(fromStr));
+          range.from = digitStr == "" ? -1 : <i32>parseInt(digitStr);
+          range.to = range.from;
           if (this.currentToken == ",") {
             // if we meet a comma, start parsing the next digit
             firstDigit = false;
+            digitStr = "";
+            range.to = -1;
           } else if (this.currentToken == "}") {
             this.eatToken("}");
             // close brace, this is a single value range
-            return rangeValues;
+            return range;
           } else {
             // anything else, we got a problem
             break;
@@ -140,13 +152,13 @@ export class Parser {
       } else {
         if (isDigit(this.currentToken.charCodeAt(0))) {
           // if it is a digit, keep eating
-          toStr += this.currentToken;
+          digitStr += this.currentToken;
         } else {
-          rangeValues.push(<u32>parseInt(toStr));
+          range.to = digitStr == "" ? -1 : <i32>parseInt(digitStr);
           if (this.currentToken == "}") {
             this.eatToken("}");
-            // close brace, this is a double value range
-            return rangeValues;
+            // close brace, end  of range
+            return range;
           } else {
             // anything else, we got a problem
             break;
@@ -160,7 +172,7 @@ export class Parser {
     this.cursor = previousCursor;
     this.currentToken = this.input.substr(this.cursor, 1);
 
-    return rangeValues;
+    return range;
   }
 
   // parses a sequence of chars
@@ -178,22 +190,15 @@ export class Parser {
         this.eatToken(")");
       } else if (this.currentToken == "{") {
         const range = this.maybeParseRepetitionRange();
-        if (range.length == 0) {
+        if (range.from == -1) {
           // this is not the start of a repetition, it's just a char!
           nodes.push(this.parseCharacter());
         } else {
           const expression = nodes.pop();
-          nodes.push(
-            new RangeRepetitionNode(
-              expression,
-              range[0],
-              range.length == 1 ? range[0] : range[1]
-            )
-          );
+          nodes.push(new RangeRepetitionNode(expression, range.from, range.to));
         }
       } else if (isQuantifier(this.currentToken)) {
         const expression = nodes.pop();
-        // TODO: add parseRepitition function
         nodes.push(new RepetitionNode(expression, this.currentToken));
         this.eatToken();
       } else if (this.currentToken == "[") {

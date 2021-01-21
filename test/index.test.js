@@ -243,6 +243,17 @@ describe("range quantifiers", () => {
     expectMatch("ba{1}b", ["bab"]);
   });
 
+  it("handles open upper bound quantifiers", () => {
+    expectMatch("a{2,}", ["aa", "aaaaa"]);
+    expectMatch("ba{2,}", ["baa", "baaaaaaa"]);
+    expectMatch("ba{1,}b", ["bab", "baaaaaab"]);
+  });
+
+  it("handles explicit upper bound quantifiers", () => {
+    const match = matches("a{2,4}", "aaaaaaaaaa");
+    expect(match.matches[0]).toEqual("aaaa");
+  });
+
   it("handles zero value quantifier", () => {
     expectMatch("ba{0}b", ["bb"]);
   });

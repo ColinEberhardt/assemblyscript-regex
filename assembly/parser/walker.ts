@@ -3,7 +3,8 @@ import {
   AST,
   ConcatenationNode,
   Node,
-  RangeRepetitionNode
+  RangeRepetitionNode,
+  RepetitionNode
 } from "./node";
 import { toArray } from "../util";
 
@@ -114,9 +115,21 @@ export function expandRepetitions(visitor: NodeVisitor): void {
 
     // create multiple clones
     const clones = new Array<Node>();
+
     const from = rangeRepNode.from;
+    // a{4} => aaaa
     for (let i = 0; i < from; i++) {
       clones.push(rangeRepNode.expression.clone());
+    }
+    if (rangeRepNode.to == -1) {
+      // a{4,} => aaaaa*
+      clones.push(new RepetitionNode(rangeRepNode.expression.clone(), "*"));
+    } else {
+      // a{4,6} => aaaaa?a?
+      const count = rangeRepNode.to - rangeRepNode.from;
+      for (let i = 0; i < count; i++) {
+        clones.push(new RepetitionNode(rangeRepNode.expression.clone(), "?"));
+      }
     }
 
     // replace the rangeRepNode with the clones
