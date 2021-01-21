@@ -57,7 +57,7 @@ function walkNode(
 }
 
 // depth first, right-left walker
-export function walk(ast: AST, visitor: (node: NodeVisitor) => void): void {
+export function walker(ast: AST, visitor: (node: NodeVisitor) => void): void {
   let node = ast.body;
   if (node != null) {
     walkNode(node, ast, visitor);

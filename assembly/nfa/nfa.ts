@@ -227,17 +227,3 @@ function automataForNode(expression: Node | null): Automata {
 export function toNFAFromAST(ast: AST): Automata {
   return automataForNode(ast.body);
 }
-
-export function walker(
-  state: State,
-  visitor: (state: State) => void,
-  visited: State[] = []
-): void {
-  visitor(state);
-  if (visited.includes(state)) return;
-  visited.push(state);
-  const nextStates = state.reachableStates();
-  for (let i = 0; i < nextStates.length; i++) {
-    walker(nextStates[i], visitor, visited);
-  }
-}

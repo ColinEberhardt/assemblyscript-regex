@@ -2,13 +2,13 @@ import {
   State,
   Automata,
   toNFAFromAST,
-  walker,
   GroupEndMarkerState
 } from "./nfa/nfa";
+import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode } from "./parser/node";
 import { Parser } from "./parser/parser";
 import { first, last, toArray } from "./util";
-import { walk as astWalk, expandRepetitions } from "./parser/walker";
+import { walker as astWalker, expandRepetitions } from "./parser/walker";
 
 function recursiveBacktrackingSearch(
   state: State,
@@ -85,13 +85,13 @@ export class RegExp {
       this.endOfInput = AssertionNode.is(last(c.expressions), "$");
     }
 
-    astWalk(ast, expandRepetitions);
+    astWalker(ast, expandRepetitions);
 
     this.nfa = toNFAFromAST(ast);
 
     // find all the group marker states
     gm = new Array<GroupEndMarkerState>();
-    walker(this.nfa.start, (state: State) => {
+    nfaWalker(this.nfa.start, (state: State) => {
       if (state instanceof GroupEndMarkerState) {
         gm.push(state as GroupEndMarkerState);
       }
