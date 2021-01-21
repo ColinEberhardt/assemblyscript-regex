@@ -1,16 +1,26 @@
-const { matches } = require("./util");
+const { RegExp } = require("./util");
 
 const expectMatch = (regex, arr) => {
   arr.forEach(value => {
-    const match = matches(regex, value);
+    const regexp = new RegExp(regex);
+    const match = regexp.exec(value);
     expect(match).not.toBeNull();
     expect(match.matches[0]).toEqual(value);
   });
 };
 
 const expectNotMatch = (regex, arr) => {
-  arr.forEach(value => expect(matches(regex, value)).toBeNull());
+  arr.forEach(value => {
+    const regexp = new RegExp(regex);
+    const match = regexp.exec(value);
+    expect(match).toBeNull()
+  });
 };
+
+const matches = (regex, value) => {
+  const regexp = new RegExp(regex);
+  return regexp.exec(value);
+}
 
 describe("Characters", () => {
   it("single character", () => {
@@ -174,7 +184,8 @@ describe("character classes", () => {
 
 describe("boundary assertions", () => {
   it("matches end of string", () => {
-    const match = matches("a$", "ba");
+    const regex = new RegExp("a$");
+    const match = regex.exec("ba");
     expect(match.index).toEqual(1);
     expect(match.matches[0]).toEqual("a");
     expectNotMatch("a$", ["ab"]);
@@ -198,7 +209,46 @@ describe("regexp", () => {
     expect(match.input).toEqual("asd123asd");
     expect(match.matches[0]).toEqual("1");
   });
-})
+
+  describe("global mode", () => {
+    it("increments lastIndex", () => {
+      const regex = new RegExp("\\d+", "g");
+      const match = regex.exec("dog 23 fish 45 cat");
+      expect(match.matches[0]).toEqual("23");
+      expect(regex.lastIndex).toEqual(6);
+    });
+
+    it("uses lastIndex to support multiple matches", () => {
+      const regex = new RegExp("\\d+", "g");
+
+      let match = regex.exec("dog 23 fish 45 cat");
+      expect(match.matches[0]).toEqual("23");
+      expect(regex.lastIndex).toEqual(6);
+
+      match = regex.exec("dog 23 fish 45 cat");
+      expect(match.matches[0]).toEqual("45");
+      expect(regex.lastIndex).toEqual(14);
+
+      match = regex.exec("dog 23 fish 45 cat");
+      expect(match).toBeNull();
+      expect(regex.lastIndex).toEqual(0);
+    });
+  });
+
+  describe("non-global mode", () => {
+    it("doesn't increment lastIndex", () => {
+      const regex = new RegExp("\\d+");
+
+      let match = regex.exec("dog 23 fish 45 cat");
+      expect(match.matches[0]).toEqual("23");
+      expect(regex.lastIndex).toEqual(0);
+
+      match = regex.exec("dog 23 fish 45 cat");
+      expect(match.matches[0]).toEqual("23");
+      expect(regex.lastIndex).toEqual(0);
+    });
+  });
+});
 
 describe("capture groups", () => {
   it("supports capture groups", () => {
@@ -233,7 +283,7 @@ describe("capture groups", () => {
     expect(match.matches[0]).toEqual("ab");
     expect(match.matches[1]).toEqual("");
     expect(match.matches[2]).toEqual("b");
-  })
+  });
 });
 
 describe("range quantifiers", () => {

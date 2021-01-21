@@ -1,9 +1,4 @@
-import {
-  State,
-  Automata,
-  toNFAFromAST,
-  GroupEndMarkerState
-} from "./nfa/nfa";
+import { State, Automata, toNFAFromAST, GroupEndMarkerState } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode } from "./parser/node";
 import { Parser } from "./parser/parser";
@@ -69,12 +64,17 @@ export class Match {
 let gm: GroupEndMarkerState[] = new Array<GroupEndMarkerState>();
 
 export class RegExp {
-  nfa: Automata;
-  endOfInput: bool;
-  startOfInput: bool;
-  groupMarkers: GroupEndMarkerState[];
+  flags: string;
+  lastIndex: i32;
 
-  constructor(regex: string) {
+  private nfa: Automata;
+  private endOfInput: bool;
+  private startOfInput: bool;
+  private groupMarkers: GroupEndMarkerState[];
+
+  constructor(regex: string, flags: string = "") {
+    this.flags = flags;
+
     const ast = Parser.toAST(regex);
 
     // look for start / end assertions
@@ -100,16 +100,21 @@ export class RegExp {
   }
 
   exec(str: string): Match | null {
-    // TODO - remove all previous group marker results?
+    // remove all previous group marker results
+    for (let i = 0; i < this.groupMarkers.length; i++) {
+      this.groupMarkers[i].capture = "";
+    }
+
     if (str == "") {
       const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
       return matchStr != null
         ? new Match(toArray(matchStr as string), 0, str)
         : null;
     }
+
     // search for a match at each index within the string
     for (
-      let matchIndex = 0;
+      let matchIndex = this.lastIndex;
       matchIndex < (this.startOfInput ? 1 : str.length);
       matchIndex++
     ) {
@@ -118,6 +123,7 @@ export class RegExp {
         this.nfa.start,
         str.substr(matchIndex)
       );
+      // we have found a match
       if (matchStr != null) {
         const match = new Match(
           toArray(matchStr as string).concat(
@@ -126,22 +132,26 @@ export class RegExp {
           matchIndex,
           str
         );
-        if (this.endOfInput) {
-          // check that this match reaches the end of the string
-          if (match.index + match.matches[0].length == str.length) {
-            return match;
+        // return this match (checking end of input condition)
+        const matchEndIndex = match.index + match.matches[0].length;
+        if (
+          (this.endOfInput && matchEndIndex == str.length) ||
+          !this.endOfInput
+        ) {
+          if (this.flags == "g") {
+            this.lastIndex = matchEndIndex;
           }
-        } else {
           return match;
         }
       }
     }
+    this.lastIndex = 0;
     return null;
   }
 }
 
 // TODO: do we need this factory function, or can we invoke
 // the ctr via the loader?
-export function createRegExp(regex: string): RegExp {
-  return new RegExp(regex);
+export function createRegExp(regex: string, flags: string): RegExp {
+  return new RegExp(regex, flags);
 }

@@ -66,7 +66,7 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
 
 ### RegExp
 
- - [ ] global
+ - [x] global
  - [ ] case insensitive
  - [ ] multiline
 
