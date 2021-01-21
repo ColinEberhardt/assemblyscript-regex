@@ -12,10 +12,10 @@ function recursiveBacktrackingSearch(
   position: i32 = 0
 ): string | null {
   // prevent endless loops when following epsilon transitions
-  // if (visited.includes(state)) {
-  //   return null;
-  // }
-  // visited.push(state);
+  if (visited.includes(state)) {
+    return null;
+  }
+  visited.push(state);
 
   state.snapshot(input, position);
 

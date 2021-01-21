@@ -11,7 +11,6 @@ const matches = (regex, value) => {
 };
 
 const unescape = str => str.replace("\\n", "\n");
-
 const escape = str => str.replace(/[\n]/g, "\\n");
 
 describe("test data", () => {
