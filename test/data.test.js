@@ -1,9 +1,14 @@
-const { matches } = require("./util");
+const { RegExp } = require("./util");
 const fs = require("fs");
 const { fail } = require("assert");
 
 const data = fs.readFileSync("./test/test.dat", "utf8");
 const lines = data.split("\n");
+
+const matches = (regex, value) => {
+  const regexp = new RegExp(regex);
+  return regexp.exec(value);
+};
 
 describe("test data", () => {
   lines.forEach(line => {

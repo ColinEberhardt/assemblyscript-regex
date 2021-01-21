@@ -74,6 +74,9 @@ export class RegExp {
 
   constructor(regex: string, flags: string = "") {
     this.flags = flags;
+    this.lastIndex = 0;
+    this.startOfInput = false;
+    this.endOfInput = false;
 
     const ast = Parser.toAST(regex);
 
