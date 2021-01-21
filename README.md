@@ -1,14 +1,39 @@
-# as-regex
+# assemblyscript-regex
 
-A regex engine built with AssemblyScript
+A regex engine for AssemblyScript.
 
-Currently AssemblyScript lacks Regex support. For a bit of fun I thought I'd try implementing a simple regex engine, based on [Denis Kyashif's blog post](https://deniskyashif.com/2019/02/17/implementing-a-regular-expression-engine/). The implementation is relatively simplistic, I've focussed on functionality rather than performance. However, it might be of use to someone.
+[AssemblyScript](https://www.assemblyscript.org/) is a new language, based on TypeScript, that runs on WebAssembly. AssemblyScript has a lightweight standard library, but lacks support for Regular Expression. The project fills that gap!
 
-## Feature support
+This project exposes an API that mirrors the JavaScript [RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) class:
 
-based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
+~~~javascript
+const regex = new RegExp("fo*", "g");
+const str = "table football, foul";
 
-### Character classes
+let match: Match | null = regex.exec(str);
+while (match != null) {
+  // first iteration
+  //   match.index = 6
+  //   match.matches[0] = "foo"
+
+  // second iteration
+  //   match.index = 16
+  //   match.matches[0] = "fo"
+  match = regex.exec(str);
+}
+~~~
+
+## Project status
+
+The initial focus of this implementation has been feature support and functionality over performance. It currently supports a sufficient number of regex features to be considered useful, including most character classes, common assertions, groups, alternations, capturing groups and quantifiers.
+
+The next phase of development will focussed on more extensive testing and performance. The project currently has reasonable unit test coverage, focussed on positive and negative test cases on a per-feature basis. It also includes a more exhaustive test suite with test cases borrowed from another regex library.
+
+### Feature support
+
+Based on the classfication within the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
+
+**Character classes**
 
  - [x] .
  - [x] \d
@@ -30,21 +55,21 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [ ] \u{hhhh} or \u{hhhhh}
  - [x] \
 
-### Assertions
+**Assertions**
 
  - [x] ^
  - [x] $
  - [ ] \b
  - [ ] \B
 
-### Other assertions
+**Other assertions**
 
  - [ ] x(?=y) Lookahead assertion
  - [ ] x(?!y) Negative lookahead assertion
  - [ ] (?<=y)x Lookbehind assertion
  - [ ] (?<!y)x Negative lookbehind assertion
 
-### Groups and ranges
+**Groups and ranges**
 
  - [x] x|y
  - [x] [xyz][a-c]
@@ -54,7 +79,7 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [ ] (?<Name>x) named capturing group
  - [ ] (?:x) Non-capturing group
 
-### Quantifiers
+**Quantifiers**
 
  - [x] x*
  - [x] x+
@@ -64,13 +89,13 @@ based on the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaS
  - [x] x{n,m}
  - [ ] x*? / x+? / ...
 
-### RegExp
+**RegExp**
 
  - [x] global
  - [ ] case insensitive
  - [ ] multiline
 
-## Testing
+### Testing
 
 Currently passes 181 of the 217 tests from the Rust regex test suite:
 
