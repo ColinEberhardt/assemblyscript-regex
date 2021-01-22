@@ -64,11 +64,10 @@ export class Parser {
   }
 
   private eatToken(value: string = ""): string {
-    if (value != "" && this.currentToken != value) {
+    const current = this.currentToken;
+    if (value.length > 0 && current != value) {
       throw new Error("invalid token");
     }
-
-    const current = this.currentToken;
 
     this.cursor++;
     this.currentToken = this.input.substr(this.cursor, 1);
@@ -76,7 +75,7 @@ export class Parser {
   }
 
   private more(): bool {
-    return this.currentToken != "";
+    return this.currentToken.length > 0;
   }
 
   private resetCursor(): void {

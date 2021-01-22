@@ -1,20 +1,17 @@
 export function last<T>(arr: T[]): T {
-  return arr[arr.length - 1];
+  return unchecked(arr[arr.length - 1]);
 }
 
 export function first<T>(arr: T[]): T {
-  return arr[0];
+  return unchecked(arr[0]);
 }
 
 export function toArray<T>(item: T): T[] {
-  const arr = new Array<T>();
-  arr.push(item);
-  return arr;
+  return [item];
 }
 
 export function replaceAtIndex<T>(arr: T[], index: u32, item: T): T[] {
-  return arr
-    .slice(0, index)
-    .concat(toArray(item))
-    .concat(arr.slice(index + 1));
+  let res = arr.slice(0);
+  unchecked(res[index] = item);
+  return res;
 }

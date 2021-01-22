@@ -6,18 +6,14 @@ import {
   RangeRepetitionNode,
   RepetitionNode
 } from "./node";
-import { toArray } from "../util";
 
 export class NodeVisitor {
-  node: Node;
-  parentNode: Node;
-  _delete: bool;
+  _delete: bool = false;
 
-  constructor(node: Node, parentNode: Node) {
-    this.node = node;
-    this.parentNode = parentNode;
-    this._delete = false;
-  }
+  constructor(
+    public node: Node,
+    public parentNode: Node
+  ) {}
 
   delete(): void {
     this._delete = true;
@@ -41,10 +37,11 @@ function walkNode(
   if (nodeVisitor._delete) {
     if (parentNode != null && ConcatenationNode.is(parentNode)) {
       const c = parentNode as ConcatenationNode;
-      const index = c.expressions.indexOf(node);
-      const subset = c.expressions
+      const expressions = c.expressions;
+      const index = expressions.indexOf(node);
+      const subset = expressions
         .slice(0, index)
-        .concat(c.expressions.slice(index + 1));
+        .concat(expressions.slice(index + 1));
       c.expressions = subset;
     } else if (parentNode != null && AST.is(parentNode)) {
       const c = parentNode as AST;
@@ -88,7 +85,7 @@ const QUANTIFIER_LIMIT = 1000;
 function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
   let concatNode: ConcatenationNode | null = null;
   if (!ConcatenationNode.is(visitor.parentNode)) {
-    concatNode = new ConcatenationNode(toArray(visitor.node));
+    concatNode = new ConcatenationNode([visitor.node]);
     visitor.parentNode.replace(visitor.node, concatNode);
   } else {
     concatNode = visitor.parentNode as ConcatenationNode;
@@ -109,33 +106,35 @@ export function expandRepetitions(visitor: NodeVisitor): void {
       );
     }
     const concatNode = parentAsConcatNode(visitor);
+    const expressions = concatNode.expressions;
 
     // locate the original index
-    const index = concatNode.expressions.indexOf(rangeRepNode);
+    const index = expressions.indexOf(rangeRepNode);
 
     // create multiple clones
     const clones = new Array<Node>();
 
     const from = rangeRepNode.from;
+    const expression = rangeRepNode.expression;
     // a{4} => aaaa
     for (let i = 0; i < from; i++) {
-      clones.push(rangeRepNode.expression.clone());
+      clones.push(expression.clone());
     }
     if (rangeRepNode.to == -1) {
       // a{4,} => aaaaa*
-      clones.push(new RepetitionNode(rangeRepNode.expression.clone(), "*"));
+      clones.push(new RepetitionNode(expression.clone(), "*"));
     } else {
       // a{4,6} => aaaaa?a?
       const count = rangeRepNode.to - rangeRepNode.from;
       for (let i = 0; i < count; i++) {
-        clones.push(new RepetitionNode(rangeRepNode.expression.clone(), "?"));
+        clones.push(new RepetitionNode(expression.clone(), "?"));
       }
     }
 
     // replace the rangeRepNode with the clones
-    concatNode.expressions = concatNode.expressions
+    concatNode.expressions = expressions
       .slice(0, index)
       .concat(clones)
-      .concat(concatNode.expressions.slice(index + 1));
+      .concat(expressions.slice(index + 1));
   }
 }

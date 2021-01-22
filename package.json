@@ -23,6 +23,5 @@
     "@assemblyscript/loader": "^0.17.5",
     "typescript": "^4.1.3"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
