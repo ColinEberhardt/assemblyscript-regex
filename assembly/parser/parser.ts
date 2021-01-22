@@ -41,34 +41,25 @@ function isSpecialCharacter(char: string): bool {
 }
 
 class Range {
-  from: i32;
-  to: i32;
-  constructor() {
-    this.from = -1;
-    this.to = -1;
-  }
+  from: i32 = -1;
+  to: i32 = -1;
 }
 
 export class Parser {
   currentToken: string = "";
   cursor: u32 = 0;
-  input: string;
 
-  private constructor(input: string) {
-    this.input = input;
-  }
+  private constructor(public input: string) {}
 
   static toAST(input: string): AST {
-    const parser = new Parser(input);
-    return parser.toAST();
+    return new Parser(input).toAST();
   }
 
   private eatToken(value: string = ""): string {
-    if (value != "" && this.currentToken != value) {
+    const current = this.currentToken;
+    if (value.length > 0 && current != value) {
       throw new Error("invalid token");
     }
-
-    const current = this.currentToken;
 
     this.cursor++;
     this.currentToken = this.input.substr(this.cursor, 1);
@@ -76,7 +67,7 @@ export class Parser {
   }
 
   private more(): bool {
-    return this.currentToken != "";
+    return this.currentToken.length > 0;
   }
 
   private resetCursor(): void {
@@ -86,8 +77,7 @@ export class Parser {
 
   private toAST(): AST {
     this.resetCursor();
-    const body = this.parseSequence();
-    return new AST(body);
+    return new AST(this.parseSequence());
   }
 
   private parseCharacter(): Node {
@@ -133,7 +123,7 @@ export class Parser {
           // if it is a digit, keep eating
           digitStr += this.currentToken;
         } else {
-          range.from = digitStr == "" ? -1 : <i32>parseInt(digitStr);
+          range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
           range.to = range.from;
           if (this.currentToken == ",") {
             // if we meet a comma, start parsing the next digit
@@ -154,7 +144,7 @@ export class Parser {
           // if it is a digit, keep eating
           digitStr += this.currentToken;
         } else {
-          range.to = digitStr == "" ? -1 : <i32>parseInt(digitStr);
+          range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
           if (this.currentToken == "}") {
             this.eatToken("}");
             // close brace, end  of range
@@ -182,8 +172,7 @@ export class Parser {
       if (this.currentToken == "|") {
         this.eatToken("|");
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
-        nodes = new Array<Node>();
-        nodes.push(new AlternationNode(left, this.parseSequence()));
+        nodes = [new AlternationNode(left, this.parseSequence())];
       } else if (this.currentToken == "(") {
         this.eatToken("(");
         nodes.push(new GroupNode(this.parseSequence()));
@@ -220,7 +209,7 @@ export class Parser {
     }
     while (
       this.currentToken != "]" ||
-      (this.currentToken == "]" && chars.length == 0)
+      (chars.length == 0 && this.currentToken == "]")
     ) {
       // TODO characters set can contain character classes
       chars += this.currentToken;

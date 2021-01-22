@@ -9,7 +9,7 @@ export function walker(
   if (visited.includes(state)) return;
   visited.push(state);
   const nextStates = state.reachableStates();
-  for (let i = 0; i < nextStates.length; i++) {
+  for (let i = 0, len = nextStates.length; i < len; i++) {
     walker(nextStates[i], visitor, visited);
   }
 }

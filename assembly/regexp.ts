@@ -45,36 +45,28 @@ function recursiveBacktrackingSearch(
 }
 
 export class Match {
-  matches: string[];
-  index: i32;
-  input: string;
-  constructor(matches: string[], index: i32, input: string) {
-    this.matches = matches;
-    this.index = index;
-    this.input = input;
-  }
+  constructor(
+    public matches: string[],
+    public index: i32,
+    public input: string
+  ) {}
 
   static fromMatch(match: string, index: i32, input: string): Match {
-    const matches = new Array<string>();
-    matches.push(match);
-    return new Match(matches, index, input);
+    return new Match([match], index, input);
   }
 }
 
-let gm: GroupEndMarkerState[] = new Array<GroupEndMarkerState>();
+let gm = new Array<GroupEndMarkerState>();
 
 export class RegExp {
-  flags: string;
-  lastIndex: i32;
+  lastIndex: i32 = 0;
 
   private nfa: Automata;
   private endOfInput: bool;
   private startOfInput: bool;
   private groupMarkers: GroupEndMarkerState[];
 
-  constructor(regex: string, flags: string = "") {
-    this.flags = flags;
-    this.lastIndex = 0;
+  constructor(regex: string, public flags: string = "") {
     this.startOfInput = false;
     this.endOfInput = false;
 
@@ -104,7 +96,7 @@ export class RegExp {
 
   exec(str: string): Match | null {
     // remove all previous group marker results
-    for (let i = 0; i < this.groupMarkers.length; i++) {
+    for (let i = 0, len = this.groupMarkers.length; i < len; i++) {
       this.groupMarkers[i].capture = "";
     }
 

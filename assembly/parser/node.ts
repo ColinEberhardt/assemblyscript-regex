@@ -1,12 +1,22 @@
-import { replaceAtIndex, toArray } from "../util";
+import { replaceAtIndex } from "../util";
 
 const emptyNodeArray = new Array<Node>();
 
+export const enum NodeType {
+  AST,
+  Assertion,
+  Alternation,
+  Concatenation,
+  Character,
+  CharacterSet,
+  CharacterClass,
+  Repetition,
+  RangeRepetition,
+  Group
+}
+
 export abstract class Node {
-  type: string;
-  constructor(type: string) {
-    this.type = type;
-  }
+  constructor(public type: NodeType) {}
 
   children(): Node[] {
     return emptyNodeArray;
@@ -20,19 +30,16 @@ export abstract class Node {
 }
 
 export class AST extends Node {
-  body: Node;
-
-  constructor(body: Node) {
-    super("AST");
-    this.body = body;
+  constructor(public body: Node) {
+    super(NodeType.AST);
   }
 
   static is(node: Node): bool {
-    return node.type == "AST";
+    return node.type == NodeType.AST;
   }
 
   children(): Node[] {
-    return this.body != null ? toArray(this.body as Node) : emptyNodeArray;
+    return this.body != null ? [this.body as Node] : emptyNodeArray;
   }
 
   clone(): Node {
@@ -45,14 +52,12 @@ export class AST extends Node {
 }
 
 export class ConcatenationNode extends Node {
-  expressions: Node[];
-  constructor(expressions: Node[]) {
-    super("Concatenation");
-    this.expressions = expressions;
+  constructor(public expressions: Node[]) {
+    super(NodeType.Concatenation);
   }
 
   static is(node: Node): bool {
-    return node.type == "Concatenation";
+    return node.type == NodeType.Concatenation;
   }
 
   children(): Node[] {
@@ -66,22 +71,19 @@ export class ConcatenationNode extends Node {
   }
 
   replace(node: Node, replacement: Node): void {
-    const index = this.expressions.indexOf(node);
-    this.expressions = replaceAtIndex(this.expressions, index, replacement);
+    const expressions = this.expressions;
+    const index = expressions.indexOf(node);
+    this.expressions = replaceAtIndex(expressions, index, replacement);
   }
 }
 
 export class CharacterSetNode extends Node {
-  chars: string;
-  negated: bool;
-  constructor(chars: string, negated: bool) {
-    super("CharacterSet");
-    this.chars = chars;
-    this.negated = negated;
+  constructor(public chars: string, public negated: bool) {
+    super(NodeType.CharacterSet);
   }
 
   static is(node: Node): bool {
-    return node.type == "CharacterSet";
+    return node.type == NodeType.CharacterSet;
   }
 
   clone(): Node {
@@ -92,12 +94,12 @@ export class CharacterSetNode extends Node {
 export class CharacterNode extends Node {
   char: string;
   constructor(char: string) {
-    super("Char");
+    super(NodeType.Character);
     this.char = char;
   }
 
   static is(node: Node): bool {
-    return node.type == "Char";
+    return node.type == NodeType.Character;
   }
 
   clone(): Node {
@@ -106,15 +108,13 @@ export class CharacterNode extends Node {
 }
 
 export class AssertionNode extends Node {
-  kind: string;
-  constructor(kind: string) {
-    super("Assertion");
-    this.kind = kind;
+  constructor(public kind: string) {
+    super(NodeType.Assertion);
   }
 
   static is(node: Node, kind: string = ""): bool {
     return (
-      node.type == "Assertion" &&
+      node.type == NodeType.Assertion &&
       ((node as AssertionNode).kind == kind || kind == "")
     );
   }
@@ -125,14 +125,12 @@ export class AssertionNode extends Node {
 }
 
 export class CharacterClassNode extends Node {
-  charClass: string;
-  constructor(charClass: string) {
-    super("CharacterClass");
-    this.charClass = charClass;
+  constructor(public charClass: string) {
+    super(NodeType.CharacterClass);
   }
 
   static is(node: Node): bool {
-    return node.type == "CharacterClass";
+    return node.type == NodeType.CharacterClass;
   }
 
   clone(): Node {
@@ -144,13 +142,13 @@ export class RepetitionNode extends Node {
   expression: Node;
   quantifier: string;
   constructor(expression: Node, quantifier: string) {
-    super("Repetition");
+    super(NodeType.Repetition);
     this.quantifier = quantifier;
     this.expression = expression;
   }
 
   static is(node: Node): bool {
-    return node.type == "Repetition";
+    return node.type == NodeType.Repetition;
   }
 
   clone(): Node {
@@ -163,18 +161,17 @@ export class RepetitionNode extends Node {
 }
 
 export class RangeRepetitionNode extends Node {
-  expression: Node;
-  from: i32;
-  to: i32;
-  constructor(expression: Node, from: i32, to: i32) {
-    super("RangeRepetition");
-    this.from = from;
-    this.to = to;
-    this.expression = expression;
+
+  constructor(
+    public expression: Node,
+    public from: i32,
+    public to: i32
+  ) {
+    super(NodeType.RangeRepetition);
   }
 
   static is(node: Node): bool {
-    return node.type == "RangeRepetition";
+    return node.type == NodeType.RangeRepetition;
   }
 
   clone(): Node {
@@ -187,23 +184,16 @@ export class RangeRepetitionNode extends Node {
 }
 
 export class AlternationNode extends Node {
-  left: Node;
-  right: Node;
-  constructor(left: Node, right: Node) {
-    super("Alternation");
-    this.left = left;
-    this.right = right;
+  constructor(public left: Node, public right: Node) {
+    super(NodeType.Alternation);
   }
 
   static is(node: Node): bool {
-    return node.type == "Alternation";
+    return node.type == NodeType.Alternation;
   }
 
   children(): Node[] {
-    const arr = new Array<Node>();
-    arr.push(this.left);
-    arr.push(this.right);
-    return arr;
+    return [this.left, this.right];
   }
 
   clone(): Node {
@@ -220,18 +210,16 @@ export class AlternationNode extends Node {
 }
 
 export class GroupNode extends Node {
-  expression: Node;
-  constructor(expression: Node) {
-    super("Group");
-    this.expression = expression;
+  constructor(public expression: Node) {
+    super(NodeType.Group);
   }
 
   static is(node: Node): bool {
-    return node.type == "Group";
+    return node.type == NodeType.Group;
   }
 
   children(): Node[] {
-    return toArray(this.expression);
+    return [this.expression];
   }
 
   clone(): Node {

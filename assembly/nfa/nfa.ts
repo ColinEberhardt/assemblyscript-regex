@@ -35,12 +35,7 @@ export class State {
 }
 
 export class GroupStartMarkerState extends State {
-  location: i32;
-
-  constructor() {
-    super();
-    this.location = -1;
-  }
+  location: i32 = -1;
 
   snapshot(input: string, position: u32): void {
     this.location = position;
@@ -48,14 +43,14 @@ export class GroupStartMarkerState extends State {
 }
 
 export class GroupEndMarkerState extends State {
-  startMarker: GroupStartMarkerState;
   // a bit yucky - storing transient state in the state machine!
-  capture: string;
+  capture: string = "";
 
-  constructor(startMarker: GroupStartMarkerState, isEnd: bool = false) {
+  constructor(
+    public startMarker: GroupStartMarkerState,
+    isEnd: bool = false
+  ) {
     super(isEnd);
-    this.startMarker = startMarker;
-    this.capture = "";
   }
 
   snapshot(input: string, position: u32): void {
@@ -64,13 +59,8 @@ export class GroupEndMarkerState extends State {
 }
 
 export class MatcherState<T extends Matcher> extends State {
-  matcher: T;
-  next: State;
-
-  constructor(matcher: T, next: State) {
+  constructor(public matcher: T, public next: State) {
     super();
-    this.matcher = matcher;
-    this.next = next;
   }
 
   matches(value: string): State | null {
@@ -78,20 +68,17 @@ export class MatcherState<T extends Matcher> extends State {
   }
 
   reachableStates(): State[] {
-    this.next;
-    const next = new Array<State>();
-    next.push(this.next);
-    return this.epsilonTransitions.slice(0).concat(next);
+    let copied = this.epsilonTransitions.slice(0);
+    copied.push(this.next);
+    return copied;
   }
 }
 
 export class Automata {
-  start: State;
-  end: State; // accepting state
-  constructor(start: State, end: State) {
-    this.start = start;
-    this.end = end;
-  }
+  constructor(
+    public start: State,
+    public end: State
+  ) {}
 
   static fromEpsilon(): Automata {
     const start = new State();
@@ -161,7 +148,7 @@ function oneOrMore(nfa: Automata): Automata {
 }
 
 function group(nfa: Automata): Automata {
-  // groups are implemented by wrapping the automata with 
+  // groups are implemented by wrapping the automata with
   // a pair of markers that record matches
   const start = new GroupStartMarkerState();
   const end = new GroupEndMarkerState(start, true);
@@ -178,27 +165,28 @@ function automataForNode(expression: Node | null): Automata {
   } else if (RepetitionNode.is(expression)) {
     const c = expression as RepetitionNode;
     const auto = automataForNode(c.expression);
-    if (c.quantifier == "?") {
+    const quantifier = c.quantifier;
+    if (quantifier == "?") {
       return zeroOrOne(auto);
-    } else if (c.quantifier == "+") {
+    } else if (quantifier == "+") {
       return oneOrMore(auto);
-    } else if (c.quantifier == "*") {
+    } else if (quantifier == "*") {
       return closure(auto);
     } else {
-      throw new Error("unsupported quantifier - " + c.quantifier);
+      throw new Error("unsupported quantifier - " + quantifier);
     }
   } else if (CharacterNode.is(expression)) {
     return Automata.fromMatcher(
       Matcher.fromCharacterNode(expression as CharacterNode)
     );
   } else if (ConcatenationNode.is(expression)) {
-    const c = expression as ConcatenationNode;
-    if (c.expressions.length == 0) {
+    const expressions = (expression as ConcatenationNode).expressions;
+    if (expressions.length == 0) {
       return Automata.fromEpsilon();
     }
-    let auto = automataForNode(c.expressions[0]);
-    for (let i = 1; i < c.expressions.length; i++) {
-      auto = concat(auto, automataForNode(c.expressions[i]));
+    let auto = automataForNode(expressions[0]);
+    for (let i = 1, len = expressions.length; i < len; i++) {
+      auto = concat(auto, automataForNode(expressions[i]));
     }
     return auto;
   } else if (AlternationNode.is(expression)) {

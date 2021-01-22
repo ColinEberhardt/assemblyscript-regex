@@ -100,20 +100,15 @@ export class CharacterClassMatcher extends Matcher {
 }
 
 export class CharacterSetMatcher extends Matcher {
-  set: string;
-  negated: bool;
-
-  constructor(set: string, negated: bool) {
+  constructor(public set: string, public negated: bool) {
     super();
-    this.set = set;
-    this.negated = negated;
   }
 
   matchesSet(set: string, char: i32): bool {
-    for (let i = 0; i < set.length; i++) {
+    for (let i = 0, len = set.length; i < len; i++) {
       // TODO - perform the set parsing logic in the constructor?
       // TODO - move into the parser?
-      if (i < set.length - 2 && set.charAt(i + 1) == "-") {
+      if (i < len - 2 && set.charCodeAt(i + 1) == 45 /*-*/) {
         const from = set.charCodeAt(i);
         const to = set.charCodeAt(i + 2);
         if (char >= from && char <= to) return true;
