@@ -16,8 +16,7 @@ import {
 function isQuantifier(code: QuantifierClass): bool {
   return (
     code == QuantifierClass.Question ||
-    code == QuantifierClass.Plus ||
-    code == QuantifierClass.Star
+    code == QuantifierClass.Plus 
   );
 }
 
