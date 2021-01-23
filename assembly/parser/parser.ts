@@ -21,27 +21,29 @@ function isQuantifier(code: QuantifierClass): bool {
   );
 }
 
-function isAssertion(char: string): bool {
-  return char == "$" || char == "^";
+function isAssertion(code: u32): bool {
+  return code == CharClass.Dollar || code == CharClass.Caret; // "$" or "^"
 }
 
-function isSpecialCharacter(char: string): bool {
-  return (
-    char == "\\" ||
-    char == "^" ||
-    char == "$" ||
-    char == "." ||
-    char == "|" ||
-    char == "?" ||
-    char == "*" ||
-    char == "+" ||
-    char == "(" ||
-    char == "[" ||
-    char == "{" ||
-    char == ")" ||
-    char == "]" ||
-    char == "}"
-  );
+function isSpecialCharacter(code: u32): bool {
+  switch (code) {
+    case 0x24: /* $ */
+    case 0x28: /* ( */
+    case 0x29: /* ) */
+    case 0x2a: /* * */
+    case 0x2b: /* + */
+    case 0x2e: /* . */
+    case 0x3f: /* ? */
+    case 0x5c: /* \ */
+    case 0x5b: /* [ */
+    case 0x5d: /* ] */
+    case 0x5e: /* ^ */
+    case 0x7c: /* | */
+    case 0x7b: /* { */
+    case 0x7d: /* } */
+      return true;
+  }
+  return false;
 }
 
 class Range {
@@ -66,7 +68,7 @@ export class Parser {
     }
 
     this.cursor++;
-    this.currentToken = this.input.substr(this.cursor, 1);
+    this.currentToken = this.input.charAt(this.cursor);
     return current.charCodeAt(0);
   }
 
@@ -76,7 +78,7 @@ export class Parser {
 
   private resetCursor(): void {
     this.cursor = 0;
-    this.currentToken = this.input.substr(this.cursor, 1);
+    this.currentToken = this.input.charAt(this.cursor);
   }
 
   private toAST(): AST {
@@ -85,26 +87,25 @@ export class Parser {
   }
 
   private parseCharacter(): Node {
-    if (this.currentToken == "\\") {
+    let token = this.currentToken.charCodeAt(0);
+    if (token == 0x5C /* \ */) {
       this.eatToken("\\");
-      // TODO: strangely without this we get a TS2367 error!
-      this.currentToken = this.currentToken;
-      if (isSpecialCharacter(this.currentToken)) {
-        const char = this.currentToken;
+      token = this.currentToken.charCodeAt(0);
+      if (isSpecialCharacter(token)) {
         this.eatToken();
-        return new CharacterNode(char.charCodeAt(0));
-      } else if (isAssertion(this.currentToken)) {
+        return new CharacterNode(token);
+      } else if (isAssertion(token)) {
         return new CharacterNode(this.eatToken());
       } else {
         return new CharacterClassNode(this.eatToken());
       }
     }
 
-    if (isAssertion(this.currentToken)) {
+    if (isAssertion(token)) {
       return new AssertionNode(this.eatToken());
     }
 
-    if (this.currentToken == ".") {
+    if (token == CharClass.Dot) {
       this.eatToken(".");
       return new CharacterClassNode(CharClass.Dot);
     }
@@ -166,7 +167,7 @@ export class Parser {
 
     // repetition not found - reset state
     this.cursor = previousCursor;
-    this.currentToken = this.input.substr(this.cursor, 1);
+    this.currentToken = this.input.charAt(this.cursor);
 
     return range;
   }
