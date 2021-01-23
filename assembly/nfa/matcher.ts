@@ -1,18 +1,21 @@
 import {
   isDigit,
+  isAlpha,
   isUnderscore,
-  isUppercaseAlpha,
-  isLowercaseAlpha,
-  isWhitespace
+  isWhitespace,
+  CharClass
 } from "./characters";
-import { CharacterClassNode, CharacterNode, CharacterSetNode } from "../parser/node";
+
+import {
+  CharacterNode,
+  CharacterSetNode,
+  CharacterClassNode
+} from "../parser/node";
 
 export abstract class Matcher {
-  abstract matches(value: string): bool;
+  abstract matches(code: u32): bool;
 
-  static fromCharacterClassNode(
-    node: CharacterClassNode
-  ): CharacterClassMatcher {
+  static fromCharacterClassNode(node: CharacterClassNode): CharacterClassMatcher {
     return new CharacterClassMatcher(node.charClass);
   }
 
@@ -26,76 +29,51 @@ export abstract class Matcher {
 }
 
 export class CharacterMatcher extends Matcher {
-  character: string;
-
-  constructor(character: string) {
+  constructor(public character: CharClass) {
     super();
-    this.character = character;
   }
 
-  matches(character: string): bool {
-    return this.character == character;
+  matches(code: u32): bool {
+    return this.character == code;
   }
 }
 
 export class CharacterClassMatcher extends Matcher {
-  charClass: string;
-
-  constructor(charClass: string) {
+  constructor(public charClass: CharClass) {
     super();
-    this.charClass = charClass;
   }
 
-  matches(symbol: string): bool {
-    const code = symbol.charCodeAt(0);
-    if (this.charClass == "d") {
-      return isDigit(code);
-    }
-    if (this.charClass == "D") {
-      return !isDigit(code);
-    }
-    if (this.charClass == ".") {
-      return code != 13 && code != 10 && code != 8232 && code != 8233;
-    }
-    if (this.charClass == "w") {
-      return (
-        isLowercaseAlpha(code) ||
-        isUppercaseAlpha(code) ||
-        isUnderscore(code) ||
-        isDigit(code)
-      );
-    }
-    if (this.charClass == "W") {
-      return !(
-        isLowercaseAlpha(code) ||
-        isUppercaseAlpha(code) ||
-        isUnderscore(code) ||
-        isDigit(code)
-      );
-    }
-    if (this.charClass == "s") {
-      return isWhitespace(code);
-    }
-    if (this.charClass == "S") {
-      return !isWhitespace(code);
-    }
-    if (this.charClass == "t") {
-      return code == 9;
-    }
-    if (this.charClass == "r") {
-      return code == 13;
-    }
-    if (this.charClass == "n") {
-      return code == 10;
-    }
-    if (this.charClass == "v") {
-      return code == 11;
-    }
-    if (this.charClass == "f") {
-      return code == 12;
-    }
+  matches(code: u32): bool {
+    switch (this.charClass) {
+      case CharClass.d: return isDigit(code);
+      case CharClass.D: return !isDigit(code);
+      case CharClass.Dot: return code != 13 && code != 10 && code != 8232 && code != 8233;
+      case CharClass.w:
+        return (
+          isAlpha(code) ||
+          isUnderscore(code) ||
+          isDigit(code)
+        );
+      case CharClass.W:
+        return !(
+          isAlpha(code) ||
+          isUnderscore(code) ||
+          isDigit(code)
+        );
+      case CharClass.s: return isWhitespace(code);
+      case CharClass.S: return !isWhitespace(code);
+      case CharClass.t: return code == 9;
+      case CharClass.r: return code == 13;
+      case CharClass.n: return code == 10;
+      case CharClass.v: return code == 11;
+      case CharClass.f: return code == 12;
 
-    throw new Error("unsupported character class - " + this.charClass);
+      default:
+        throw new Error(
+          "unsupported character class - " +
+          String.fromCharCode(this.charClass)
+        );
+    }
   }
 }
 
@@ -104,24 +82,23 @@ export class CharacterSetMatcher extends Matcher {
     super();
   }
 
-  matchesSet(set: string, char: i32): bool {
+  matchesSet(set: string, code: u32): bool {
     for (let i = 0, len = set.length; i < len; i++) {
       // TODO - perform the set parsing logic in the constructor?
       // TODO - move into the parser?
       if (i < len - 2 && set.charCodeAt(i + 1) == 45 /*-*/) {
-        const from = set.charCodeAt(i);
-        const to = set.charCodeAt(i + 2);
-        if (char >= from && char <= to) return true;
+        const from = set.charCodeAt(i) as u32;
+        const to = set.charCodeAt(i + 2) as u32;
+        if (code >= from && code <= to) return true;
       } else {
-        if (set.charCodeAt(i) == char) return true;
+        if (set.charCodeAt(i) == code) return true;
       }
     }
     return false;
   }
 
-  matches(value: string): bool {
-    const char = value.charCodeAt(0);
-    const matches = this.matchesSet(this.set, char);
+  matches(code: u32): bool {
+    const matches = this.matchesSet(this.set, code);
     return this.negated ? !matches : matches;
   }
 }

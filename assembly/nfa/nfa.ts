@@ -10,18 +10,16 @@ import {
   GroupNode,
   AssertionNode
 } from "../parser/node";
+
+import { QuantifierClass } from "./characters";
 import { Matcher } from "./matcher";
 
 export class State {
-  isEnd: bool;
-  epsilonTransitions: Array<State>;
+  epsilonTransitions: Array<State> = [];
 
-  constructor(isEnd: bool = false) {
-    this.isEnd = isEnd;
-    this.epsilonTransitions = new Array<State>();
-  }
+  constructor(public isEnd: bool = false) {}
 
-  matches(char: string): State | null {
+  matches(code: u32): State | null {
     return null;
   }
 
@@ -63,8 +61,8 @@ export class MatcherState<T extends Matcher> extends State {
     super();
   }
 
-  matches(value: string): State | null {
-    return this.matcher.matches(value) ? this.next : null;
+  matches(code: u32): State | null {
+    return this.matcher.matches(code) ? this.next : null;
   }
 
   reachableStates(): State[] {
@@ -166,14 +164,14 @@ function automataForNode(expression: Node | null): Automata {
     const c = expression as RepetitionNode;
     const auto = automataForNode(c.expression);
     const quantifier = c.quantifier;
-    if (quantifier == "?") {
+    if (quantifier == QuantifierClass.Question) {
       return zeroOrOne(auto);
-    } else if (quantifier == "+") {
+    } else if (quantifier == QuantifierClass.Plus) {
       return oneOrMore(auto);
-    } else if (quantifier == "*") {
+    } else if (quantifier == QuantifierClass.Star) {
       return closure(auto);
     } else {
-      throw new Error("unsupported quantifier - " + quantifier);
+      throw new Error("unsupported quantifier - " + String.fromCharCode(quantifier));
     }
   } else if (CharacterNode.is(expression)) {
     return Automata.fromMatcher(

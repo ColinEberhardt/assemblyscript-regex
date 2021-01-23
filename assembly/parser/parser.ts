@@ -1,4 +1,4 @@
-import { isDigit } from "../nfa/characters";
+import { isDigit, CharClass, QuantifierClass } from "../nfa/characters";
 import {
   AST,
   RangeRepetitionNode,
@@ -13,8 +13,12 @@ import {
   CharacterSetNode
 } from "./node";
 
-function isQuantifier(char: string): bool {
-  return char == "?" || char == "+" || char == "*";
+function isQuantifier(code: QuantifierClass): bool {
+  return (
+    code == QuantifierClass.Question ||
+    code == QuantifierClass.Plus ||
+    code == QuantifierClass.Star
+  );
 }
 
 function isAssertion(char: string): bool {
@@ -55,7 +59,7 @@ export class Parser {
     return new Parser(input).toAST();
   }
 
-  private eatToken(value: string = ""): string {
+  private eatToken(value: string = ""): u32 {
     const current = this.currentToken;
     if (value.length > 0 && current != value) {
       throw new Error("invalid token");
@@ -63,7 +67,7 @@ export class Parser {
 
     this.cursor++;
     this.currentToken = this.input.substr(this.cursor, 1);
-    return current;
+    return current.charCodeAt(0);
   }
 
   private more(): bool {
@@ -88,7 +92,7 @@ export class Parser {
       if (isSpecialCharacter(this.currentToken)) {
         const char = this.currentToken;
         this.eatToken();
-        return new CharacterNode(char);
+        return new CharacterNode(char.charCodeAt(0));
       } else if (isAssertion(this.currentToken)) {
         return new CharacterNode(this.eatToken());
       } else {
@@ -102,7 +106,7 @@ export class Parser {
 
     if (this.currentToken == ".") {
       this.eatToken(".");
-      return new CharacterClassNode(".");
+      return new CharacterClassNode(CharClass.Dot);
     }
 
     return new CharacterNode(this.eatToken());
@@ -117,20 +121,22 @@ export class Parser {
 
     let firstDigit = true;
     let digitStr = "";
-    while (this.more() && this.currentToken != ")") {
+    while (this.more()) {
+      let token = this.currentToken.charCodeAt(0);
+      if (token == 0x29 /* ) */) break;
       if (firstDigit) {
-        if (isDigit(this.currentToken.charCodeAt(0))) {
+        if (isDigit(token)) {
           // if it is a digit, keep eating
           digitStr += this.currentToken;
         } else {
           range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
           range.to = range.from;
-          if (this.currentToken == ",") {
+          if (token == 0x2C /* , */) {
             // if we meet a comma, start parsing the next digit
             firstDigit = false;
             digitStr = "";
             range.to = -1;
-          } else if (this.currentToken == "}") {
+          } else if (token == 0x7D /* } */) {
             this.eatToken("}");
             // close brace, this is a single value range
             return range;
@@ -140,12 +146,12 @@ export class Parser {
           }
         }
       } else {
-        if (isDigit(this.currentToken.charCodeAt(0))) {
+        if (isDigit(token)) {
           // if it is a digit, keep eating
           digitStr += this.currentToken;
         } else {
           range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
-          if (this.currentToken == "}") {
+          if (token == 0x7D /* } */) {
             this.eatToken("}");
             // close brace, end  of range
             return range;
@@ -168,16 +174,21 @@ export class Parser {
   // parses a sequence of chars
   private parseSequence(): Node {
     let nodes = new Array<Node>();
-    while (this.more() && this.currentToken != ")") {
-      if (this.currentToken == "|") {
+    while (this.more()) {
+      let token = this.currentToken.charCodeAt(0);
+      if (token == 0x29 /* ) */) break;
+      // @ts-ignore
+      if (token == 0x7C /* | */) {
         this.eatToken("|");
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
         nodes = [new AlternationNode(left, this.parseSequence())];
-      } else if (this.currentToken == "(") {
+        // @ts-ignore
+      } else if (token == 0x28 /* ( */) {
         this.eatToken("(");
         nodes.push(new GroupNode(this.parseSequence()));
         this.eatToken(")");
-      } else if (this.currentToken == "{") {
+        // @ts-ignore
+      } else if (token == 0x7B /* { */) {
         const range = this.maybeParseRepetitionRange();
         if (range.from == -1) {
           // this is not the start of a repetition, it's just a char!
@@ -186,11 +197,12 @@ export class Parser {
           const expression = nodes.pop();
           nodes.push(new RangeRepetitionNode(expression, range.from, range.to));
         }
-      } else if (isQuantifier(this.currentToken)) {
+      } else if (isQuantifier(token)) {
         const expression = nodes.pop();
-        nodes.push(new RepetitionNode(expression, this.currentToken));
+        nodes.push(new RepetitionNode(expression, token));
         this.eatToken();
-      } else if (this.currentToken == "[") {
+        // @ts-ignore
+      } else if (token == 0x5B /* [ */) {
         nodes.push(this.parseCharacterSet());
       } else {
         nodes.push(this.parseCharacter());

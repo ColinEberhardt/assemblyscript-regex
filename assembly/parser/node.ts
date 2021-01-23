@@ -1,6 +1,5 @@
+import { CharClass, QuantifierClass } from "../nfa/characters";
 import { replaceAtIndex } from "../util";
-
-const emptyNodeArray = new Array<Node>();
 
 export const enum NodeType {
   AST,
@@ -13,7 +12,9 @@ export const enum NodeType {
   Repetition,
   RangeRepetition,
   Group
-}
+};
+
+const emptyNodeArray = new Array<Node>();
 
 export abstract class Node {
   constructor(public type: NodeType) {}
@@ -92,10 +93,8 @@ export class CharacterSetNode extends Node {
 }
 
 export class CharacterNode extends Node {
-  char: string;
-  constructor(char: string) {
+  constructor(public char: u32) {
     super(NodeType.Character);
-    this.char = char;
   }
 
   static is(node: Node): bool {
@@ -108,14 +107,14 @@ export class CharacterNode extends Node {
 }
 
 export class AssertionNode extends Node {
-  constructor(public kind: string) {
+  constructor(public kind: CharClass) {
     super(NodeType.Assertion);
   }
 
-  static is(node: Node, kind: string = ""): bool {
+  static is(node: Node, kind: CharClass = CharClass.None): bool {
     return (
       node.type == NodeType.Assertion &&
-      ((node as AssertionNode).kind == kind || kind == "")
+      ((node as AssertionNode).kind == kind || kind == CharClass.None)
     );
   }
 
@@ -125,7 +124,7 @@ export class AssertionNode extends Node {
 }
 
 export class CharacterClassNode extends Node {
-  constructor(public charClass: string) {
+  constructor(public charClass: CharClass) {
     super(NodeType.CharacterClass);
   }
 
@@ -139,12 +138,8 @@ export class CharacterClassNode extends Node {
 }
 
 export class RepetitionNode extends Node {
-  expression: Node;
-  quantifier: string;
-  constructor(expression: Node, quantifier: string) {
+  constructor(public expression: Node, public quantifier: QuantifierClass) {
     super(NodeType.Repetition);
-    this.quantifier = quantifier;
-    this.expression = expression;
   }
 
   static is(node: Node): bool {

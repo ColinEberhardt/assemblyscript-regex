@@ -1,3 +1,29 @@
+export const enum CharClass {
+  None = -1,
+
+  Dot    = 0x2E, // "."
+  Dollar = 0x24, // "$"
+  Caret  = 0x5E, // "^"
+
+  D = 0x44,
+  S = 0x53,
+  W = 0x57,
+  d = 0x64,
+  f = 0x66,
+  n = 0x6e,
+  r = 0x72,
+  s = 0x73,
+  t = 0x74,
+  v = 0x76,
+  w = 0x77,
+}
+
+export const enum QuantifierClass {
+  Star     = 0x2A, // "*"
+  Plus     = 0x2B, // "+"
+  Question = 0x3F, // "?"
+}
+
 export function isDigit(code: u32): bool {
   return code - 48 < 10;
 }
@@ -8,6 +34,10 @@ export function isLowercaseAlpha(code: u32): bool {
 
 export function isUppercaseAlpha(code: u32): bool {
   return code - 65 < 26;
+}
+
+export function isAlpha(code: u32): bool {
+  return (code | 32) - 97 < 26;
 }
 
 export function isUnderscore(code: u32): bool {
