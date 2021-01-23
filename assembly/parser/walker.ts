@@ -1,3 +1,4 @@
+import { QuantifierClass } from "../nfa/characters";
 import {
   AssertionNode,
   AST,
@@ -69,9 +70,9 @@ export function deleteAssertionNodes(nodeVisitor: NodeVisitor): void {
 }
 
 export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
-  if (ConcatenationNode.is(nodeVisitor.node)) {
-    const c = nodeVisitor.node as ConcatenationNode;
-    if (c.expressions.length == 0) {
+  let node = nodeVisitor.node;
+  if (ConcatenationNode.is(node)) {
+    if ((node as ConcatenationNode).expressions.length == 0) {
       nodeVisitor.delete();
     }
   }
@@ -84,21 +85,23 @@ const QUANTIFIER_LIMIT = 1000;
 
 function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
   let concatNode: ConcatenationNode | null = null;
-  if (!ConcatenationNode.is(visitor.parentNode)) {
-    concatNode = new ConcatenationNode([visitor.node]);
-    visitor.parentNode.replace(visitor.node, concatNode);
-  } else {
-    concatNode = visitor.parentNode as ConcatenationNode;
+  let parentNode = visitor.parentNode;
+  if (!ConcatenationNode.is(parentNode)) {
+    let node = visitor.node;
+    concatNode = new ConcatenationNode([node]);
+    parentNode.replace(node, concatNode);
+    return concatNode;
   }
-  return concatNode as ConcatenationNode;
+  return parentNode as ConcatenationNode;
 }
 
 // take each range repetition and replace with a concatenation
 // of cloned nodes, e.g. a{2} becomes aa
 export function expandRepetitions(visitor: NodeVisitor): void {
-  if (RangeRepetitionNode.is(visitor.node)) {
+  let node = visitor.node;
+  if (RangeRepetitionNode.is(node)) {
     // find the parent
-    const rangeRepNode = visitor.node as RangeRepetitionNode;
+    const rangeRepNode = node as RangeRepetitionNode;
 
     if (rangeRepNode.to > QUANTIFIER_LIMIT) {
       throw new Error(
@@ -111,23 +114,23 @@ export function expandRepetitions(visitor: NodeVisitor): void {
     // locate the original index
     const index = expressions.indexOf(rangeRepNode);
 
-    // create multiple clones
-    const clones = new Array<Node>();
-
     const from = rangeRepNode.from;
     const expression = rangeRepNode.expression;
+    // create multiple clones
+    const clones = new Array<Node>(from);
     // a{4} => aaaa
     for (let i = 0; i < from; i++) {
-      clones.push(expression.clone());
+      clones[i] = expression.clone();
     }
+
     if (rangeRepNode.to == -1) {
       // a{4,} => aaaaa*
-      clones.push(new RepetitionNode(expression.clone(), "*"));
+      clones.push(new RepetitionNode(expression.clone(), QuantifierClass.Star));
     } else {
       // a{4,6} => aaaaa?a?
       const count = rangeRepNode.to - rangeRepNode.from;
       for (let i = 0; i < count; i++) {
-        clones.push(new RepetitionNode(expression.clone(), "?"));
+        clones.push(new RepetitionNode(expression.clone(), QuantifierClass.Question));
       }
     }
 

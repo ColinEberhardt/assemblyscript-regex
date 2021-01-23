@@ -1,8 +1,9 @@
 import { State, Automata, toNFAFromAST, GroupEndMarkerState } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode } from "./parser/node";
+import { CharClass } from "./nfa/characters";
 import { Parser } from "./parser/parser";
-import { first, last, toArray } from "./util";
+import { first, last } from "./util";
 import { walker as astWalker, expandRepetitions } from "./parser/walker";
 
 function recursiveBacktrackingSearch(
@@ -24,8 +25,10 @@ function recursiveBacktrackingSearch(
   }
 
   // check whether this state transition matches
-  const nextState =
-    position < input.length ? state.matches(input.charAt(position)) : null;
+  const nextState = position < input.length
+    ? state.matches(input.charCodeAt(position))
+    : null;
+
   if (nextState) {
     return recursiveBacktrackingSearch(nextState, input, [], position + 1);
   } else {
@@ -75,9 +78,9 @@ export class RegExp {
     // look for start / end assertions
     const body = ast.body;
     if (body != null && ConcatenationNode.is(body)) {
-      const c = ast.body as ConcatenationNode;
-      this.startOfInput = AssertionNode.is(first(c.expressions), "^");
-      this.endOfInput = AssertionNode.is(last(c.expressions), "$");
+      const expressions = (ast.body as ConcatenationNode).expressions;
+      this.startOfInput = AssertionNode.is(first(expressions), CharClass.Caret);
+      this.endOfInput = AssertionNode.is(last(expressions), CharClass.Dollar);
     }
 
     astWalker(ast, expandRepetitions);
@@ -86,7 +89,7 @@ export class RegExp {
 
     // find all the group marker states
     gm = new Array<GroupEndMarkerState>();
-    nfaWalker(this.nfa.start, (state: State) => {
+    nfaWalker(this.nfa.start, state => {
       if (state instanceof GroupEndMarkerState) {
         gm.push(state as GroupEndMarkerState);
       }
@@ -95,22 +98,24 @@ export class RegExp {
   }
 
   exec(str: string): Match | null {
+    let groupMarkers = this.groupMarkers;
     // remove all previous group marker results
-    for (let i = 0, len = this.groupMarkers.length; i < len; i++) {
-      this.groupMarkers[i].capture = "";
+    for (let i = 0, len = groupMarkers.length; i < len; i++) {
+      groupMarkers[i].capture = "";
     }
 
-    if (str == "") {
+    let len = str.length;
+    if (!len) {
       const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
       return matchStr != null
-        ? new Match(toArray(matchStr as string), 0, str)
+        ? new Match([matchStr!], 0, str)
         : null;
     }
 
     // search for a match at each index within the string
     for (
       let matchIndex = this.lastIndex;
-      matchIndex < (this.startOfInput ? 1 : str.length);
+      matchIndex < (this.startOfInput ? 1 : len);
       matchIndex++
     ) {
       // search for a match in this substring
@@ -121,17 +126,15 @@ export class RegExp {
       // we have found a match
       if (matchStr != null) {
         const match = new Match(
-          toArray(matchStr as string).concat(
-            this.groupMarkers.map<string>(m => m.capture)
-          ),
+          [matchStr!].concat(groupMarkers.map<string>(m => m.capture)),
           matchIndex,
           str
         );
         // return this match (checking end of input condition)
         const matchEndIndex = match.index + match.matches[0].length;
         if (
-          (this.endOfInput && matchEndIndex == str.length) ||
-          !this.endOfInput
+          !this.endOfInput ||
+          (this.endOfInput && matchEndIndex == len)
         ) {
           if (this.flags == "g") {
             this.lastIndex = matchEndIndex;
