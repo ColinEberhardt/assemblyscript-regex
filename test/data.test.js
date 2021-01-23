@@ -10,13 +10,13 @@ const matches = (regex, value) => {
   return regexp.exec(value);
 };
 
-const unescape = str => str.replace("\\n", "\n");
-const escape = str => str.replace(/[\n]/g, "\\n");
+const unescape = (str) => str.replace("\\n", "\n");
+const escape = (str) => str.replace(/[\n]/g, "\\n");
 
 describe("test data", () => {
-  lines.forEach(line => {
+  lines.forEach((line) => {
     try {
-      const parts = line.split("\t").filter(f => f !== "");
+      const parts = line.split("\t").filter((f) => f !== "");
       if (parts.length < 4) return;
 
       const regex = unescape(parts[1]);

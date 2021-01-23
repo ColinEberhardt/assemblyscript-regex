@@ -8,6 +8,6 @@ export function first<T>(arr: T[]): T {
 
 export function replaceAtIndex<T>(arr: T[], index: u32, item: T): T[] {
   let res = arr.slice(0);
-  unchecked(res[index] = item);
+  unchecked((res[index] = item));
   return res;
 }

@@ -25,9 +25,8 @@ function recursiveBacktrackingSearch(
   }
 
   // check whether this state transition matches
-  const nextState = position < input.length
-    ? state.matches(input.charCodeAt(position))
-    : null;
+  const nextState =
+    position < input.length ? state.matches(input.charCodeAt(position)) : null;
 
   if (nextState) {
     return recursiveBacktrackingSearch(nextState, input, [], position + 1);
@@ -89,7 +88,7 @@ export class RegExp {
 
     // find all the group marker states
     gm = new Array<GroupEndMarkerState>();
-    nfaWalker(this.nfa.start, state => {
+    nfaWalker(this.nfa.start, (state) => {
       if (state instanceof GroupEndMarkerState) {
         gm.push(state as GroupEndMarkerState);
       }
@@ -107,9 +106,7 @@ export class RegExp {
     let len = str.length;
     if (!len) {
       const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
-      return matchStr != null
-        ? new Match([matchStr!], 0, str)
-        : null;
+      return matchStr != null ? new Match([matchStr!], 0, str) : null;
     }
 
     // search for a match at each index within the string
@@ -126,16 +123,13 @@ export class RegExp {
       // we have found a match
       if (matchStr != null) {
         const match = new Match(
-          [matchStr!].concat(groupMarkers.map<string>(m => m.capture)),
+          [matchStr!].concat(groupMarkers.map<string>((m) => m.capture)),
           matchIndex,
           str
         );
         // return this match (checking end of input condition)
         const matchEndIndex = match.index + match.matches[0].length;
-        if (
-          !this.endOfInput ||
-          (this.endOfInput && matchEndIndex == len)
-        ) {
+        if (!this.endOfInput || (this.endOfInput && matchEndIndex == len)) {
           if (this.flags == "g") {
             this.lastIndex = matchEndIndex;
           }

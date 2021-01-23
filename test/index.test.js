@@ -1,7 +1,7 @@
 const { RegExp } = require("./util");
 
 const expectMatch = (regex, arr) => {
-  arr.forEach(value => {
+  arr.forEach((value) => {
     const regexp = new RegExp(regex);
     const match = regexp.exec(value);
     expect(match).not.toBeNull();
@@ -10,7 +10,7 @@ const expectMatch = (regex, arr) => {
 };
 
 const expectNotMatch = (regex, arr) => {
-  arr.forEach(value => {
+  arr.forEach((value) => {
     const regexp = new RegExp(regex);
     const match = regexp.exec(value);
     expect(match).toBeNull();

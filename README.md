@@ -6,7 +6,7 @@ A regex engine for AssemblyScript.
 
 This project exposes an API that mirrors the JavaScript [RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) class:
 
-~~~javascript
+```javascript
 const regex = new RegExp("fo*", "g");
 const str = "table football, foul";
 
@@ -21,7 +21,7 @@ while (match != null) {
   //   match.matches[0] = "fo"
   match = regex.exec(str);
 }
-~~~
+```
 
 ## Project status
 
@@ -35,65 +35,65 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 
 **Character classes**
 
- - [x] .
- - [x] \d
- - [x] \D
- - [x] \w
- - [x] \W
- - [x] \s
- - [x] \S
- - [x] \t
- - [x] \r
- - [x] \n
- - [x] \v
- - [x] \f
- - [ ] [\b]
- - [ ] \0
- - [ ] \cX
- - [ ] \xhh
- - [ ] \uhhhh
- - [ ] \u{hhhh} or \u{hhhhh}
- - [x] \
+- [x] .
+- [x] \d
+- [x] \D
+- [x] \w
+- [x] \W
+- [x] \s
+- [x] \S
+- [x] \t
+- [x] \r
+- [x] \n
+- [x] \v
+- [x] \f
+- [ ] [\b]
+- [ ] \0
+- [ ] \cX
+- [ ] \xhh
+- [ ] \uhhhh
+- [ ] \u{hhhh} or \u{hhhhh}
+- [x] \
 
 **Assertions**
 
- - [x] ^
- - [x] $
- - [ ] \b
- - [ ] \B
+- [x] ^
+- [x] $
+- [ ] \b
+- [ ] \B
 
 **Other assertions**
 
- - [ ] x(?=y) Lookahead assertion
- - [ ] x(?!y) Negative lookahead assertion
- - [ ] (?<=y)x Lookbehind assertion
- - [ ] (?<!y)x Negative lookbehind assertion
+- [ ] x(?=y) Lookahead assertion
+- [ ] x(?!y) Negative lookahead assertion
+- [ ] (?<=y)x Lookbehind assertion
+- [ ] (?<!y)x Negative lookbehind assertion
 
 **Groups and ranges**
 
- - [x] x|y
- - [x] [xyz][a-c]
- - [x] [^xyz][^a-c]
- - [x] (x) capturing group
- - [ ] \n back reference
- - [ ] (?<Name>x) named capturing group
- - [ ] (?:x) Non-capturing group
+- [x] x|y
+- [x] [xyz][a-c]
+- [x] [^xyz][^a-c]
+- [x] (x) capturing group
+- [ ] \n back reference
+- [ ] (?<Name>x) named capturing group
+- [ ] (?:x) Non-capturing group
 
 **Quantifiers**
 
- - [x] x*
- - [x] x+
- - [x] x?
- - [x] x{n}
- - [x] x{n,}
- - [x] x{n,m}
- - [ ] x*? / x+? / ...
+- [x] x\*
+- [x] x+
+- [x] x?
+- [x] x{n}
+- [x] x{n,}
+- [x] x{n,m}
+- [ ] x\*? / x+? / ...
 
 **RegExp**
 
- - [x] global
- - [ ] case insensitive
- - [ ] multiline
+- [x] global
+- [ ] case insensitive
+- [ ] multiline
 
 ### Testing
 

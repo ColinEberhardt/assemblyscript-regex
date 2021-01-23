@@ -10,7 +10,7 @@ import {
   AlternationNode,
   ConcatenationNode,
   RepetitionNode,
-  CharacterSetNode
+  CharacterSetNode,
 } from "./node";
 
 function isQuantifier(code: QuantifierClass): bool {
@@ -40,7 +40,7 @@ function isSpecialCharacter(code: u32): bool {
     case 0x5e: /* ^ */
     case 0x7c: /* | */
     case 0x7b: /* { */
-    case 0x7d: /* } */
+    case 0x7d /* } */:
       return true;
   }
   return false;
@@ -88,7 +88,7 @@ export class Parser {
 
   private parseCharacter(): Node {
     let token = this.currentToken.charCodeAt(0);
-    if (token == 0x5C /* \ */) {
+    if (token == 0x5c /* \ */) {
       this.eatToken("\\");
       token = this.currentToken.charCodeAt(0);
       if (isSpecialCharacter(token)) {
@@ -132,12 +132,12 @@ export class Parser {
         } else {
           range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
           range.to = range.from;
-          if (token == 0x2C /* , */) {
+          if (token == 0x2c /* , */) {
             // if we meet a comma, start parsing the next digit
             firstDigit = false;
             digitStr = "";
             range.to = -1;
-          } else if (token == 0x7D /* } */) {
+          } else if (token == 0x7d /* } */) {
             this.eatToken("}");
             // close brace, this is a single value range
             return range;
@@ -152,7 +152,7 @@ export class Parser {
           digitStr += this.currentToken;
         } else {
           range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
-          if (token == 0x7D /* } */) {
+          if (token == 0x7d /* } */) {
             this.eatToken("}");
             // close brace, end  of range
             return range;
@@ -179,7 +179,7 @@ export class Parser {
       let token = this.currentToken.charCodeAt(0);
       if (token == 0x29 /* ) */) break;
       // @ts-ignore
-      if (token == 0x7C /* | */) {
+      if (token == 0x7c /* | */) {
         this.eatToken("|");
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
         nodes = [new AlternationNode(left, this.parseSequence())];
@@ -189,7 +189,7 @@ export class Parser {
         nodes.push(new GroupNode(this.parseSequence()));
         this.eatToken(")");
         // @ts-ignore
-      } else if (token == 0x7B /* { */) {
+      } else if (token == 0x7b /* { */) {
         const range = this.maybeParseRepetitionRange();
         if (range.from == -1) {
           // this is not the start of a repetition, it's just a char!
@@ -203,7 +203,7 @@ export class Parser {
         nodes.push(new RepetitionNode(expression, token));
         this.eatToken();
         // @ts-ignore
-      } else if (token == 0x5B /* [ */) {
+      } else if (token == 0x5b /* [ */) {
         nodes.push(this.parseCharacterSet());
       } else {
         nodes.push(this.parseCharacter());

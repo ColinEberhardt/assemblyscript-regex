@@ -8,13 +8,13 @@ class RegExpProxy {
       fs.readFileSync("./build/untouched.wasm"),
       {
         env: {
-          log: strPtr => {
+          log: (strPtr) => {
             const { __getString, __release } = wasmModule.exports;
             str = __getString(strPtr);
             console.log(str);
             __release(strPtr);
-          }
-        }
+          },
+        },
       }
     );
 
@@ -26,7 +26,7 @@ class RegExpProxy {
       __newString,
       __retain,
       __release,
-      __getArray
+      __getArray,
     } = this.wasmModule.exports;
 
     // create the regexp
@@ -46,7 +46,7 @@ class RegExpProxy {
       __newString,
       __retain,
       __release,
-      __getArray
+      __getArray,
     } = this.wasmModule.exports;
 
     // execute
@@ -58,7 +58,7 @@ class RegExpProxy {
 
     // extract the string matches
     const matchesArrayPtr = __getArray(match.matches);
-    const matches = matchesArrayPtr.map(m => __getString(m));
+    const matches = matchesArrayPtr.map((m) => __getString(m));
     __release(matchesArrayPtr);
 
     const inputPtr = match.input;
@@ -67,7 +67,7 @@ class RegExpProxy {
     return {
       matches,
       index: match.index,
-      input: __getString(inputPtr)
+      input: __getString(inputPtr),
     };
   }
 

@@ -5,16 +5,13 @@ import {
   ConcatenationNode,
   Node,
   RangeRepetitionNode,
-  RepetitionNode
+  RepetitionNode,
 } from "./node";
 
 export class NodeVisitor {
   _delete: bool = false;
 
-  constructor(
-    public node: Node,
-    public parentNode: Node
-  ) {}
+  constructor(public node: Node, public parentNode: Node) {}
 
   delete(): void {
     this._delete = true;
@@ -130,7 +127,9 @@ export function expandRepetitions(visitor: NodeVisitor): void {
       // a{4,6} => aaaaa?a?
       const count = rangeRepNode.to - rangeRepNode.from;
       for (let i = 0; i < count; i++) {
-        clones.push(new RepetitionNode(expression.clone(), QuantifierClass.Question));
+        clones.push(
+          new RepetitionNode(expression.clone(), QuantifierClass.Question)
+        );
       }
     }
 

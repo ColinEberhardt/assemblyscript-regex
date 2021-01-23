@@ -11,8 +11,8 @@ export const enum NodeType {
   CharacterClass,
   Repetition,
   RangeRepetition,
-  Group
-};
+  Group,
+}
 
 const emptyNodeArray = new Array<Node>();
 
@@ -67,7 +67,7 @@ export class ConcatenationNode extends Node {
 
   clone(): Node {
     return new ConcatenationNode(
-      this.expressions.slice(0).map<Node>(s => s.clone())
+      this.expressions.slice(0).map<Node>((s) => s.clone())
     );
   }
 
@@ -156,12 +156,7 @@ export class RepetitionNode extends Node {
 }
 
 export class RangeRepetitionNode extends Node {
-
-  constructor(
-    public expression: Node,
-    public from: i32,
-    public to: i32
-  ) {
+  constructor(public expression: Node, public from: i32, public to: i32) {
     super(NodeType.RangeRepetition);
   }
 

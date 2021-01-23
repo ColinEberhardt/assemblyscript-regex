@@ -8,7 +8,7 @@ import {
   CharacterSetNode,
   CharacterClassNode,
   GroupNode,
-  AssertionNode
+  AssertionNode,
 } from "../parser/node";
 
 import { QuantifierClass } from "./characters";
@@ -44,10 +44,7 @@ export class GroupEndMarkerState extends State {
   // a bit yucky - storing transient state in the state machine!
   capture: string = "";
 
-  constructor(
-    public startMarker: GroupStartMarkerState,
-    isEnd: bool = false
-  ) {
+  constructor(public startMarker: GroupStartMarkerState, isEnd: bool = false) {
     super(isEnd);
   }
 
@@ -73,10 +70,7 @@ export class MatcherState<T extends Matcher> extends State {
 }
 
 export class Automata {
-  constructor(
-    public start: State,
-    public end: State
-  ) {}
+  constructor(public start: State, public end: State) {}
 
   static fromEpsilon(): Automata {
     const start = new State();
@@ -171,7 +165,9 @@ function automataForNode(expression: Node | null): Automata {
     } else if (quantifier == QuantifierClass.Star) {
       return closure(auto);
     } else {
-      throw new Error("unsupported quantifier - " + String.fromCharCode(quantifier));
+      throw new Error(
+        "unsupported quantifier - " + String.fromCharCode(quantifier)
+      );
     }
   } else if (CharacterNode.is(expression)) {
     return Automata.fromMatcher(

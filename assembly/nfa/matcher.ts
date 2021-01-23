@@ -3,19 +3,21 @@ import {
   isAlpha,
   isUnderscore,
   isWhitespace,
-  CharClass
+  CharClass,
 } from "./characters";
 
 import {
   CharacterNode,
   CharacterSetNode,
-  CharacterClassNode
+  CharacterClassNode,
 } from "../parser/node";
 
 export abstract class Matcher {
   abstract matches(code: u32): bool;
 
-  static fromCharacterClassNode(node: CharacterClassNode): CharacterClassMatcher {
+  static fromCharacterClassNode(
+    node: CharacterClassNode
+  ): CharacterClassMatcher {
     return new CharacterClassMatcher(node.charClass);
   }
 
@@ -45,33 +47,34 @@ export class CharacterClassMatcher extends Matcher {
 
   matches(code: u32): bool {
     switch (this.charClass) {
-      case CharClass.d: return isDigit(code);
-      case CharClass.D: return !isDigit(code);
-      case CharClass.Dot: return code != 13 && code != 10 && code != 8232 && code != 8233;
+      case CharClass.d:
+        return isDigit(code);
+      case CharClass.D:
+        return !isDigit(code);
+      case CharClass.Dot:
+        return code != 13 && code != 10 && code != 8232 && code != 8233;
       case CharClass.w:
-        return (
-          isAlpha(code) ||
-          isUnderscore(code) ||
-          isDigit(code)
-        );
+        return isAlpha(code) || isUnderscore(code) || isDigit(code);
       case CharClass.W:
-        return !(
-          isAlpha(code) ||
-          isUnderscore(code) ||
-          isDigit(code)
-        );
-      case CharClass.s: return isWhitespace(code);
-      case CharClass.S: return !isWhitespace(code);
-      case CharClass.t: return code == 9;
-      case CharClass.r: return code == 13;
-      case CharClass.n: return code == 10;
-      case CharClass.v: return code == 11;
-      case CharClass.f: return code == 12;
+        return !(isAlpha(code) || isUnderscore(code) || isDigit(code));
+      case CharClass.s:
+        return isWhitespace(code);
+      case CharClass.S:
+        return !isWhitespace(code);
+      case CharClass.t:
+        return code == 9;
+      case CharClass.r:
+        return code == 13;
+      case CharClass.n:
+        return code == 10;
+      case CharClass.v:
+        return code == 11;
+      case CharClass.f:
+        return code == 12;
 
       default:
         throw new Error(
-          "unsupported character class - " +
-          String.fromCharCode(this.charClass)
+          "unsupported character class - " + String.fromCharCode(this.charClass)
         );
     }
   }
