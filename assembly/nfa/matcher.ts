@@ -4,10 +4,14 @@ import {
   CharacterNode,
   CharacterSetNode,
   CharacterClassNode,
+  CharacterRangeNode,
 } from "../parser/node";
+import { Match } from "../regexp";
 
-export abstract class Matcher {
-  abstract matches(code: u32): bool;
+export class Matcher {
+  matches(code: u32): bool {
+    return false;
+  }
 
   static fromCharacterClassNode(
     node: CharacterClassNode
@@ -15,8 +19,27 @@ export abstract class Matcher {
     return new CharacterClassMatcher(node.charClass);
   }
 
+  static fromCharacterRangeNode(
+    node: CharacterRangeNode
+  ): CharacterRangeMatcher {
+    return new CharacterRangeMatcher(node.from, node.to);
+  }
+
   static fromCharacterSetNode(node: CharacterSetNode): CharacterSetMatcher {
-    return new CharacterSetMatcher(node.chars, node.negated);
+    const matchers = new Array<Matcher>();
+    for (let i = 0; i < node.expressions.length; i++) {
+      const exp = node.expressions[i];
+      if (CharacterRangeNode.is(exp)) {
+        matchers.push(
+          Matcher.fromCharacterRangeNode(exp as CharacterRangeNode)
+        );
+      } else if (CharacterNode.is(exp)) {
+        matchers.push(Matcher.fromCharacterNode(exp as CharacterNode));
+      } else {
+        throw new Error("unsupported node type within character set");
+      }
+    }
+    return new CharacterSetMatcher(matchers, node.negated);
   }
 
   static fromCharacterNode(node: CharacterNode): CharacterMatcher {
@@ -31,6 +54,16 @@ export class CharacterMatcher extends Matcher {
 
   matches(code: u32): bool {
     return this.character == code;
+  }
+}
+
+export class CharacterRangeMatcher extends Matcher {
+  constructor(public from: u32, public to: u32) {
+    super();
+  }
+
+  matches(code: u32): bool {
+    return code >= this.from && code <= this.to;
   }
 }
 
@@ -79,28 +112,20 @@ export class CharacterClassMatcher extends Matcher {
   }
 }
 
+// no closure support
+let _code: u32;
+
 export class CharacterSetMatcher extends Matcher {
-  constructor(public set: string, public negated: bool) {
+  constructor(public matchers: Matcher[], public negated: bool) {
     super();
   }
 
-  matchesSet(set: string, code: u32): bool {
-    for (let i = 0, len = set.length; i < len; i++) {
-      // TODO - perform the set parsing logic in the constructor?
-      // TODO - move into the parser?
-      if (i < len - 2 && set.charCodeAt(i + 1) == 45 /*-*/) {
-        const from = set.charCodeAt(i) as u32;
-        const to = set.charCodeAt(i + 2) as u32;
-        if (code >= from && code <= to) return true;
-      } else {
-        if (set.charCodeAt(i) == code) return true;
-      }
-    }
-    return false;
-  }
-
   matches(code: u32): bool {
-    const matches = this.matchesSet(this.set, code);
-    return this.negated ? !matches : matches;
+    _code = code;
+    if (!this.negated) {
+      return this.matchers.some((m) => m.matches(_code));
+    } else {
+      return !this.matchers.some((m) => m.matches(_code));
+    }
   }
 }

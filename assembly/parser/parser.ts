@@ -11,6 +11,7 @@ import {
   ConcatenationNode,
   RepetitionNode,
   CharacterSetNode,
+  CharacterRangeNode,
 } from "./node";
 
 function isQuantifier(code: Char): bool {
@@ -117,7 +118,7 @@ export class Parser {
     let firstDigit = true;
     let digitStr = "";
     while (this.more()) {
-      let token = this.currentToken.charCodeAt(0);
+      const token = this.currentToken.charCodeAt(0);
       if (token == Char.RightParenthesis) break;
       if (firstDigit) {
         if (isDigit(token)) {
@@ -170,7 +171,7 @@ export class Parser {
   private parseSequence(): Node {
     let nodes = new Array<Node>();
     while (this.more()) {
-      let token = this.currentToken.charCodeAt(0);
+      const token = this.currentToken.charCodeAt(0);
       if (token == Char.RightParenthesis) break;
       // @ts-ignore
       if (token == Char.VerticalBar) {
@@ -207,23 +208,38 @@ export class Parser {
     return nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
   }
 
+  private parseCharacterRange(): Node {
+    const from = this.eatToken();
+    this.eatToken(Char.Minus);
+    const to = this.eatToken();
+    return new CharacterRangeNode(from, to);
+  }
+
   private parseCharacterSet(): CharacterSetNode {
-    let chars = "";
     this.eatToken(Char.LeftSquareBracket);
-    const negated = this.currentToken == "^";
+    const token = this.currentToken.charCodeAt(0);
+
+    const negated = token == Char.Caret;
     if (negated) {
       this.eatToken(Char.Caret);
     }
-    while (
-      this.currentToken != "]" ||
-      (chars.length == 0 && this.currentToken == "]")
-    ) {
-      // TODO characters set can contain character classes
-      chars += this.currentToken;
-      this.eatToken();
+
+    const nodes = new Array<Node>();
+    while (this.currentToken != "]" || nodes.length == 0) {
+      // lookahead for character range
+      if (
+        this.cursor + 1 < u32(this.input.length) &&
+        this.input.charCodeAt(this.cursor + 1) == Char.Minus &&
+        this.input.charCodeAt(this.cursor + 2) != Char.RightSquareBracket
+      ) {
+        nodes.push(this.parseCharacterRange());
+      } else {
+        nodes.push(this.parseCharacter());
+      }
+
       // TODO error if we run out of chars?
     }
     this.eatToken(Char.RightSquareBracket);
-    return new CharacterSetNode(chars, negated);
+    return new CharacterSetNode(nodes, negated);
   }
 }

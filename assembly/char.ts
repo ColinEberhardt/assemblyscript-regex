@@ -9,8 +9,9 @@ export const enum Char {
   LeftParenthesis = 0x28,
   RightParenthesis = 0x29,
   Asterisk = 0x2a, // "*"
-  Comma = 0x2c, // "*"
   Plus = 0x2b, // "+"
+  Comma = 0x2c, // "*"
+  Minus = 0x2d, // "-"
   Dot = 0x2e, // "."
   Zero = 0x30,
   Question = 0x3f, // "?"
