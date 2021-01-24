@@ -1,4 +1,4 @@
-import { QuantifierClass } from "../nfa/characters";
+import { Char } from "../char";
 import {
   AssertionNode,
   AST,
@@ -122,14 +122,12 @@ export function expandRepetitions(visitor: NodeVisitor): void {
 
     if (rangeRepNode.to == -1) {
       // a{4,} => aaaaa*
-      clones.push(new RepetitionNode(expression.clone(), QuantifierClass.Star));
+      clones.push(new RepetitionNode(expression.clone(), Char.Asterisk));
     } else {
       // a{4,6} => aaaaa?a?
       const count = rangeRepNode.to - rangeRepNode.from;
       for (let i = 0; i < count; i++) {
-        clones.push(
-          new RepetitionNode(expression.clone(), QuantifierClass.Question)
-        );
+        clones.push(new RepetitionNode(expression.clone(), Char.Question));
       }
     }
 

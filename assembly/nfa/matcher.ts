@@ -1,10 +1,4 @@
-import {
-  isDigit,
-  isAlpha,
-  isUnderscore,
-  isWhitespace,
-  CharClass,
-} from "./characters";
+import { isDigit, isAlpha, isWhitespace, Char } from "../char";
 
 import {
   CharacterNode,
@@ -31,7 +25,7 @@ export abstract class Matcher {
 }
 
 export class CharacterMatcher extends Matcher {
-  constructor(public character: CharClass) {
+  constructor(public character: Char) {
     super();
   }
 
@@ -41,36 +35,41 @@ export class CharacterMatcher extends Matcher {
 }
 
 export class CharacterClassMatcher extends Matcher {
-  constructor(public charClass: CharClass) {
+  constructor(public charClass: Char) {
     super();
   }
 
   matches(code: u32): bool {
     switch (this.charClass) {
-      case CharClass.d:
+      case Char.d:
         return isDigit(code);
-      case CharClass.D:
+      case Char.D:
         return !isDigit(code);
-      case CharClass.Dot:
-        return code != 13 && code != 10 && code != 8232 && code != 8233;
-      case CharClass.w:
-        return isAlpha(code) || isUnderscore(code) || isDigit(code);
-      case CharClass.W:
-        return !(isAlpha(code) || isUnderscore(code) || isDigit(code));
-      case CharClass.s:
+      case Char.Dot:
+        return (
+          code != Char.CarriageReturn &&
+          code != Char.LineFeed &&
+          code != 8232 &&
+          code != 8233
+        );
+      case Char.w:
+        return isAlpha(code) || code == Char.Underscore || isDigit(code);
+      case Char.W:
+        return !(isAlpha(code) || code == Char.Underscore || isDigit(code));
+      case Char.s:
         return isWhitespace(code);
-      case CharClass.S:
+      case Char.S:
         return !isWhitespace(code);
-      case CharClass.t:
-        return code == 9;
-      case CharClass.r:
-        return code == 13;
-      case CharClass.n:
-        return code == 10;
-      case CharClass.v:
-        return code == 11;
-      case CharClass.f:
-        return code == 12;
+      case Char.t:
+        return code == Char.HorizontalTab;
+      case Char.r:
+        return code == Char.CarriageReturn;
+      case Char.n:
+        return code == Char.LineFeed;
+      case Char.v:
+        return code == Char.VerticalTab;
+      case Char.f:
+        return code == Char.FormFeed;
 
       default:
         throw new Error(

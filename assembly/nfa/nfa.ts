@@ -11,7 +11,7 @@ import {
   AssertionNode,
 } from "../parser/node";
 
-import { QuantifierClass } from "./characters";
+import { Char } from "../char";
 import { Matcher } from "./matcher";
 
 export class State {
@@ -158,11 +158,11 @@ function automataForNode(expression: Node | null): Automata {
     const c = expression as RepetitionNode;
     const auto = automataForNode(c.expression);
     const quantifier = c.quantifier;
-    if (quantifier == QuantifierClass.Question) {
+    if (quantifier == Char.Question) {
       return zeroOrOne(auto);
-    } else if (quantifier == QuantifierClass.Plus) {
+    } else if (quantifier == Char.Plus) {
       return oneOrMore(auto);
-    } else if (quantifier == QuantifierClass.Star) {
+    } else if (quantifier == Char.Asterisk) {
       return closure(auto);
     } else {
       throw new Error(

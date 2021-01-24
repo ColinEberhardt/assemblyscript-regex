@@ -1,4 +1,4 @@
-import { CharClass, QuantifierClass } from "../nfa/characters";
+import { Char } from "../char";
 import { replaceAtIndex } from "../util";
 
 export const enum NodeType {
@@ -107,14 +107,14 @@ export class CharacterNode extends Node {
 }
 
 export class AssertionNode extends Node {
-  constructor(public kind: CharClass) {
+  constructor(public kind: Char) {
     super(NodeType.Assertion);
   }
 
-  static is(node: Node, kind: CharClass = CharClass.None): bool {
+  static is(node: Node, kind: Char = Char.None): bool {
     return (
       node.type == NodeType.Assertion &&
-      ((node as AssertionNode).kind == kind || kind == CharClass.None)
+      ((node as AssertionNode).kind == kind || kind == Char.None)
     );
   }
 
@@ -124,7 +124,7 @@ export class AssertionNode extends Node {
 }
 
 export class CharacterClassNode extends Node {
-  constructor(public charClass: CharClass) {
+  constructor(public charClass: Char) {
     super(NodeType.CharacterClass);
   }
 
@@ -138,7 +138,7 @@ export class CharacterClassNode extends Node {
 }
 
 export class RepetitionNode extends Node {
-  constructor(public expression: Node, public quantifier: QuantifierClass) {
+  constructor(public expression: Node, public quantifier: Char) {
     super(NodeType.Repetition);
   }
 

@@ -1,7 +1,7 @@
 import { State, Automata, toNFAFromAST, GroupEndMarkerState } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode } from "./parser/node";
-import { CharClass } from "./nfa/characters";
+import { Char } from "./char";
 import { Parser } from "./parser/parser";
 import { first, last } from "./util";
 import { walker as astWalker, expandRepetitions } from "./parser/walker";
@@ -78,8 +78,8 @@ export class RegExp {
     const body = ast.body;
     if (body != null && ConcatenationNode.is(body)) {
       const expressions = (ast.body as ConcatenationNode).expressions;
-      this.startOfInput = AssertionNode.is(first(expressions), CharClass.Caret);
-      this.endOfInput = AssertionNode.is(last(expressions), CharClass.Dollar);
+      this.startOfInput = AssertionNode.is(first(expressions), Char.Caret);
+      this.endOfInput = AssertionNode.is(last(expressions), Char.Dollar);
     }
 
     astWalker(ast, expandRepetitions);

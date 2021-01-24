@@ -1,13 +1,29 @@
-export const enum CharClass {
+export const enum Char {
   None = -1,
-
-  Dot = 0x2e, // "."
+  HorizontalTab = 0x09,
+  VerticalTab = 0x0b,
+  FormFeed = 0x0c,
+  CarriageReturn = 0x0d,
+  LineFeed = 0x0a,
   Dollar = 0x24, // "$"
-  Caret = 0x5e, // "^"
-
+  LeftParenthesis = 0x28,
+  RightParenthesis = 0x29,
+  Asterisk = 0x2a, // "*"
+  Comma = 0x2c, // "*"
+  Plus = 0x2b, // "+"
+  Dot = 0x2e, // "."
+  Zero = 0x30,
+  Question = 0x3f, // "?"
+  A = 0x41,
   D = 0x44,
   S = 0x53,
   W = 0x57,
+  LeftSquareBracket = 0x5b, // "["
+  Backslash = 0x5c, // "\"
+  RightSquareBracket = 0x5d, // "]"
+  Caret = 0x5e, // "^"
+  Underscore = 0x5f,
+  a = 0x61,
   d = 0x64,
   f = 0x66,
   n = 0x6e,
@@ -16,32 +32,25 @@ export const enum CharClass {
   t = 0x74,
   v = 0x76,
   w = 0x77,
-}
-
-export const enum QuantifierClass {
-  Star = 0x2a, // "*"
-  Plus = 0x2b, // "+"
-  Question = 0x3f, // "?"
+  LeftCurlyBrace = 0x7b /* { */,
+  VerticalBar = 0x7c /* | */,
+  RightCurlyBrace = 0x7d /*  */,
 }
 
 export function isDigit(code: u32): bool {
-  return code - 48 < 10;
+  return code - Char.Zero < 10;
 }
 
 export function isLowercaseAlpha(code: u32): bool {
-  return code - 97 < 26;
+  return code - Char.a < 26;
 }
 
 export function isUppercaseAlpha(code: u32): bool {
-  return code - 65 < 26;
+  return code - Char.A < 26;
 }
 
 export function isAlpha(code: u32): bool {
-  return (code | 32) - 97 < 26;
-}
-
-export function isUnderscore(code: u32): bool {
-  return code == 95;
+  return (code | 32) - Char.a < 26;
 }
 
 export function isWhitespace(code: u32): bool {

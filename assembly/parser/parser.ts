@@ -1,4 +1,4 @@
-import { isDigit, CharClass, QuantifierClass } from "../nfa/characters";
+import { isDigit, Char } from "../char";
 import {
   AST,
   RangeRepetitionNode,
@@ -13,34 +13,30 @@ import {
   CharacterSetNode,
 } from "./node";
 
-function isQuantifier(code: QuantifierClass): bool {
-  return (
-    code == QuantifierClass.Question ||
-    code == QuantifierClass.Plus ||
-    code == QuantifierClass.Star
-  );
+function isQuantifier(code: Char): bool {
+  return code == Char.Question || code == Char.Plus || code == Char.Asterisk;
 }
 
 function isAssertion(code: u32): bool {
-  return code == CharClass.Dollar || code == CharClass.Caret; // "$" or "^"
+  return code == Char.Dollar || code == Char.Caret; // "$" or "^"
 }
 
 function isSpecialCharacter(code: u32): bool {
   switch (code) {
-    case 0x24: /* $ */
-    case 0x28: /* ( */
-    case 0x29: /* ) */
-    case 0x2a: /* * */
-    case 0x2b: /* + */
-    case 0x2e: /* . */
-    case 0x3f: /* ? */
-    case 0x5c: /* \ */
-    case 0x5b: /* [ */
-    case 0x5d: /* ] */
-    case 0x5e: /* ^ */
-    case 0x7c: /* | */
-    case 0x7b: /* { */
-    case 0x7d /* } */:
+    case Char.Dollar:
+    case Char.LeftParenthesis:
+    case Char.RightParenthesis:
+    case Char.Asterisk:
+    case Char.Plus:
+    case Char.Dot:
+    case Char.Question:
+    case Char.Backslash:
+    case Char.LeftSquareBracket:
+    case Char.RightSquareBracket:
+    case Char.Caret:
+    case Char.VerticalBar:
+    case Char.LeftCurlyBrace:
+    case Char.RightCurlyBrace:
       return true;
   }
   return false;
@@ -86,8 +82,8 @@ export class Parser {
 
   private parseCharacter(): Node {
     let token = this.currentToken.charCodeAt(0);
-    if (token == 0x5c /* \ */) {
-      this.eatToken(0x5c);
+    if (token == Char.Backslash) {
+      this.eatToken(Char.Backslash);
       token = this.currentToken.charCodeAt(0);
       if (isSpecialCharacter(token)) {
         this.eatToken();
@@ -103,9 +99,9 @@ export class Parser {
       return new AssertionNode(this.eatToken());
     }
 
-    if (token == CharClass.Dot) {
-      this.eatToken(CharClass.Dot);
-      return new CharacterClassNode(CharClass.Dot);
+    if (token == Char.Dot) {
+      this.eatToken(Char.Dot);
+      return new CharacterClassNode(Char.Dot);
     }
 
     return new CharacterNode(this.eatToken());
@@ -114,7 +110,7 @@ export class Parser {
   private maybeParseRepetitionRange(): Range {
     // snapshot
     const previousCursor = this.cursor;
-    this.eatToken(0x7b /* { */);
+    this.eatToken(Char.LeftCurlyBrace);
 
     let range = new Range();
 
@@ -122,7 +118,7 @@ export class Parser {
     let digitStr = "";
     while (this.more()) {
       let token = this.currentToken.charCodeAt(0);
-      if (token == 0x29 /* ) */) break;
+      if (token == Char.RightParenthesis) break;
       if (firstDigit) {
         if (isDigit(token)) {
           // if it is a digit, keep eating
@@ -130,13 +126,13 @@ export class Parser {
         } else {
           range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
           range.to = range.from;
-          if (token == 0x2c /* , */) {
+          if (token == Char.Comma) {
             // if we meet a comma, start parsing the next digit
             firstDigit = false;
             digitStr = "";
             range.to = -1;
-          } else if (token == 0x7d /* } */) {
-            this.eatToken(0x7d /* } */);
+          } else if (token == Char.RightCurlyBrace) {
+            this.eatToken(Char.RightCurlyBrace);
             // close brace, this is a single value range
             return range;
           } else {
@@ -150,8 +146,8 @@ export class Parser {
           digitStr += this.currentToken;
         } else {
           range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
-          if (token == 0x7d /* } */) {
-            this.eatToken(0x7d /* } */);
+          if (token == Char.RightCurlyBrace) {
+            this.eatToken(Char.RightCurlyBrace);
             // close brace, end  of range
             return range;
           } else {
@@ -175,19 +171,19 @@ export class Parser {
     let nodes = new Array<Node>();
     while (this.more()) {
       let token = this.currentToken.charCodeAt(0);
-      if (token == 0x29 /* ) */) break;
+      if (token == Char.RightParenthesis) break;
       // @ts-ignore
-      if (token == 0x7c /* | */) {
-        this.eatToken(0x7c /* | */);
+      if (token == Char.VerticalBar) {
+        this.eatToken(Char.VerticalBar);
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
         nodes = [new AlternationNode(left, this.parseSequence())];
         // @ts-ignore
-      } else if (token == 0x28 /* ( */) {
-        this.eatToken(0x28 /* ( */);
+      } else if (token == Char.LeftParenthesis) {
+        this.eatToken(Char.LeftParenthesis);
         nodes.push(new GroupNode(this.parseSequence()));
-        this.eatToken(0x29 /* ) */);
+        this.eatToken(Char.RightParenthesis);
         // @ts-ignore
-      } else if (token == 0x7b /* { */) {
+      } else if (token == Char.LeftCurlyBrace) {
         const range = this.maybeParseRepetitionRange();
         if (range.from == -1) {
           // this is not the start of a repetition, it's just a char!
@@ -201,7 +197,7 @@ export class Parser {
         nodes.push(new RepetitionNode(expression, token));
         this.eatToken();
         // @ts-ignore
-      } else if (token == 0x5b /* [ */) {
+      } else if (token == Char.LeftSquareBracket) {
         nodes.push(this.parseCharacterSet());
       } else {
         nodes.push(this.parseCharacter());
@@ -213,10 +209,10 @@ export class Parser {
 
   private parseCharacterSet(): CharacterSetNode {
     let chars = "";
-    this.eatToken(0x5b /* [ */);
+    this.eatToken(Char.LeftSquareBracket);
     const negated = this.currentToken == "^";
     if (negated) {
-      this.eatToken(0x5e /* ^ */);
+      this.eatToken(Char.Caret);
     }
     while (
       this.currentToken != "]" ||
@@ -227,7 +223,7 @@ export class Parser {
       this.eatToken();
       // TODO error if we run out of chars?
     }
-    this.eatToken(0x5d /* ] */);
+    this.eatToken(Char.RightSquareBracket);
     return new CharacterSetNode(chars, negated);
   }
 }
