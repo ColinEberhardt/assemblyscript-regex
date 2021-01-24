@@ -61,15 +61,13 @@ export class Parser {
     return new Parser(input).toAST();
   }
 
-  private eatToken(value: string = ""): u32 {
-    const current = this.currentToken;
-    if (value.length > 0 && current != value) {
+  private eatToken(value: u32 = -1): u32 {
+    const token = this.currentToken.charCodeAt(0) as u32;
+    if (value != -1 && token != value) {
       throw new Error("invalid token");
     }
-
-    this.cursor++;
-    this.currentToken = this.input.charAt(this.cursor);
-    return current.charCodeAt(0);
+    this.currentToken = this.input.charAt(++this.cursor);
+    return token;
   }
 
   private more(): bool {
@@ -78,7 +76,7 @@ export class Parser {
 
   private resetCursor(): void {
     this.cursor = 0;
-    this.currentToken = this.input.charAt(this.cursor);
+    this.currentToken = this.input.charAt(0);
   }
 
   private toAST(): AST {
@@ -89,7 +87,7 @@ export class Parser {
   private parseCharacter(): Node {
     let token = this.currentToken.charCodeAt(0);
     if (token == 0x5c /* \ */) {
-      this.eatToken("\\");
+      this.eatToken(0x5c);
       token = this.currentToken.charCodeAt(0);
       if (isSpecialCharacter(token)) {
         this.eatToken();
@@ -106,7 +104,7 @@ export class Parser {
     }
 
     if (token == CharClass.Dot) {
-      this.eatToken(".");
+      this.eatToken(CharClass.Dot);
       return new CharacterClassNode(CharClass.Dot);
     }
 
@@ -116,7 +114,7 @@ export class Parser {
   private maybeParseRepetitionRange(): Range {
     // snapshot
     const previousCursor = this.cursor;
-    this.eatToken("{");
+    this.eatToken(0x7b /* { */);
 
     let range = new Range();
 
@@ -138,7 +136,7 @@ export class Parser {
             digitStr = "";
             range.to = -1;
           } else if (token == 0x7d /* } */) {
-            this.eatToken("}");
+            this.eatToken(0x7d /* } */);
             // close brace, this is a single value range
             return range;
           } else {
@@ -153,7 +151,7 @@ export class Parser {
         } else {
           range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
           if (token == 0x7d /* } */) {
-            this.eatToken("}");
+            this.eatToken(0x7d /* } */);
             // close brace, end  of range
             return range;
           } else {
@@ -167,7 +165,7 @@ export class Parser {
 
     // repetition not found - reset state
     this.cursor = previousCursor;
-    this.currentToken = this.input.charAt(this.cursor);
+    this.currentToken = this.input.charAt(previousCursor);
 
     return range;
   }
@@ -180,14 +178,14 @@ export class Parser {
       if (token == 0x29 /* ) */) break;
       // @ts-ignore
       if (token == 0x7c /* | */) {
-        this.eatToken("|");
+        this.eatToken(0x7c /* | */);
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];
         nodes = [new AlternationNode(left, this.parseSequence())];
         // @ts-ignore
       } else if (token == 0x28 /* ( */) {
-        this.eatToken("(");
+        this.eatToken(0x28 /* ( */);
         nodes.push(new GroupNode(this.parseSequence()));
-        this.eatToken(")");
+        this.eatToken(0x29 /* ) */);
         // @ts-ignore
       } else if (token == 0x7b /* { */) {
         const range = this.maybeParseRepetitionRange();
@@ -215,10 +213,10 @@ export class Parser {
 
   private parseCharacterSet(): CharacterSetNode {
     let chars = "";
-    this.eatToken("[");
+    this.eatToken(0x5b /* [ */);
     const negated = this.currentToken == "^";
     if (negated) {
-      this.eatToken("^");
+      this.eatToken(0x5e /* ^ */);
     }
     while (
       this.currentToken != "]" ||
@@ -229,7 +227,7 @@ export class Parser {
       this.eatToken();
       // TODO error if we run out of chars?
     }
-    this.eatToken("]");
+    this.eatToken(0x5d /* ] */);
     return new CharacterSetNode(chars, negated);
   }
 }
