@@ -83,10 +83,6 @@ export class Parser {
     return new AST(this.parseSequence());
   }
 
-  private currentCharCode(): u32 {
-    return this.iterator.current;
-  }
-
   private parseCharacter(): Node {
     let token = this.iterator.current;
     if (token == Char.Backslash) {
@@ -241,13 +237,19 @@ export class Parser {
       ) {
         nodes.push(this.parseCharacterRange());
       } else {
-        if (
-          this.iterator.current == Char.Backslash &&
-          isCharacterSetSpecialChar(this.iterator.lookahead(1))
-        ) {
-          this.eatToken(Char.Backslash);
+        // have we encountered a backslash?
+        if (this.iterator.current == Char.Backslash) {
+          this.eatToken();
+          if (isCharacterSetSpecialChar(this.iterator.current)) {
+            // if it was a backslashed special char, treat as a regular char
+            nodes.push(new CharacterNode(this.eatToken()));
+          } else {
+            // otherwise this is a character class
+            nodes.push(new CharacterClassNode(this.eatToken()));
+          }
+        } else {
+          nodes.push(new CharacterNode(this.eatToken()));
         }
-        nodes.push(new CharacterNode(this.eatToken()));
       }
 
       if (!this.iterator.more()) {

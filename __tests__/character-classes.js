@@ -1,5 +1,9 @@
 const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
 
+it.skip("should throw with un-supported classes", () => {
+  expect(() => new RegExp("\\o")).toThrow();
+});
+
 it("dot", () => {
   expectMatch(".", [" ", "B", "|", "9"]);
   expectNotMatch(".", ["", "\n"]);

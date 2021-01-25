@@ -34,6 +34,8 @@ export class Matcher {
           return Matcher.fromCharacterRangeNode(exp as CharacterRangeNode);
         case NodeType.Character:
           return Matcher.fromCharacterNode(exp as CharacterNode);
+        case NodeType.CharacterClass:
+          return Matcher.fromCharacterClassNode(exp as CharacterClassNode);
         default:
           throw new Error("unsupported node type within character set");
       }

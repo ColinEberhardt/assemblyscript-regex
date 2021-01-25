@@ -50,3 +50,12 @@ it("treats - as a literal in negated sets", () => {
   expectNotMatch("[^-abc]", ["-", "a", "b", "c"]);
   expectMatch("[^-abc]", ["1", "A"]);
 });
+
+it("supports character classes", () => {
+  expectMatch("[\\w]", ["A", "a", "Z", "z", "0", "9", "_"]);
+  expectNotMatch("[\\w]", ["", "$"]);
+});
+
+it("supports opening square brackets", () => {
+  expectMatch("[ae[c]", ["a", "e", "[", "c"]);
+});
