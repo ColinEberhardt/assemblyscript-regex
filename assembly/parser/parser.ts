@@ -58,44 +58,78 @@ class Range {
   to: i32 = -1;
 }
 
-export class Parser {
-  currentToken: string = "";
+class StringIterator {
+  current: u32;
   cursor: u32 = 0;
 
-  private constructor(public input: string) {}
+  constructor(private sourceString: string) {
+    this.current = this.sourceString.charCodeAt(0);
+  }
+
+  lookahead(distance: u32): u32 {
+    return this.sourceString.charCodeAt(this.cursor + distance);
+  }
+
+  next(): bool {
+    this.cursor++;
+    if (this.cursor >= u32(this.sourceString.length)) {
+      return false;
+    }
+    this.current = this.sourceString.charCodeAt(this.cursor);
+    return true;
+  }
+
+  currentAsString(): string {
+    return String.fromCharCode(this.current);
+  }
+
+  more(): bool {
+    return this.cursor < u32(this.sourceString.length);
+  }
+
+  copy(): StringIterator {
+    const iterator = new StringIterator(this.sourceString);
+    iterator.cursor = this.cursor;
+    iterator.current = this.current;
+    return iterator;
+  }
+}
+
+export class Parser {
+  // currentToken: string = "";
+  // cursor: u32 = 0;
+  iterator: StringIterator;
+
+  private constructor(input: string) {
+    this.iterator = new StringIterator(input);
+  }
 
   static toAST(input: string): AST {
     return new Parser(input).toAST();
   }
 
   private eatToken(value: u32 = -1): u32 {
-    const token = this.currentToken.charCodeAt(0) as u32;
-    if (value != -1 && token != value) {
+    const currentToken = this.iterator.current;
+    if (value != -1 && this.iterator.current != value) {
       throw new Error("invalid token");
     }
-    this.currentToken = this.input.charAt(++this.cursor);
-    return token;
-  }
-
-  private more(): bool {
-    return this.currentToken.length > 0;
-  }
-
-  private resetCursor(): void {
-    this.cursor = 0;
-    this.currentToken = this.input.charAt(0);
+    this.iterator.next();
+    return currentToken;
   }
 
   private toAST(): AST {
-    this.resetCursor();
     return new AST(this.parseSequence());
   }
 
+  private currentCharCode(): u32 {
+    return this.iterator.current;
+  }
+
   private parseCharacter(): Node {
-    let token = this.currentToken.charCodeAt(0);
+    let token = this.iterator.current;
     if (token == Char.Backslash) {
       this.eatToken(Char.Backslash);
-      token = this.currentToken.charCodeAt(0);
+      token = this.iterator.current;
       if (isSpecialCharacter(token)) {
         this.eatToken();
         return new CharacterNode(token);
@@ -120,20 +154,20 @@ export class Parser {
 
   private maybeParseRepetitionRange(): Range {
     // snapshot
-    const previousCursor = this.cursor;
+    const iteratorCopy = this.iterator.copy();
     this.eatToken(Char.LeftCurlyBrace);
 
     let range = new Range();
 
     let firstDigit = true;
     let digitStr = "";
-    while (this.more()) {
-      const token = this.currentToken.charCodeAt(0);
+    while (this.iterator.more()) {
+      const token = this.iterator.current;
       if (token == Char.RightParenthesis) break;
       if (firstDigit) {
         if (isDigit(token)) {
           // if it is a digit, keep eating
-          digitStr += this.currentToken;
+          digitStr += this.iterator.currentAsString();
         } else {
           range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
           range.to = range.from;
@@ -154,7 +188,7 @@ export class Parser {
       } else {
         if (isDigit(token)) {
           // if it is a digit, keep eating
-          digitStr += this.currentToken;
+          digitStr += this.iterator.currentAsString();
         } else {
           range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
           if (token == Char.RightCurlyBrace) {
@@ -171,8 +205,7 @@ export class Parser {
     }
 
     // repetition not found - reset state
-    this.cursor = previousCursor;
-    this.currentToken = this.input.charAt(previousCursor);
+    this.iterator = iteratorCopy;
 
     return range;
   }
@@ -180,8 +213,8 @@ export class Parser {
   // parses a sequence of chars
   private parseSequence(): Node {
     let nodes = new Array<Node>();
-    while (this.more()) {
-      const token = this.currentToken.charCodeAt(0);
+    while (this.iterator.more()) {
+      const token = this.iterator.current;
       if (token == Char.RightParenthesis) break;
       // @ts-ignore
       if (token == Char.VerticalBar) {
@@ -227,34 +260,35 @@ export class Parser {
 
   private parseCharacterSet(): CharacterSetNode {
     this.eatToken(Char.LeftSquareBracket);
-    const token = this.currentToken.charCodeAt(0);
 
-    const negated = token == Char.Caret;
+    const negated = this.iterator.current == Char.Caret;
     if (negated) {
       this.eatToken(Char.Caret);
     }
 
     const nodes = new Array<Node>();
-    while (this.currentToken != "]" || nodes.length == 0) {
+    while (
+      this.iterator.current != Char.RightSquareBracket ||
+      nodes.length == 0
+    ) {
       // lookahead for character range
       if (
-        this.cursor + 2 < u32(this.input.length) &&
-        this.currentToken != "\\" &&
-        this.input.charCodeAt(this.cursor + 1) == Char.Minus &&
-        this.input.charCodeAt(this.cursor + 2) != Char.RightSquareBracket
+        this.iterator.current != Char.Backslash &&
+        this.iterator.lookahead(1) == Char.Minus &&
+        this.iterator.lookahead(2) != Char.RightSquareBracket
       ) {
         nodes.push(this.parseCharacterRange());
       } else {
         if (
-          this.currentToken == "\\" &&
-          isCharacterSetSpecialChar(this.input.charCodeAt(this.cursor + 1))
+          this.iterator.current == Char.Backslash &&
+          isCharacterSetSpecialChar(this.iterator.lookahead(1))
         ) {
           this.eatToken(Char.Backslash);
         }
         nodes.push(new CharacterNode(this.eatToken()));
       }
 
-      if (this.cursor >= u32(this.input.length)) {
+      if (!this.iterator.more()) {
         throw new SyntaxError("Unterminated character class");
       }
     }
