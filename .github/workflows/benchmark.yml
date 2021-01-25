@@ -1,0 +1,40 @@
+name: Performance benchmark
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  benchmark:
+    name: Performance regression check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: npm ci
+      - run: npm run asbuild:untouched
+      # Run benchmark with `go test -bench` and stores the output to a file
+      - name: Run benchmark
+        run: npm run benchmark | tee benchmark/output.txt
+      # Download previous benchmark result from cache (if exists)
+      - name: Download previous benchmark data
+        uses: actions/cache@v1
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
+      # Run `github-action-benchmark` action
+      - name: Store benchmark result
+        uses: rhysd/github-action-benchmark@v1
+        with:
+          # What benchmark tool the output.txt came from
+          tool: "benchmarkjs"
+          # Where the output from the benchmark tool is stored
+          output-file-path: benchmark/output.txt
+          # Personal access token to deploy GitHub Pages branch
+          github-token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+          # Enable alert commit comment
+          comment-on-alert: true
+          # Mention @colineberhardt in the commit comment
+          alert-comment-cc-users: "@colineberhardt"
+          # Push and deploy GitHub pages branch automatically
+          auto-push: true
