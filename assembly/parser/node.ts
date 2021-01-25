@@ -35,10 +35,6 @@ export class AST extends Node {
     super(NodeType.AST);
   }
 
-  static is(node: Node): bool {
-    return node.type == NodeType.AST;
-  }
-
   children(): Node[] {
     return this.body != null ? [this.body as Node] : emptyNodeArray;
   }
@@ -55,10 +51,6 @@ export class AST extends Node {
 export class ConcatenationNode extends Node {
   constructor(public expressions: Node[]) {
     super(NodeType.Concatenation);
-  }
-
-  static is(node: Node): bool {
-    return node.type == NodeType.Concatenation;
   }
 
   children(): Node[] {
@@ -83,10 +75,6 @@ export class CharacterSetNode extends Node {
     super(NodeType.CharacterSet);
   }
 
-  static is(node: Node): bool {
-    return node.type == NodeType.CharacterSet;
-  }
-
   clone(): Node {
     return new CharacterSetNode(this.chars, this.negated);
   }
@@ -95,10 +83,6 @@ export class CharacterSetNode extends Node {
 export class CharacterNode extends Node {
   constructor(public char: u32) {
     super(NodeType.Character);
-  }
-
-  static is(node: Node): bool {
-    return node.type == NodeType.Character;
   }
 
   clone(): Node {
@@ -128,10 +112,6 @@ export class CharacterClassNode extends Node {
     super(NodeType.CharacterClass);
   }
 
-  static is(node: Node): bool {
-    return node.type == NodeType.CharacterClass;
-  }
-
   clone(): Node {
     return new CharacterClassNode(this.charClass);
   }
@@ -140,10 +120,6 @@ export class CharacterClassNode extends Node {
 export class RepetitionNode extends Node {
   constructor(public expression: Node, public quantifier: Char) {
     super(NodeType.Repetition);
-  }
-
-  static is(node: Node): bool {
-    return node.type == NodeType.Repetition;
   }
 
   clone(): Node {
@@ -158,10 +134,6 @@ export class RepetitionNode extends Node {
 export class RangeRepetitionNode extends Node {
   constructor(public expression: Node, public from: i32, public to: i32) {
     super(NodeType.RangeRepetition);
-  }
-
-  static is(node: Node): bool {
-    return node.type == NodeType.RangeRepetition;
   }
 
   clone(): Node {
@@ -202,10 +174,6 @@ export class AlternationNode extends Node {
 export class GroupNode extends Node {
   constructor(public expression: Node) {
     super(NodeType.Group);
-  }
-
-  static is(node: Node): bool {
-    return node.type == NodeType.Group;
   }
 
   children(): Node[] {

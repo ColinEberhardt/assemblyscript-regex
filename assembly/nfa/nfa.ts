@@ -9,6 +9,7 @@ import {
   CharacterClassNode,
   GroupNode,
   AssertionNode,
+  NodeType,
 } from "../parser/node";
 
 import { Char } from "../char";
@@ -154,55 +155,60 @@ function group(nfa: Automata): Automata {
 function automataForNode(expression: Node | null): Automata {
   if (expression == null) {
     return Automata.fromEpsilon();
-  } else if (RepetitionNode.is(expression)) {
-    const c = expression as RepetitionNode;
-    const auto = automataForNode(c.expression);
-    const quantifier = c.quantifier;
-    if (quantifier == Char.Question) {
-      return zeroOrOne(auto);
-    } else if (quantifier == Char.Plus) {
-      return oneOrMore(auto);
-    } else if (quantifier == Char.Asterisk) {
-      return closure(auto);
-    } else {
-      throw new Error(
-        "unsupported quantifier - " + String.fromCharCode(quantifier)
+  }
+
+  switch (expression.type) {
+    case NodeType.Repetition: {
+      const repNode = expression as RepetitionNode;
+      const auto = automataForNode(repNode.expression);
+      const quantifier = repNode.quantifier;
+      if (quantifier == Char.Question) {
+        return zeroOrOne(auto);
+      } else if (quantifier == Char.Plus) {
+        return oneOrMore(auto);
+      } else if (quantifier == Char.Asterisk) {
+        return closure(auto);
+      } else {
+        throw new Error(
+          "unsupported quantifier - " + String.fromCharCode(quantifier)
+        );
+      }
+    }
+    case NodeType.Character:
+      return Automata.fromMatcher(
+        Matcher.fromCharacterNode(expression as CharacterNode)
       );
+    case NodeType.Concatenation: {
+      const expressions = (expression as ConcatenationNode).expressions;
+      if (expressions.length == 0) {
+        return Automata.fromEpsilon();
+      }
+      let auto = automataForNode(expressions[0]);
+      for (let i = 1, len = expressions.length; i < len; i++) {
+        auto = concat(auto, automataForNode(expressions[i]));
+      }
+      return auto;
     }
-  } else if (CharacterNode.is(expression)) {
-    return Automata.fromMatcher(
-      Matcher.fromCharacterNode(expression as CharacterNode)
-    );
-  } else if (ConcatenationNode.is(expression)) {
-    const expressions = (expression as ConcatenationNode).expressions;
-    if (expressions.length == 0) {
+    case NodeType.Alternation: {
+      const c = expression as AlternationNode;
+      return union(automataForNode(c.left), automataForNode(c.right));
+    }
+    case NodeType.CharacterSet:
+      return Automata.fromMatcher(
+        Matcher.fromCharacterSetNode(expression as CharacterSetNode)
+      );
+    case NodeType.CharacterClass:
+      return Automata.fromMatcher(
+        Matcher.fromCharacterClassNode(expression as CharacterClassNode)
+      );
+    case NodeType.Group:
+      const c = expression as GroupNode;
+      const auto = automataForNode(c.expression);
+      return group(auto);
+    case NodeType.Assertion:
       return Automata.fromEpsilon();
-    }
-    let auto = automataForNode(expressions[0]);
-    for (let i = 1, len = expressions.length; i < len; i++) {
-      auto = concat(auto, automataForNode(expressions[i]));
-    }
-    return auto;
-  } else if (AlternationNode.is(expression)) {
-    const c = expression as AlternationNode;
-    return union(automataForNode(c.left), automataForNode(c.right));
-  } else if (CharacterSetNode.is(expression)) {
-    return Automata.fromMatcher(
-      Matcher.fromCharacterSetNode(expression as CharacterSetNode)
-    );
-  } else if (CharacterClassNode.is(expression)) {
-    return Automata.fromMatcher(
-      Matcher.fromCharacterClassNode(expression as CharacterClassNode)
-    );
-  } else if (GroupNode.is(expression)) {
-    const c = expression as GroupNode;
-    const auto = automataForNode(c.expression);
-    return group(auto);
-  } else if (AssertionNode.is(expression)) {
-    // assertion nodes are ignored
-    return Automata.fromEpsilon();
-  } else {
-    throw new Error("un-recognised AST node");
+    default:
+      throw new Error("un-recognised AST node");
   }
 }
 

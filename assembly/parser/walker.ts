@@ -4,6 +4,7 @@ import {
   AST,
   ConcatenationNode,
   Node,
+  NodeType,
   RangeRepetitionNode,
   RepetitionNode,
 } from "./node";
@@ -33,7 +34,7 @@ function walkNode(
 
   // TODO - the delete function is a bit half-baked, it needs to crawl up the tree
   if (nodeVisitor._delete) {
-    if (parentNode != null && ConcatenationNode.is(parentNode)) {
+    if (parentNode != null && parentNode.type == NodeType.Concatenation) {
       const c = parentNode as ConcatenationNode;
       const expressions = c.expressions;
       const index = expressions.indexOf(node);
@@ -41,7 +42,7 @@ function walkNode(
         .slice(0, index)
         .concat(expressions.slice(index + 1));
       c.expressions = subset;
-    } else if (parentNode != null && AST.is(parentNode)) {
+    } else if (parentNode != null && parentNode.type == NodeType.AST) {
       const c = parentNode as AST;
       // c.body = null;
     } else {
@@ -68,7 +69,7 @@ export function deleteAssertionNodes(nodeVisitor: NodeVisitor): void {
 
 export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
   let node = nodeVisitor.node;
-  if (ConcatenationNode.is(node)) {
+  if (node.type == NodeType.Concatenation) {
     if ((node as ConcatenationNode).expressions.length == 0) {
       nodeVisitor.delete();
     }
@@ -83,7 +84,7 @@ const QUANTIFIER_LIMIT = 1000;
 function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
   let concatNode: ConcatenationNode | null = null;
   let parentNode = visitor.parentNode;
-  if (!ConcatenationNode.is(parentNode)) {
+  if (parentNode.type != NodeType.Concatenation) {
     let node = visitor.node;
     concatNode = new ConcatenationNode([node]);
     parentNode.replace(node, concatNode);
@@ -96,7 +97,7 @@ function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
 // of cloned nodes, e.g. a{2} becomes aa
 export function expandRepetitions(visitor: NodeVisitor): void {
   let node = visitor.node;
-  if (RangeRepetitionNode.is(node)) {
+  if (node.type == NodeType.RangeRepetition) {
     // find the parent
     const rangeRepNode = node as RangeRepetitionNode;
 
