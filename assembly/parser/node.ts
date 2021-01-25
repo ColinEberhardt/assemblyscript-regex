@@ -32,7 +32,7 @@ export abstract class Node {
 }
 
 export class AST extends Node {
-  constructor(public body: Node) {
+  constructor(public body: Node | null) {
     super(NodeType.AST);
   }
 
@@ -41,7 +41,8 @@ export class AST extends Node {
   }
 
   clone(): Node {
-    return new AST(this.body.clone());
+    const body = this.body;
+    return new AST(body != null ? body.clone() : null);
   }
 
   replace(node: Node, replacement: Node): void {

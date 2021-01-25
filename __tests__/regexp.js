@@ -1,6 +1,10 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+const { RegExp, expectMatch, matches } = require("./util");
 
 describe("regexp", () => {
+  it("handles empty regex", () => {
+    expectMatch("", [""]);
+  });
+
   it("match returns correct substring", () => {
     const match = matches("\\d", "asd123asd");
     expect(match.index).toEqual(3);

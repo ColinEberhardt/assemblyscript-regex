@@ -12,7 +12,8 @@
     "asbuild:untouched": "asc assembly/index.ts --target debug",
     "asbuild:optimized": "asc assembly/index.ts --target release",
     "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
-    "tsrun": "ts-node ts/index.ts"
+    "tsrun": "ts-node ts/index.ts",
+    "benchmark": "node benchmark/benchmark.js"
   },
   "author": "colin.eberhardt@gmail.com",
   "license": "MIT",
@@ -20,6 +21,7 @@
     "@assemblyscript/loader": "^0.17.5",
     "@types/node": "^14.14.13",
     "assemblyscript": "0.17.5",
+    "benchmark": "^2.1.4",
     "jest": "^26.6.3",
     "jest-summary-reporter": "0.0.2",
     "prettier": "^2.2.1",

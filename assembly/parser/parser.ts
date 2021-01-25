@@ -80,7 +80,11 @@ export class Parser {
   }
 
   private toAST(): AST {
-    return new AST(this.parseSequence());
+    if (!this.iterator.more()) {
+      return new AST(null);
+    } else {
+      return new AST(this.parseSequence());
+    }
   }
 
   private parseCharacter(): Node {

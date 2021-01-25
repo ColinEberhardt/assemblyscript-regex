@@ -20,13 +20,10 @@ class RegExp {
 
     const {
       RegExp,
-      Match,
       createRegExp,
-      __getString,
       __newString,
       __retain,
       __release,
-      __getArray,
     } = this.wasmModule.exports;
 
     // create the regexp
@@ -39,9 +36,7 @@ class RegExp {
 
   exec(str) {
     const {
-      RegExp,
       Match,
-      createRegExp,
       __getString,
       __newString,
       __retain,

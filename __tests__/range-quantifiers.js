@@ -12,6 +12,10 @@ it("handles open upper bound quantifiers", () => {
   expectMatch("ba{1,}b", ["bab", "baaaaaab"]);
 });
 
+it("handles larger numbers", () => {
+  expectMatch("a{20,30}", ["a".repeat(25)]);
+});
+
 it("handles explicit upper bound quantifiers", () => {
   const match = matches("a{2,4}", "aaaaaaaaaa");
   expect(match.matches[0]).toEqual("aaaa");
