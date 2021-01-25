@@ -39,7 +39,8 @@ it("not whitespace", () => {
   expectMatch("\\S", ["a", "0"]);
 });
 
-it("tab, cr, lf, vt, ff", () => {
+it("tab, cr, lf, vt, ff, bs", () => {
+  expectMatch("\\b", ["\b"]);
   expectMatch("\\t", ["\t"]);
   expectMatch("\\r", ["\r"]);
   expectMatch("\\n", ["\n"]);

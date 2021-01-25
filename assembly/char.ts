@@ -1,5 +1,6 @@
 export const enum Char {
   None = -1,
+  BackSpace = 0x08,
   HorizontalTab = 0x09,
   VerticalTab = 0x0b,
   FormFeed = 0x0c,
@@ -25,6 +26,7 @@ export const enum Char {
   Caret = 0x5e, // "^"
   Underscore = 0x5f,
   a = 0x61,
+  b = 0x62,
   d = 0x64,
   f = 0x66,
   n = 0x6e,

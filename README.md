@@ -47,7 +47,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [x] \n
 - [x] \v
 - [x] \f
-- [ ] [\b]
+- [x] [\b]
 - [ ] \0
 - [ ] \cX
 - [ ] \xhh

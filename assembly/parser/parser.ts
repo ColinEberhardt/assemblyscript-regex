@@ -174,7 +174,6 @@ export class Parser {
     while (this.iterator.more()) {
       const token = this.iterator.current;
       if (token == Char.RightParenthesis) break;
-      // @ts-ignore
       if (token == Char.VerticalBar) {
         this.eatToken(Char.VerticalBar);
         const left = nodes.length > 1 ? new ConcatenationNode(nodes) : nodes[0];

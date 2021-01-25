@@ -6,9 +6,7 @@ import {
   CharacterClassNode,
   CharacterRangeNode,
   NodeType,
-  Node,
 } from "../parser/node";
-import { Match } from "../regexp";
 
 export class Matcher {
   matches(code: u32): bool {
@@ -94,6 +92,8 @@ export class CharacterClassMatcher extends Matcher {
         return isWhitespace(code);
       case Char.S:
         return !isWhitespace(code);
+      case Char.b:
+        return code == Char.BackSpace;
       case Char.t:
         return code == Char.HorizontalTab;
       case Char.r:
