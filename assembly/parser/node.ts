@@ -9,6 +9,7 @@ export const enum NodeType {
   Character,
   CharacterSet,
   CharacterClass,
+  CharacterRange,
   Repetition,
   RangeRepetition,
   Group,
@@ -71,12 +72,29 @@ export class ConcatenationNode extends Node {
 }
 
 export class CharacterSetNode extends Node {
-  constructor(public chars: string, public negated: bool) {
+  constructor(public expressions: Node[], public negated: bool) {
     super(NodeType.CharacterSet);
   }
 
   clone(): Node {
-    return new CharacterSetNode(this.chars, this.negated);
+    return new CharacterSetNode(
+      this.expressions.slice(0).map<Node>((s) => s.clone()),
+      this.negated
+    );
+  }
+}
+
+export class CharacterRangeNode extends Node {
+  constructor(public from: u32, public to: u32) {
+    super(NodeType.CharacterRange);
+  }
+
+  static is(node: Node): bool {
+    return node.type == NodeType.CharacterRange;
+  }
+
+  clone(): Node {
+    return new CharacterRangeNode(this.from, this.to);
   }
 }
 

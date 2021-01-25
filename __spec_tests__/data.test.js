@@ -1,8 +1,8 @@
-const { RegExp } = require("./util");
+const { RegExp } = require("../__tests__/util");
 const fs = require("fs");
 const { fail } = require("assert");
 
-const data = fs.readFileSync("./test/test.dat", "utf8");
+const data = fs.readFileSync("./__spec_tests__/test.dat", "utf8");
 const lines = data.split("\n");
 
 const matches = (regex, value) => {
