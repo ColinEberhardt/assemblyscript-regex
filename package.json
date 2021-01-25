@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm run asbuild:untouched && npm run prettier:check && jest __tests__",
     "test:suite": "npm run asbuild:untouched && jest __spec_tests__ --reporter=jest-summary-reporter",
+    "jest": "jest __tests__",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "asbuild:untouched": "asc assembly/index.ts --target debug",

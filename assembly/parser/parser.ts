@@ -18,6 +18,16 @@ function isQuantifier(code: Char): bool {
   return code == Char.Question || code == Char.Plus || code == Char.Asterisk;
 }
 
+// characters which have special meaning within character sets
+function isCharacterSetSpecialChar(code: Char): bool {
+  return (
+    code == Char.Caret ||
+    code == Char.Minus ||
+    code == Char.RightSquareBracket ||
+    code == Char.Backslash
+  );
+}
+
 function isAssertion(code: u32): bool {
   return code == Char.Dollar || code == Char.Caret; // "$" or "^"
 }
@@ -228,16 +238,25 @@ export class Parser {
     while (this.currentToken != "]" || nodes.length == 0) {
       // lookahead for character range
       if (
-        this.cursor + 1 < u32(this.input.length) &&
+        this.cursor + 2 < u32(this.input.length) &&
+        this.currentToken != "\\" &&
         this.input.charCodeAt(this.cursor + 1) == Char.Minus &&
         this.input.charCodeAt(this.cursor + 2) != Char.RightSquareBracket
       ) {
         nodes.push(this.parseCharacterRange());
       } else {
-        nodes.push(this.parseCharacter());
+        if (
+          this.currentToken == "\\" &&
+          isCharacterSetSpecialChar(this.input.charCodeAt(this.cursor + 1))
+        ) {
+          this.eatToken(Char.Backslash);
+        }
+        nodes.push(new CharacterNode(this.eatToken()));
       }
 
-      // TODO error if we run out of chars?
+      if (this.cursor >= u32(this.input.length)) {
+        throw new SyntaxError("Unterminated character class");
+      }
     }
     this.eatToken(Char.RightSquareBracket);
     return new CharacterSetNode(nodes, negated);

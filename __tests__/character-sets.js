@@ -5,6 +5,17 @@ it("matches discrete characters", () => {
   expectNotMatch("[abce]", ["", "f", "h"]);
 });
 
+it("throws an error if no closing bracket is found", () => {
+  expect(() => new RegExp("[abce")).toThrow();
+});
+
+it("supports escaping of special characters", () => {
+  expectMatch("[a\\^b]", ["a", "b", "^"]);
+  expectMatch("[a\\-c]", ["a", "c", "-"]);
+  expectMatch("[a\\]]", ["a", "]"]);
+  expectMatch("[a\\\\b]", ["a", "\\"]);
+});
+
 it("matches character ranges", () => {
   expectMatch("[a-c]", ["a", "b", "c"]);
   expectNotMatch("[a-c]", ["d", "e", ""]);
