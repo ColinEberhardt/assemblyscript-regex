@@ -152,7 +152,6 @@ export class RegExp {
 // TODO: do we need this factory function, or can we invoke
 // the ctr via the loader?
 export function createRegExp(regex: string, flags: string): RegExp {
-
   /* ---------------- */
   /*
     This block of code is needed to avoid the following runtime error ...

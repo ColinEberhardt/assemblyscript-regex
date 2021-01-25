@@ -26,19 +26,15 @@ export class Matcher {
   }
 
   static fromCharacterSetNode(node: CharacterSetNode): CharacterSetMatcher {
-    const matchers = new Array<Matcher>();
-    for (let i = 0; i < node.expressions.length; i++) {
-      const exp = node.expressions[i];
+    const matchers = node.expressions.map<Matcher>((exp) => {
       if (CharacterRangeNode.is(exp)) {
-        matchers.push(
-          Matcher.fromCharacterRangeNode(exp as CharacterRangeNode)
-        );
+        return Matcher.fromCharacterRangeNode(exp as CharacterRangeNode);
       } else if (CharacterNode.is(exp)) {
-        matchers.push(Matcher.fromCharacterNode(exp as CharacterNode));
+        return Matcher.fromCharacterNode(exp as CharacterNode);
       } else {
         throw new Error("unsupported node type within character set");
       }
-    }
+    });
     return new CharacterSetMatcher(matchers, node.negated);
   }
 
