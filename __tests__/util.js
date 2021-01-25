@@ -2,7 +2,7 @@ global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
 const loader = require("@assemblyscript/loader/umd/index");
 
-class RegExpProxy {
+class RegExp {
   constructor(regex, flags = "") {
     this.wasmModule = loader.instantiateSync(
       fs.readFileSync("./build/untouched.wasm"),
@@ -80,4 +80,31 @@ class RegExpProxy {
   }
 }
 
-module.exports.RegExp = RegExpProxy;
+const expectMatch = (regex, arr) => {
+  arr.forEach((value) => {
+    const regexp = new RegExp(regex);
+    const match = regexp.exec(value);
+    expect(match).not.toBeNull();
+    expect(match.matches[0]).toEqual(value);
+  });
+};
+
+const expectNotMatch = (regex, arr) => {
+  arr.forEach((value) => {
+    const regexp = new RegExp(regex);
+    const match = regexp.exec(value);
+    expect(match).toBeNull();
+  });
+};
+
+const matches = (regex, value) => {
+  const regexp = new RegExp(regex);
+  return regexp.exec(value);
+};
+
+test.todo("no tests in this file!");
+
+module.exports.RegExp = RegExp;
+module.exports.matches = matches;
+module.exports.expectNotMatch = expectNotMatch;
+module.exports.expectMatch = expectMatch;
