@@ -5,6 +5,8 @@ import {
   CharacterSetNode,
   CharacterClassNode,
   CharacterRangeNode,
+  NodeType,
+  Node,
 } from "../parser/node";
 import { Match } from "../regexp";
 
@@ -27,12 +29,13 @@ export class Matcher {
 
   static fromCharacterSetNode(node: CharacterSetNode): CharacterSetMatcher {
     const matchers = node.expressions.map<Matcher>((exp) => {
-      if (CharacterRangeNode.is(exp)) {
-        return Matcher.fromCharacterRangeNode(exp as CharacterRangeNode);
-      } else if (CharacterNode.is(exp)) {
-        return Matcher.fromCharacterNode(exp as CharacterNode);
-      } else {
-        throw new Error("unsupported node type within character set");
+      switch (exp.type) {
+        case NodeType.CharacterRange:
+          return Matcher.fromCharacterRangeNode(exp as CharacterRangeNode);
+        case NodeType.Character:
+          return Matcher.fromCharacterNode(exp as CharacterNode);
+        default:
+          throw new Error("unsupported node type within character set");
       }
     });
     return new CharacterSetMatcher(matchers, node.negated);
