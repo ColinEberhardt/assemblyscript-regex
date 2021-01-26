@@ -16,7 +16,7 @@ wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
   },
 });
 
-function executeRegex(regexStr, valueStr) {
+function executeRegex(regexStr, valueStr, untilNull = false) {
   const {
     RegExp,
     createRegExp,
@@ -27,14 +27,19 @@ function executeRegex(regexStr, valueStr) {
 
   // create the regexp
   const regexPtr = __retain(__newString(regexStr));
-  const flagsPtr = __retain(__newString(""));
+  const flagsPtr = __retain(__newString("g"));
   const regexObjPtr = createRegExp(regexPtr, flagsPtr);
   const regex = RegExp.wrap(regexObjPtr);
   __release(regexPtr);
   __release(flagsPtr);
 
   const strPtr = __retain(__newString(valueStr));
-  regex.exec(strPtr);
+  let ret = regex.exec(strPtr);
+  if (untilNull) {
+    while (ret != 0) {
+      ret = regex.exec(strPtr);
+    }
+  }
   __release(strPtr);
   __release(regexObjPtr);
 }
@@ -62,6 +67,11 @@ suite
   })
   .add("alternation", () => {
     executeRegex("a|b|c|d|e|f|g", "d");
+  })
+  .add("multiple regex matches", () => {
+    const text =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    executeRegex("[a-l]{3}", text, true);
   })
   // add listeners
   .on("cycle", (event) => {
