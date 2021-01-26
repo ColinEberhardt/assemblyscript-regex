@@ -16,10 +16,10 @@ wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
   },
 });
 
+// the executeRegExp exported function is ex
 function executeRegex(regexStr, valueStr, untilNull = false) {
   const {
-    RegExp,
-    createRegExp,
+    executeRegExp,
     __newString,
     __retain,
     __release,
@@ -27,21 +27,10 @@ function executeRegex(regexStr, valueStr, untilNull = false) {
 
   // create the regexp
   const regexPtr = __retain(__newString(regexStr));
-  const flagsPtr = __retain(__newString("g"));
-  const regexObjPtr = createRegExp(regexPtr, flagsPtr);
-  const regex = RegExp.wrap(regexObjPtr);
-  __release(regexPtr);
-  __release(flagsPtr);
-
   const strPtr = __retain(__newString(valueStr));
-  let ret = regex.exec(strPtr);
-  if (untilNull) {
-    while (ret != 0) {
-      ret = regex.exec(strPtr);
-    }
-  }
+  executeRegExp(regexPtr, strPtr, untilNull ? -1 : 5);
+  __release(regexPtr);
   __release(strPtr);
-  __release(regexObjPtr);
 }
 
 // add tests

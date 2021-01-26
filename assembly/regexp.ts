@@ -180,3 +180,20 @@ export function createRegExp(regex: string, flags: string): RegExp {
 
   return new RegExp(regex, flags);
 }
+
+// the executeRegExp exported function is used for benchmarking, giving a simple API
+// for executing a regex a given number of times
+export function executeRegExp(
+  regexStr: string,
+  value: string,
+  iterations: i32
+): void {
+  const regex = new RegExp(regexStr, "g");
+  if (iterations < 0) {
+    while (regex.exec(value) != null);
+  } else {
+    for (let i = 0; i < iterations; i++) {
+      regex.exec(value);
+    }
+  }
+}
