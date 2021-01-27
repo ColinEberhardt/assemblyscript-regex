@@ -35,15 +35,15 @@ function walkNode(
   // TODO - the delete function is a bit half-baked, it needs to crawl up the tree
   if (nodeVisitor._delete) {
     if (parentNode != null && parentNode.type == NodeType.Concatenation) {
-      const c = parentNode as ConcatenationNode;
-      const expressions = c.expressions;
+      const _c = parentNode as ConcatenationNode;
+      const expressions = _c.expressions;
       const index = expressions.indexOf(node);
       const subset = expressions
         .slice(0, index)
         .concat(expressions.slice(index + 1));
-      c.expressions = subset;
+      _c.expressions = subset;
     } else if (parentNode != null && parentNode.type == NodeType.AST) {
-      const c = parentNode as AST;
+      const _c = parentNode as AST;
       // c.body = null;
     } else {
       throw new Error(
