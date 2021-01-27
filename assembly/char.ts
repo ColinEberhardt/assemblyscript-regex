@@ -33,6 +33,7 @@ export const enum Char {
   t = 0x74,
   v = 0x76,
   w = 0x77,
+  x = 0x78,
   LeftCurlyBrace = 0x7b /* { */,
   VerticalBar = 0x7c /* | */,
   RightCurlyBrace = 0x7d /*  */,

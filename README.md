@@ -50,7 +50,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [ ] [\b]
 - [ ] \0
 - [ ] \cX
-- [ ] \xhh
+- [x] \xhh
 - [ ] \uhhhh
 - [ ] \u{hhhh} or \u{hhhhh}
 - [x] \

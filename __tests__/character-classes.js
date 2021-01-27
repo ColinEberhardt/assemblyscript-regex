@@ -52,3 +52,8 @@ it("escaped dot", () => {
   expectMatch("\\.", ["."]);
   expectNotMatch("\\.", ["", "a"]);
 });
+
+it("character codes", () => {
+  expectMatch("\\x42", ["B"]);
+  expectNotMatch("\\x42", ["a", ""]);
+});

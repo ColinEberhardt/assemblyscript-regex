@@ -87,9 +87,18 @@ export class Parser {
     }
   }
 
+  private parseCharacterCode(): Node {
+    this.eatToken(Char.x);
+    let value = this.iterator.currentAsString();
+    this.eatToken();
+    value += this.iterator.currentAsString();
+    this.eatToken();
+    return new CharacterNode(u32(parseInt(value, 16)));
+  }
+
   private parseCharacter(): Node {
     let token = this.iterator.current;
-    if (token == Char.Backslash) {
+    if (this.iterator.current == Char.Backslash) {
       this.eatToken(Char.Backslash);
       token = this.iterator.current;
       if (isSpecialCharacter(token)) {
@@ -97,6 +106,8 @@ export class Parser {
         return new CharacterNode(token);
       } else if (isAssertion(token)) {
         return new CharacterNode(this.eatToken());
+      } else if (token == Char.x) {
+        return this.parseCharacterCode();
       } else {
         return new CharacterClassNode(this.eatToken());
       }
