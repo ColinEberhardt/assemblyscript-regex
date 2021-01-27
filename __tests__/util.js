@@ -5,7 +5,7 @@ const loader = require("@assemblyscript/loader/umd/index");
 class RegExp {
   constructor(regex, flags = "") {
     this.wasmModule = loader.instantiateSync(
-      fs.readFileSync("./build/untouched.wasm"),
+      fs.readFileSync("./build/debug/assemblyscript-regex.wasm"),
       {
         env: {
           log: (strPtr) => {

@@ -14,7 +14,12 @@
       "shrinkLevel": 1,
       "converge": false,
       "noAssert": false
+    },
+    "test": {
+      "debug": true
     }
   },
-  "options": {}
+  "options": {
+    "transform": ["visitor-as/dist/examples/includeBytesTransform"]
+  }
 }
