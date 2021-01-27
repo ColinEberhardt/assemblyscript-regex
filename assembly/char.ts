@@ -44,6 +44,10 @@ export function isDigit(code: u32): bool {
   return code - Char.Zero < 10;
 }
 
+export function isHexadecimalDigit(code: u32): bool {
+  return isDigit(code) || code - Char.a < 6;
+}
+
 export function isLowercaseAlpha(code: u32): bool {
   return code - Char.a < 26;
 }

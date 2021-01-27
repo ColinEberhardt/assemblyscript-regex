@@ -1,4 +1,4 @@
-import { isDigit, Char } from "../char";
+import { isDigit, Char, isHexadecimalDigit } from "../char";
 import { StringIterator } from "./string-iterator";
 import {
   AST,
@@ -87,7 +87,16 @@ export class Parser {
     }
   }
 
-  private parseCharacterCode(length: i32 = 2): Node {
+  private parseCharacterCode(code: u32): Node {
+    const length = code == Char.x ? 2 : 4;
+    // check whether we have the correct number of digits ahead
+    for (let i = 0; i < length; i++) {
+      if (!isHexadecimalDigit(this.iterator.lookahead(i + 1))) {
+        return new CharacterNode(this.eatToken());
+      }
+    }
+    // if so, parse the hex string
+    this.eatToken(code);
     let value = "";
     for (let i = 0; i < length; i++) {
       value += this.iterator.currentAsString();
@@ -107,11 +116,9 @@ export class Parser {
       } else if (isAssertion(token)) {
         return new CharacterNode(this.eatToken());
       } else if (token == Char.x) {
-        this.eatToken(Char.x);
-        return this.parseCharacterCode();
+        return this.parseCharacterCode(Char.x);
       } else if (token == Char.u) {
-        this.eatToken(Char.u);
-        return this.parseCharacterCode(4);
+        return this.parseCharacterCode(Char.u);
       } else {
         return new CharacterClassNode(this.eatToken());
       }
