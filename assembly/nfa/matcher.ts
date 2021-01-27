@@ -6,11 +6,18 @@ import {
   CharacterClassNode,
   CharacterRangeNode,
   NodeType,
-  Node,
 } from "../parser/node";
-import { Match } from "../regexp";
+
+const enum MatcherType {
+  Character,
+  CharacterRange,
+  CharacterClass,
+  CharacterSet,
+}
 
 export class Matcher {
+  constructor(readonly type: MatcherType) {}
+
   matches(code: u32): bool {
     return false;
   }
@@ -50,7 +57,7 @@ export class Matcher {
 
 export class CharacterMatcher extends Matcher {
   constructor(public character: Char) {
-    super();
+    super(MatcherType.Character);
   }
 
   matches(code: u32): bool {
@@ -60,7 +67,7 @@ export class CharacterMatcher extends Matcher {
 
 export class CharacterRangeMatcher extends Matcher {
   constructor(public from: u32, public to: u32) {
-    super();
+    super(MatcherType.CharacterRange);
   }
 
   matches(code: u32): bool {
@@ -70,7 +77,7 @@ export class CharacterRangeMatcher extends Matcher {
 
 export class CharacterClassMatcher extends Matcher {
   constructor(public charClass: Char) {
-    super();
+    super(MatcherType.CharacterClass);
   }
 
   matches(code: u32): bool {
@@ -113,20 +120,34 @@ export class CharacterClassMatcher extends Matcher {
   }
 }
 
-// no closure support
-let _code: u32;
-
 export class CharacterSetMatcher extends Matcher {
   constructor(public matchers: Matcher[], public negated: bool) {
-    super();
+    super(MatcherType.CharacterSet);
   }
 
   matches(code: u32): bool {
-    _code = code;
-    if (!this.negated) {
-      return this.matchers.some((m) => m.matches(_code));
-    } else {
-      return !this.matchers.some((m) => m.matches(_code));
+    let match: bool = false;
+    for (let i = 0, len = this.matchers.length; i < len; i++) {
+      let matcher = this.matchers[i];
+      switch (matcher.type) {
+        case MatcherType.Character:
+          match = (matcher as CharacterMatcher).matches(code);
+          break;
+
+        case MatcherType.CharacterRange:
+          match = (matcher as CharacterRangeMatcher).matches(code);
+          break;
+
+        case MatcherType.CharacterClass:
+          match = (matcher as CharacterClassMatcher).matches(code);
+          break;
+
+        case MatcherType.CharacterSet:
+          match = (matcher as CharacterSetMatcher).matches(code);
+          break;
+      }
+      if (match) break;
     }
+    return this.negated ? !match : match;
   }
 }
