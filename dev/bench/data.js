@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1611782409148,
+  "lastUpdate": 1611782865805,
   "repoUrl": "https://github.com/ColinEberhardt/assemblyscript-regex",
   "entries": {
     "Benchmark": [
@@ -511,6 +511,72 @@ window.BENCHMARK_DATA = {
             "range": "±1.03%",
             "unit": "ops/sec",
             "extra": "89 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin Eberhardt",
+            "username": "ColinEberhardt"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6847db1ce8524d8875a5364484c8c62f3a6c78bf",
+          "message": "replaces #21  (#22)\n\n* opt\r\n\r\n* remove 'unreachable code' hack\r\n\r\nCo-authored-by: MaxGraey <maxgraey@gmail.com>",
+          "timestamp": "2021-01-27T21:26:35Z",
+          "tree_id": "87be1c9aa31ccd5ae59bd5f6e3abd667be6f0e7e",
+          "url": "https://github.com/ColinEberhardt/assemblyscript-regex/commit/6847db1ce8524d8875a5364484c8c62f3a6c78bf"
+        },
+        "date": 1611782865306,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "baseline",
+            "value": 133567,
+            "range": "±1.11%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "character class",
+            "value": 44461,
+            "range": "±1.10%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "concatenation",
+            "value": 10470,
+            "range": "±1.84%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "quantifiers",
+            "value": 18361,
+            "range": "±0.78%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "range quantifiers",
+            "value": 6076,
+            "range": "±0.93%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "alternation",
+            "value": 21243,
+            "range": "±0.83%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
           }
         ]
       }
