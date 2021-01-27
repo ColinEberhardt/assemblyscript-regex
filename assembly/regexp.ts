@@ -75,7 +75,7 @@ export class RegExp {
   private startOfInput: bool;
   private groupMarkers: GroupEndMarkerState[];
 
-  constructor(regex: string, public flags: string = "") {
+  constructor(private regex: string, public flags: string = "") {
     this.startOfInput = false;
     this.endOfInput = false;
 
@@ -146,6 +146,10 @@ export class RegExp {
     }
     this.lastIndex = 0;
     return null;
+  }
+
+  toString(): string {
+    return this.regex;
   }
 }
 
