@@ -4,8 +4,8 @@
   "description": "A regex engine built with AssemblyScript",
   "ascMain": "assembly/index.ts",
   "scripts": {
-    "test": "npm run asbuild:untouched && npm run prettier:check && jest __tests__",
-    "test:suite": "npm run asbuild:untouched && jest __spec_tests__ --reporter=jest-summary-reporter",
+    "test": "npm run asbuild:untouched && npm run test:generate && npm run prettier:check && jest __tests__ --reporter=jest-summary-reporter",
+    "test:generate": "node __spec_tests__/test-generator.js",
     "jest": "jest __tests__ --testPathIgnorePatterns assembly/*",
     "asp": "asp --verbose",
     "asp:ci": "asp",
