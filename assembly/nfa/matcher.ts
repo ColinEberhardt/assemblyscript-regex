@@ -123,10 +123,27 @@ export class CharacterSetMatcher extends Matcher {
 
   matches(code: u32): bool {
     _code = code;
-    if (!this.negated) {
-      return this.matchers.some((m) => m.matches(_code));
-    } else {
-      return !this.matchers.some((m) => m.matches(_code));
+    let match = false;
+    for (let i = 0; i < this.matchers.length; i++) {
+      if (matches(this.matchers[i], code)) {
+        match = true;
+        break;
+      }
     }
+    // @ts-ignore
+    return <bool>(this.negated ^ match);
   }
+}
+
+function matches(matcher: Matcher, code: u32): bool {
+  if (matcher instanceof CharacterMatcher) {
+    return (<CharacterMatcher>matcher).matches(code);
+  } else if (matcher instanceof CharacterRangeMatcher) {
+    return (<CharacterRangeMatcher>matcher).matches(code);
+  } else if (matcher instanceof CharacterClassMatcher) {
+    return (<CharacterClassMatcher>matcher).matches(code);
+  } else if (matcher instanceof CharacterSetMatcher) {
+    return (<CharacterSetMatcher>matcher).matches(code);
+  }
+  return matcher.matches(code);
 }

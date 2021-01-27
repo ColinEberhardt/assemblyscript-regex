@@ -5,16 +5,19 @@ const loader = require("@assemblyscript/loader/umd/index");
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
-wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
-  env: {
-    log: () => {
-      const { __getString, __release } = wasmModule.exports;
-      str = __getString(strPtr);
-      console.log(str);
-      __release(strPtr);
+wasmModule = loader.instantiateSync(
+  fs.readFileSync("./build/debug/assemblyscript-regex.wasm"),
+  {
+    env: {
+      log: () => {
+        const { __getString, __release } = wasmModule.exports;
+        str = __getString(strPtr);
+        console.log(str);
+        __release(strPtr);
+      },
     },
-  },
-});
+  }
+);
 
 // the executeRegExp exported function is ex
 function executeRegex(regexStr, valueStr, untilNull = false) {

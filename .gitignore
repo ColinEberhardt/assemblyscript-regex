@@ -1,2 +1,4 @@
 node_modules
 build
+assembly/__tests__/index.spec.wat
+assembly/__tests__/spec.spec.wat

@@ -34,6 +34,9 @@ describe("test data", () => {
               digits[0] == "?"
                 ? ""
                 : str.substring(Number(digits[1]), Number(digits[2]));
+            if  (parts[2] === "NULL" ) {
+              console.log(`match ${match.matches}, parts ${parts}`)
+            }
             expect(match.matches[index]).toEqual(expected);
           });
         }
