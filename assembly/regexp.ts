@@ -152,32 +152,6 @@ export class RegExp {
 // TODO: do we need this factory function, or can we invoke
 // the ctr via the loader?
 export function createRegExp(regex: string, flags: string): RegExp {
-  /* ---------------- */
-  /*
-    This block of code is needed to avoid the following runtime error ...
-
-    RuntimeError: unreachable
-        at assembly/nfa/matcher/Matcher#matches@virtual (wasm-function[240]:1)
-        at assembly/nfa/matcher/CharacterSetMatcher#matches~anonymous|0 (wasm-function[241]:19)
-        at ~lib/array/Array<assembly/nfa/matcher/Matcher>#some (wasm-function[242]:85)
-        at assembly/nfa/matcher/CharacterSetMatcher#matches (wasm-function[244]:21)
-        at assembly/nfa/nfa/MatcherState<assembly/nfa/matcher/CharacterSetMatcher>#matches (wasm-function[245]:8)
-        at assembly/nfa/nfa/State#matches@virtual (wasm-function[250]:58)
-        at assembly/regexp/recursiveBacktrackingSearch (wasm-function[184]:121)
-        at assembly/regexp/recursiveBacktrackingSearch@varargs (wasm-function[185]:56)
-        at assembly/regexp/RegExp#exec (wasm-function[192]:307)
-  */
-  const matchers = new Array<Matcher>();
-  matchers.push(new CharacterMatcher(Char.A));
-  const charMatcher = new CharacterSetMatcher(matchers, false);
-  const state = new MatcherState<CharacterSetMatcher>(
-    charMatcher,
-    new State(true)
-  );
-  const char = "a".charCodeAt(0);
-  const doesMatch = state.matches(char) != null;
-  /* ---------------- */
-
   return new RegExp(regex, flags);
 }
 
