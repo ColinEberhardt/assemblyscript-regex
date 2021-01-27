@@ -179,7 +179,7 @@ export function createRegExp(regex: string, flags: string): RegExp {
     new State(true)
   );
   const char = "a".charCodeAt(0);
-  const doesMatch = state.matches(char) != null;
+  const _doesMatch = state.matches(char) != null;
   /* ---------------- */
 
   return new RegExp(regex, flags);

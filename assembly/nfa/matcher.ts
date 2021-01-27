@@ -6,9 +6,7 @@ import {
   CharacterClassNode,
   CharacterRangeNode,
   NodeType,
-  Node,
 } from "../parser/node";
-import { Match } from "../regexp";
 
 export class Matcher {
   matches(code: u32): bool {
