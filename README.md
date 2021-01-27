@@ -94,9 +94,3 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [x] global
 - [ ] case insensitive
 - [ ] multiline
-
-### Testing
-
-Currently passes 190 of the 217 tests from the Rust regex test suite:
-
-https://raw.githubusercontent.com/att/ast/2012-08-01-master/src/cmd/re/basic.dat
