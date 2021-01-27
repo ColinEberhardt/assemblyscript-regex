@@ -53,7 +53,12 @@ it("escaped dot", () => {
   expectNotMatch("\\.", ["", "a"]);
 });
 
-it("character codes", () => {
+it("one word character codes", () => {
   expectMatch("\\x42", ["B"]);
   expectNotMatch("\\x42", ["a", ""]);
+});
+
+it("two word character codes", () => {
+  expectMatch("\\u0042", ["B"]);
+  expectMatch("\\u0566", ["զ"]);
 });

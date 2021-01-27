@@ -87,12 +87,12 @@ export class Parser {
     }
   }
 
-  private parseCharacterCode(): Node {
-    this.eatToken(Char.x);
-    let value = this.iterator.currentAsString();
-    this.eatToken();
-    value += this.iterator.currentAsString();
-    this.eatToken();
+  private parseCharacterCode(length: i32 = 2): Node {
+    let value = "";
+    for (let i = 0; i < length; i++) {
+      value += this.iterator.currentAsString();
+      this.eatToken();
+    }
     return new CharacterNode(u32(parseInt(value, 16)));
   }
 
@@ -107,7 +107,11 @@ export class Parser {
       } else if (isAssertion(token)) {
         return new CharacterNode(this.eatToken());
       } else if (token == Char.x) {
+        this.eatToken(Char.x);
         return this.parseCharacterCode();
+      } else if (token == Char.u) {
+        this.eatToken(Char.u);
+        return this.parseCharacterCode(4);
       } else {
         return new CharacterClassNode(this.eatToken());
       }

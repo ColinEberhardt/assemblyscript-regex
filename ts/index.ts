@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("");
-const match = regexObj.exec("");
+const regexObj = new RegExp("\\x42");
+const match = regexObj.exec("B");
 
 console.log(match);
