@@ -13,6 +13,62 @@ import { first, last } from "./util";
 import { walker as astWalker, expandRepetitions } from "./parser/walker";
 import { CharacterMatcher, CharacterSetMatcher, Matcher } from "./nfa/matcher";
 
+/* 
+   Follows through the epsilon transitions of a state until reaching
+   a state with a symbol transition which gets added to the set of next states.
+*/
+function addNextState(
+  state: State,
+  nextStates: State[],
+  visited: State[]
+): void {
+  if (state.epsilonTransitions.length > 0) {
+    for (let i = 0; i < state.epsilonTransitions.length; i++) {
+      const st = state.epsilonTransitions[i];
+      if (!visited.includes(st)) {
+        visited.push(st);
+        addNextState(st, nextStates, visited);
+      }
+    }
+  } else {
+    nextStates.push(state);
+  }
+}
+
+/*
+Process a string through an NFA. For each input symbol it transitions into in multiple states at the same time.
+The string is matched if after reading the last symbol, is has transitioned into at least one end state.
+For an NFA with N states in can be at at most N states at a time. This algorighm finds a match by processing the input word once.
+*/
+function search(nfa: Automata, word: string): string | null {
+  let currentStates = new Array<State>();
+  /* The initial set of current states is either the start state or
+     the set of states reachable by epsilon transitions from the start state */
+  addNextState(nfa.start, currentStates, []);
+
+  for (let i = 0; i < word.length; i++) {
+    const symbol = word.charCodeAt(i);
+    const nextStates = new Array<State>();
+
+    for (let j = 0; j < currentStates.length; j++) {
+      const state = currentStates[j];
+
+      const nextState = state.matches(symbol);
+      if (nextState) {
+        addNextState(nextState, nextStates, []);
+      }
+    }
+
+    currentStates = nextStates;
+
+    if (currentStates.some((s) => s.isEnd)) {
+      return word.substr(0, i + 1);
+    }
+  }
+
+  return null;
+}
+
 function recursiveBacktrackingSearch(
   state: State,
   input: string,
@@ -123,10 +179,7 @@ export class RegExp {
       matchIndex++
     ) {
       // search for a match in this substring
-      const matchStr = recursiveBacktrackingSearch(
-        this.nfa.start,
-        str.substr(matchIndex)
-      );
+      const matchStr = search(this.nfa, str.substr(matchIndex));
       // we have found a match
       if (matchStr != null) {
         const match = new Match(
