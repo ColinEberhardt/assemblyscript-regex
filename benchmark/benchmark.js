@@ -5,7 +5,7 @@ const loader = require("@assemblyscript/loader/umd/index");
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
-wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
+wasmModule = loader.instantiateSync(fs.readFileSync("./build/optimized.wasm"), {
   env: {
     log: () => {
       const { __getString, __release } = wasmModule.exports;
