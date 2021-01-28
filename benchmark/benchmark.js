@@ -1,17 +1,16 @@
 global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
-const loader = require("@assemblyscript/loader/umd/index");
+const loader = require("@assemblyscript/loader");
 
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
-wasmModule = loader.instantiateSync(fs.readFileSync("./build/optimized.wasm"), {
+wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
   env: {
     log: () => {
-      const { __getString, __release } = wasmModule.exports;
+      const { __getString } = wasmModule.exports;
       str = __getString(strPtr);
       console.log(str);
-      __release(strPtr);
     },
   },
 });

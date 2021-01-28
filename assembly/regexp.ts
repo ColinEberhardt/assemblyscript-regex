@@ -16,7 +16,7 @@ import { CharacterMatcher, CharacterSetMatcher, Matcher } from "./nfa/matcher";
 function recursiveBacktrackingSearch(
   state: State,
   input: string,
-  visited: State[] = [],
+  visited: State[],
   position: i32 = 0
 ): string | null {
   // prevent endless loops when following epsilon transitions
@@ -112,7 +112,7 @@ export class RegExp {
 
     let len = str.length;
     if (!len) {
-      const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
+      const matchStr = recursiveBacktrackingSearch(this.nfa.start, "", []);
       return matchStr != null ? new Match([matchStr!], 0, str) : null;
     }
 
@@ -125,7 +125,8 @@ export class RegExp {
       // search for a match in this substring
       const matchStr = recursiveBacktrackingSearch(
         this.nfa.start,
-        str.substr(matchIndex)
+        str.substr(matchIndex),
+        []
       );
       // we have found a match
       if (matchStr != null) {
