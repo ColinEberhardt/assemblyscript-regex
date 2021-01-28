@@ -1,10 +1,5 @@
-import {
-  State,
-  Automata,
-  toNFAFromAST,
-  GroupEndMarkerState,
-  MatcherState,
-} from "./nfa/nfa";
+import { State, Automata, GroupEndMarkerState } from "./nfa/nfa";
+
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
 import { Char } from "./char";
@@ -71,14 +66,11 @@ export class RegExp {
   lastIndex: i32 = 0;
 
   private nfa: Automata;
-  private endOfInput: bool;
-  private startOfInput: bool;
+  private endOfInput: bool = false;
+  private startOfInput: bool = false;
   private groupMarkers: GroupEndMarkerState[];
 
   constructor(regex: string, public flags: string = "") {
-    this.startOfInput = false;
-    this.endOfInput = false;
-
     const ast = Parser.toAST(regex);
 
     // look for start / end assertions
@@ -91,7 +83,7 @@ export class RegExp {
 
     astWalker(ast, expandRepetitions);
 
-    this.nfa = toNFAFromAST(ast);
+    this.nfa = Automata.toNFA(ast);
 
     // find all the group marker states
     gm = new Array<GroupEndMarkerState>();
