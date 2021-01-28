@@ -1,13 +1,12 @@
 const fs = require("fs");
-const prettier = require("prettier");
-const data = fs.readFileSync("./__spec_tests__/test.dat", "utf8");
+const data = fs.readFileSync("./spec/test.dat", "utf8");
 const lines = data.split("\n");
+const prettier = require("prettier");
 
-// const unescape = (str) => str.replace("\\n", "\n");
 const escape = (str) => str.replace("\\", "\\\\");
 
 const knownIssues = {
-  "issue with parsing the test itself": [58, 59, 78, 212, 213],
+  "issue with parsing the test itself": [28, 58, 59, 78, 212, 213],
   "issue with generating the test": [61, 62, 64],
   "issue that require triage": [
     20,
@@ -43,7 +42,11 @@ const hasKnownIssue = (index) => {
 };
 
 let testCase = `
-const { RegExp, expectMatch, matches } = require("../util");
+/* eslint-disable no-useless-escape */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { RegExp, Match } from "..";
+import { expectMatch, expectNotMatch, exec} from "../__tests__/utils";
 
 `;
 
@@ -52,10 +55,10 @@ lines.forEach((line, index) => {
 
   const knownIssue = hasKnownIssue(index);
   if (knownIssue == "issue with parsing the test itself") {
-    testCase += `it.skip("line ${index} - issue with parsing the test itself", () => {});`;
+    testCase += `xit("line ${index} - issue with parsing the test itself", () => {});`;
     return;
   }
-  const knownIssueCode = knownIssue ? `.skip` : "";
+  const knownIssueCode = knownIssue ? "xit" : "it";
 
   try {
     const parts = line.split("\t").filter((f) => f !== "");
@@ -67,14 +70,14 @@ lines.forEach((line, index) => {
     const regex = escape(parts[1]);
     const str = parts[2] !== "NULL" ? parts[2] : "";
 
-    nextCase += `it${knownIssueCode}("line: ${index} - matches ${regex} against '${escape(
+    nextCase += `${knownIssueCode}("line: ${index} - matches ${regex} against '${escape(
       str
     )}'", () => {
       `;
     if (parts[3] == "BADBR") {
       nextCase += ` expect(() => new RegExp("${regex}")).toThrow();`;
     } else {
-      nextCase += ` const match = matches("${regex}", "${escape(str)}");`;
+      nextCase += ` const match = exec("${regex}", "${escape(str)}");`;
 
       // create an expect for each capture group
       const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
@@ -84,7 +87,7 @@ lines.forEach((line, index) => {
           digits[0] == "?"
             ? ""
             : str.substring(Number(digits[1]), Number(digits[2]));
-        nextCase += ` expect(match.matches[${index}]).toEqual("${escape(
+        nextCase += ` expect(match.matches[${index}]).toBe("${escape(
           expected
         )}");`;
       });
@@ -100,6 +103,6 @@ lines.forEach((line, index) => {
 });
 
 fs.writeFileSync(
-  "./__tests__/generated/data.js",
+  "./assembly/__spec_tests__/generated.spec.ts",
   prettier.format(testCase, { parser: "babel" })
 );

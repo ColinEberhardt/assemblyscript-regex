@@ -20,6 +20,6 @@
     }
   },
   "options": {
-    "transform": ["visitor-as/dist/examples/includeBytesTransform"]
+    "transform": []
   }
 }
