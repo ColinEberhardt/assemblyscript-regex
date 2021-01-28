@@ -9,10 +9,8 @@ class RegExp {
       {
         env: {
           log: (strPtr) => {
-            const { __getString, __release } = wasmModule.exports;
-            str = __getString(strPtr);
-            console.log(str);
-            __release(strPtr);
+            const { __getString } = wasmModule.exports;
+            console.log(__getString(strPtr));
           },
         },
       }
@@ -22,16 +20,16 @@ class RegExp {
       RegExp,
       createRegExp,
       __newString,
-      __retain,
-      __release,
+      __pin,
+      __unpin,
     } = this.wasmModule.exports;
 
     // create the regexp
-    const regexPtr = __retain(__newString(regex));
-    const flagsPtr = __retain(__newString(flags));
-    this.regex = RegExp.wrap(createRegExp(regexPtr, flagsPtr));
-    __release(regexPtr);
-    __release(flagsPtr);
+    const patternPtr = __pin(__newString(regex));
+    const flagsPtr = __newString(flags);
+    const regexPtr = __pin(createRegExp(patternPtr, flagsPtr));
+    __unpin(patternPtr);
+    this.regex = RegExp.wrap(regexPtr);
   }
 
   exec(str) {
@@ -39,35 +37,33 @@ class RegExp {
       Match,
       __getString,
       __newString,
-      __retain,
-      __release,
+      __pin,
+      __unpin,
       __getArray,
     } = this.wasmModule.exports;
 
     // execute
-    const strPtr = __retain(__newString(str));
-    const match = Match.wrap(this.regex.exec(strPtr));
-    __release(strPtr);
-
-    if (match == 0) return null;
+    const matchPtr = __pin(this.regex.exec(__newString(str)));
+    if (!matchPtr) return null;
 
     // extract the string matches
-    const matchesArrayPtr = __getArray(match.matches);
-    const matches = matchesArrayPtr.map((m) => __getString(m));
-    __release(matchesArrayPtr);
-
-    const inputPtr = match.input;
+    const match = Match.wrap(matchPtr);
+    const matchesArray = __getArray(match.matches);
+    const matches = matchesArray.map((m) => __getString(m));
+    const index = match.index;
+    const input = __getString(match.input);
+    __unpin(matchPtr);
 
     // create a new JS object based on the wasm object
     return {
       matches,
-      index: match.index,
-      input: __getString(inputPtr),
+      index,
+      input,
     };
   }
 
   release() {
-    __release(this.regex);
+    __unpin(this.regex);
   }
 
   get lastIndex() {

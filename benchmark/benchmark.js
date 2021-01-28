@@ -1,6 +1,6 @@
 global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
-const loader = require("@assemblyscript/loader/umd/index");
+const loader = require("@assemblyscript/loader");
 
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
@@ -8,10 +8,8 @@ const suite = new Benchmark.Suite();
 wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
   env: {
     log: () => {
-      const { __getString, __release } = wasmModule.exports;
-      str = __getString(strPtr);
-      console.log(str);
-      __release(strPtr);
+      const { __getString } = wasmModule.exports;
+      console.log(__getString(strPtr));
     },
   },
 });
@@ -21,16 +19,15 @@ function executeRegex(regexStr, valueStr, untilNull = false) {
   const {
     executeRegExp,
     __newString,
-    __retain,
-    __release,
+    __pin,
+    __unpin,
   } = wasmModule.exports;
 
   // create the regexp
-  const regexPtr = __retain(__newString(regexStr));
-  const strPtr = __retain(__newString(valueStr));
+  const regexPtr = __pin(__newString(regexStr));
+  const strPtr = __newString(valueStr);
   executeRegExp(regexPtr, strPtr, untilNull ? -1 : 5);
-  __release(regexPtr);
-  __release(strPtr);
+  __unpin(regexPtr);
 }
 
 // add tests
