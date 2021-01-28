@@ -1,6 +1,6 @@
 global.TextDecoder = require("text-encoding").TextDecoder;
 const fs = require("fs");
-const loader = require("@assemblyscript/loader/umd/index");
+const loader = require("@assemblyscript/loader");
 
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
@@ -61,6 +61,12 @@ suite
     const text =
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     executeRegex("[a-l]{3}", text, true);
+  })
+  .add("complex regex", () => {
+    executeRegex(
+      "M[ou]'?am+[ae]r .*([AEae]l[- ])?[GKQ]h?[aeu]+([dtz][dhz]?)+af[iy]",
+      "Muammar Qadhafi"
+    );
   })
   // add listeners
   .on("cycle", (event) => {
