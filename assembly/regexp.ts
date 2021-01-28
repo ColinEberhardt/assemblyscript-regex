@@ -33,9 +33,10 @@ function recursiveBacktrackingSearch(
   if (nextState) {
     return recursiveBacktrackingSearch(nextState, input, [], position + 1);
   } else {
-    for (let i = 0; i < state.epsilonTransitions.length; i++) {
+    let epsilonTransitions = state.epsilonTransitions;
+    for (let i = 0, len = epsilonTransitions.length; i < len; i++) {
       const match = recursiveBacktrackingSearch(
-        state.epsilonTransitions[i],
+        epsilonTransitions[i],
         input,
         visited,
         position
@@ -44,8 +45,8 @@ function recursiveBacktrackingSearch(
         return match;
       }
     }
+    return null;
   }
-  return null;
 }
 
 export class Match {
