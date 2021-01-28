@@ -70,7 +70,7 @@ export class RegExp {
   private startOfInput: bool = false;
   private groupMarkers: GroupEndMarkerState[];
 
-  constructor(regex: string, public flags: string = "") {
+  constructor(regex: string, public flags: string | null = null) {
     const ast = Parser.toAST(regex);
 
     // look for start / end assertions
