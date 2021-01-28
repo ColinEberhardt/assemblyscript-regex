@@ -1,2 +1,6 @@
-node_modules
-build
+node_modules/
+build/
+.history
+.vscode
+.idea
+npm-debug.*
