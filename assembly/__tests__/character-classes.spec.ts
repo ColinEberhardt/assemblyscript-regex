@@ -1,5 +1,5 @@
 import { RegExp } from "..";
-import { expectMatch, expectNotMatch, exec} from "./utils";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 xit("should throw with un-supported classes", () => {
   // expect(() => new RegExp("\\o")).toThrow();

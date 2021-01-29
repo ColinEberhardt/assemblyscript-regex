@@ -1,4 +1,4 @@
-import { expectMatch, expectNotMatch, exec} from "./utils";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("handles single quantifier", () => {
   expectMatch("a{2}", ["aa"]);

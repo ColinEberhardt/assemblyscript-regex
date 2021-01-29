@@ -1,4 +1,4 @@
-import { expectMatch, expectNotMatch, exec} from "./utils";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("matches empty strings", () => {
   expectMatch("a?", [""]);

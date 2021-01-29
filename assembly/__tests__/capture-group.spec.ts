@@ -1,4 +1,4 @@
-import { expectMatch, expectNotMatch, exec} from "./utils";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("supports capture groups", () => {
   let match = exec("a(\\d)a", "a3a");

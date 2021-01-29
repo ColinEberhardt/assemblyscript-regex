@@ -4,10 +4,12 @@
   "description": "A regex engine built with AssemblyScript",
   "ascMain": "assembly/index.ts",
   "scripts": {
-    "test": "npm run asbuild:untouched && npm run eslint && npm run asp",
+    "test": "npm run test:generate && npm run asbuild:untouched && npm run prettier && npm run eslint && npm run asp",
     "test:generate": "node spec/test-generator.js",
     "asp": "asp --verbose",
     "asp:ci": "asp",
+    "prettier": "prettier --check .",
+    "prettier:write": "prettier --write .",
     "eslint:write": "npm run eslint -- --fix ",
     "asbuild:untouched": "asb --target debug",
     "asbuild:optimized": "asb",
@@ -36,7 +38,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier:check || (yarn prettier:fix && exit 1)"
+      "pre-commit": "npm run prettier && npm run eslint"
     }
   }
 }
