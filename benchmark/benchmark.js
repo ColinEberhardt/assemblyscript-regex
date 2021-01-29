@@ -16,12 +16,7 @@ wasmModule = loader.instantiateSync(fs.readFileSync("./build/untouched.wasm"), {
 
 // the executeRegExp exported function is ex
 function executeRegex(regexStr, valueStr, untilNull = false) {
-  const {
-    executeRegExp,
-    __newString,
-    __pin,
-    __unpin,
-  } = wasmModule.exports;
+  const { executeRegExp, __newString, __pin, __unpin } = wasmModule.exports;
 
   // create the regexp
   const regexPtr = __pin(__newString(regexStr));
