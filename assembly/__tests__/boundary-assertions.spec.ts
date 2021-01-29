@@ -1,10 +1,9 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("matches end of string", () => {
-  const regex = new RegExp("a$");
-  const match = regex.exec("ba");
-  expect(match.index).toEqual(1);
-  expect(match.matches[0]).toEqual("a");
+  const match = exec("a$", "ba");
+  expect(match.index).toBe(1);
+  expect(match.matches[0]).toBe("a");
   expectNotMatch("a$", ["ab"]);
 });
 

@@ -1,12 +1,10 @@
 import { State, Automata, GroupEndMarkerState } from "./nfa/nfa";
-
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
 import { Char } from "./char";
 import { Parser } from "./parser/parser";
 import { first, last } from "./util";
 import { walker as astWalker, expandRepetitions } from "./parser/walker";
-import { CharacterMatcher, CharacterSetMatcher, Matcher } from "./nfa/matcher";
 
 function recursiveBacktrackingSearch(
   state: State,
@@ -139,6 +137,10 @@ export class RegExp {
     }
     this.lastIndex = 0;
     return null;
+  }
+
+  toString(): string {
+    return this.regex;
   }
 }
 

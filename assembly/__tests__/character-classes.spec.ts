@@ -1,7 +1,8 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+import { RegExp } from "..";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
-it.skip("should throw with un-supported classes", () => {
-  expect(() => new RegExp("\\o")).toThrow();
+xit("should throw with un-supported classes", () => {
+  // expect(() => new RegExp("\\o")).toThrow();
 });
 
 it("dot", () => {
@@ -51,26 +52,4 @@ it("tab, cr, lf, vt, ff", () => {
 it("escaped dot", () => {
   expectMatch("\\.", ["."]);
   expectNotMatch("\\.", ["", "a"]);
-});
-
-describe("hexadecimal character encodings", () => {
-  it("supports one word character codes", () => {
-    expectMatch("\\x42", ["B"]);
-    expectMatch("\\x3f", ["?"]);
-    expectNotMatch("\\x42", ["a", ""]);
-  });
-
-  it("supports two word character codes", () => {
-    expectMatch("\\u0042", ["B"]);
-    expectMatch("\\u0566", ["զ"]);
-  });
-
-  it("if lookahead finds non hex chars, treat as literal", () => {
-    expectMatch("\\x4g", ["x4g"]);
-    expectMatch("\\u3j", ["u3j"]);
-  });
-
-  it("if lookahead finds end of string, treat as literal", () => {
-    expectMatch("\\x4", ["x4"]);
-  });
 });

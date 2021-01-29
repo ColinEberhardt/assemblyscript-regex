@@ -8,13 +8,13 @@ import {
   CharacterSetNode,
   CharacterClassNode,
   GroupNode,
-  AssertionNode,
   NodeType,
 } from "../parser/node";
 
 import { Char } from "../char";
 import { Matcher } from "./matcher";
 
+/* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {
   epsilonTransitions: Array<State> = [];
 

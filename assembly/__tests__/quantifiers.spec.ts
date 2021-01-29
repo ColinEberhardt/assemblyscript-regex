@@ -1,4 +1,4 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("matches empty strings", () => {
   expectMatch("a?", [""]);
@@ -25,13 +25,14 @@ it("multiple rules", () => {
 });
 
 it("zero or more is greedy", () => {
-  let match = matches("a*", "aaaaa");
+  let match = exec("a*", "aaaaa");
   expect(match).not.toBeNull();
-  expect(match.matches[0]).toEqual("aaaaa");
+  expect(match.matches[0]).toStrictEqual("aaaaa");
 });
 
 it("one or more is greedy", () => {
-  let match = matches("a+", "aaaaa");
+  let match = exec("a+", "aaaaa");
+  log(match);
   expect(match).not.toBeNull();
-  expect(match.matches[0]).toEqual("aaaaa");
+  expect(match.matches[0]).toStrictEqual("aaaaa");
 });

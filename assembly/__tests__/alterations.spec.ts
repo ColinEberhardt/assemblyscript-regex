@@ -1,4 +1,4 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+import { expectMatch, expectNotMatch } from "./utils";
 
 it("or", () => {
   expectMatch("a|b", ["b", "a"]);

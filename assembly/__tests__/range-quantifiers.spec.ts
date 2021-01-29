@@ -1,4 +1,4 @@
-const { RegExp, expectNotMatch, expectMatch, matches } = require("./util");
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("handles single quantifier", () => {
   expectMatch("a{2}", ["aa"]);
@@ -12,13 +12,9 @@ it("handles open upper bound quantifiers", () => {
   expectMatch("ba{1,}b", ["bab", "baaaaaab"]);
 });
 
-it("handles larger numbers", () => {
-  expectMatch("a{20,30}", ["a".repeat(25)]);
-});
-
 it("handles explicit upper bound quantifiers", () => {
-  const match = matches("a{2,4}", "aaaaaaaaaa");
-  expect(match.matches[0]).toEqual("aaaa");
+  const match = exec("a{2,4}", "aaaaaaaaaa");
+  expect(match.matches[0]).toBe("aaaa");
 });
 
 it("handles zero value quantifier", () => {
