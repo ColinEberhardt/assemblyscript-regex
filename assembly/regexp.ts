@@ -1,9 +1,4 @@
-import {
-  State,
-  Automata,
-  toNFAFromAST,
-  GroupEndMarkerState,
-} from "./nfa/nfa";
+import { State, Automata, toNFAFromAST, GroupEndMarkerState } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
 import { Char } from "./char";

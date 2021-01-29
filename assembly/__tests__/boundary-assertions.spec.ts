@@ -1,4 +1,4 @@
-import { expectMatch, expectNotMatch, exec} from "./utils";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("matches end of string", () => {
   const match = exec("a$", "ba");
