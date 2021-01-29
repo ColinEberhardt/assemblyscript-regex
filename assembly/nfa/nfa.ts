@@ -205,9 +205,10 @@ function visit(expression: Node | null): Automata {
       return Automata.fromMatcher(
         Matcher.fromCharacterClassNode(expression as CharacterClassNode)
       );
-    case NodeType.Group:
+    case NodeType.Group: {
       const node = expression as GroupNode;
       return group(visit(node.expression));
+    }
     case NodeType.Assertion:
       return Automata.fromEpsilon();
     default:
