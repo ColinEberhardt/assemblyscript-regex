@@ -1,4 +1,4 @@
-import { State, Automata, GroupEndMarkerState } from "./nfa/nfa";
+import { State, Automata, GroupEndMarkerState, MatchResult } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
 import { Char } from "./char";
@@ -18,33 +18,37 @@ function recursiveBacktrackingSearch(
   }
   visited.push(state);
 
-  state.snapshot(input, position);
+  const matches = state.matches(input, position);
+  if (matches == MatchResult.Match) {
+    // a match occurred
+    if (position == input.length) {
+      // we've reached the end of the string
+      return null;
+    }
+    visited = [];
+    position++;
+  } else if (matches == MatchResult.Fail) {
+    return null;
+  }
 
-  if (state.isEnd) {
+  const transitions = state.transitions;
+  if (transitions.length == 0) {
+    // we've reached the end, so retur the matched string
     return input.substring(0, position);
   }
 
-  // check whether this state transition matches
-  const nextState =
-    position < input.length ? state.matches(input.charCodeAt(position)) : null;
-
-  if (nextState) {
-    return recursiveBacktrackingSearch(nextState, input, [], position + 1);
-  } else {
-    let epsilonTransitions = state.epsilonTransitions;
-    for (let i = 0, len = epsilonTransitions.length; i < len; i++) {
-      const match = recursiveBacktrackingSearch(
-        epsilonTransitions[i],
-        input,
-        visited,
-        position
-      );
-      if (match != null) {
-        return match;
-      }
+  for (let i = 0, len = transitions.length; i < len; i++) {
+    const match = recursiveBacktrackingSearch(
+      transitions[i],
+      input,
+      visited,
+      position
+    );
+    if (match != null) {
+      return match;
     }
-    return null;
   }
+  return null;
 }
 
 export class Match {

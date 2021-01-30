@@ -8,7 +8,7 @@ export function walker(
   visitor(state);
   if (visited.includes(state)) return;
   visited.push(state);
-  const nextStates = state.reachableStates();
+  const nextStates = state.transitions;
   for (let i = 0, len = nextStates.length; i < len; i++) {
     walker(nextStates[i], visitor, visited);
   }

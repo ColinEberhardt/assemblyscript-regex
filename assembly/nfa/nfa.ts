@@ -14,30 +14,35 @@ import {
 import { Char } from "../char";
 import { Matcher } from "./matcher";
 
+export enum MatchResult {
+  // a match has occurred - which is a signal to consume a character
+  Match,
+  // a match failed, abort this regex
+  Fail,
+  // this state doesn't preform a match
+  Ignore,
+}
+
 /* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {
-  epsilonTransitions: Array<State> = [];
+  constructor(public transitions: State[] = []) {}
 
-  constructor(public isEnd: bool = false) {}
-
-  matches(code: u32): State | null {
-    return null;
-  }
-
-  // a slightly hacky was to implement capture groups, the GroupEndMarkerState subclass
-  // uses this method to store the matched substring during the regex search
-  snapshot(input: string, position: u32): void {}
-
-  reachableStates(): State[] {
-    return this.epsilonTransitions;
+  matches(input: string, position: u32): MatchResult {
+    return MatchResult.Ignore;
   }
 }
 
 export class GroupStartMarkerState extends State {
   location: i32 = -1;
 
-  snapshot(input: string, position: u32): void {
+  constructor(next: State) {
+    super();
+    this.transitions.push(next);
+  }
+
+  matches(input: string, position: u32): MatchResult {
     this.location = position;
+    return MatchResult.Ignore;
   }
 }
 
@@ -45,45 +50,44 @@ export class GroupEndMarkerState extends State {
   // a bit yucky - storing transient state in the state machine!
   capture: string = "";
 
-  constructor(public startMarker: GroupStartMarkerState, isEnd: bool = false) {
-    super(isEnd);
+  constructor(next: State, public startMarker: GroupStartMarkerState) {
+    super();
+    this.transitions.push(next);
   }
 
-  snapshot(input: string, position: u32): void {
+  matches(input: string, position: u32): MatchResult {
     this.capture = input.substring(this.startMarker.location, position);
+    return MatchResult.Ignore;
   }
 }
 
 export class MatcherState<T extends Matcher> extends State {
-  constructor(public matcher: T, public next: State) {
+  constructor(private matcher: T, next: State) {
     super();
+    this.transitions.push(next);
   }
 
-  matches(code: u32): State | null {
-    return this.matcher.matches(code) ? this.next : null;
-  }
-
-  reachableStates(): State[] {
-    let copied = this.epsilonTransitions.slice(0);
-    copied.push(this.next);
-    return copied;
+  matches(input: string, position: u32): MatchResult {
+    return this.matcher.matches(input.charCodeAt(position))
+      ? MatchResult.Match
+      : MatchResult.Fail;
   }
 }
 
 export class Automata {
   static toNFA(ast: AST): Automata {
-    return visit(ast.body);
+    return automataForNode(ast.body);
   }
 
   static fromEpsilon(): Automata {
     const start = new State();
-    const end = new State(true);
-    start.epsilonTransitions.push(end);
+    const end = new State();
+    start.transitions.push(end);
     return new Automata(start, end);
   }
 
   static fromMatcher<T extends Matcher>(matcher: T): Automata {
-    const end = new State(true);
+    const end = new State();
     const start = new MatcherState<T>(matcher, end);
     return new Automata(start, end);
   }
@@ -92,71 +96,64 @@ export class Automata {
 }
 
 function concat(first: Automata, second: Automata): Automata {
-  first.end.epsilonTransitions.push(second.start);
-  first.end.isEnd = false;
+  first.end.transitions.push(second.start);
   return new Automata(first.start, second.end);
 }
 
 function union(first: Automata, second: Automata): Automata {
   const start = new State();
-  start.epsilonTransitions.push(first.start);
-  start.epsilonTransitions.push(second.start);
-  const end = new State(true);
-  first.end.epsilonTransitions.push(end);
-  first.end.isEnd = false;
-  second.end.epsilonTransitions.push(end);
-  second.end.isEnd = false;
+  start.transitions.push(first.start);
+  start.transitions.push(second.start);
+  const end = new State();
+  first.end.transitions.push(end);
+  second.end.transitions.push(end);
   return new Automata(start, end);
 }
 
 function closure(nfa: Automata): Automata {
   const start = new State();
-  const end = new State(true);
+  const end = new State();
   // to ensure greedy matches, the epsilon transitions that loop-back
   // need to be first in the list
-  start.epsilonTransitions.push(nfa.start);
-  start.epsilonTransitions.push(end);
-  nfa.end.epsilonTransitions.push(nfa.start);
-  nfa.end.epsilonTransitions.push(end);
-  nfa.end.isEnd = false;
+  start.transitions.push(nfa.start);
+  start.transitions.push(end);
+  nfa.end.transitions.push(nfa.start);
+  nfa.end.transitions.push(end);
   return new Automata(start, end);
 }
 
 function zeroOrOne(nfa: Automata): Automata {
   const start = new State();
-  const end = new State(true);
-  start.epsilonTransitions.push(nfa.start);
-  start.epsilonTransitions.push(end);
-  nfa.end.epsilonTransitions.push(end);
-  nfa.end.isEnd = false;
+  const end = new State();
+  start.transitions.push(nfa.start);
+  start.transitions.push(end);
+  nfa.end.transitions.push(end);
   return new Automata(start, end);
 }
 
 function oneOrMore(nfa: Automata): Automata {
   const start = new State();
-  const end = new State(true);
-  start.epsilonTransitions.push(nfa.start);
+  const end = new State();
+  start.transitions.push(nfa.start);
   // to ensure greedy matches, the epsilon transitions that loop-back
   // need to be first in the list
-  nfa.end.epsilonTransitions.push(nfa.start);
-  nfa.end.epsilonTransitions.push(end);
-  nfa.end.isEnd = false;
+  nfa.end.transitions.push(nfa.start);
+  nfa.end.transitions.push(end);
   return new Automata(start, end);
 }
 
 function group(nfa: Automata): Automata {
   // groups are implemented by wrapping the automata with
   // a pair of markers that record matches
-  const start = new GroupStartMarkerState();
-  const end = new GroupEndMarkerState(start, true);
-  start.epsilonTransitions.push(nfa.start);
-  nfa.end.epsilonTransitions.push(end);
-  nfa.end.isEnd = false;
-  return new Automata(start, end);
+  const startMarker = new GroupStartMarkerState(nfa.start);
+  const end = new State();
+  const endMarker = new GroupEndMarkerState(end, startMarker);
+  nfa.end.transitions.push(endMarker);
+  return new Automata(startMarker, end);
 }
 
 // recursively builds an automata for the given AST
-function visit(expression: Node | null): Automata {
+function automataForNode(expression: Node | null): Automata {
   if (expression == null) {
     return Automata.fromEpsilon();
   }
@@ -164,7 +161,7 @@ function visit(expression: Node | null): Automata {
   switch (expression.type) {
     case NodeType.Repetition: {
       const node = expression as RepetitionNode;
-      const automata = visit(node.expression);
+      const automata = automataForNode(node.expression);
       const quantifier = node.quantifier;
       if (quantifier == Char.Question) {
         return zeroOrOne(automata);
@@ -187,15 +184,15 @@ function visit(expression: Node | null): Automata {
       if (expressions.length == 0) {
         return Automata.fromEpsilon();
       }
-      let automata = visit(expressions[0]);
+      let automata = automataForNode(expressions[0]);
       for (let i = 1, len = expressions.length; i < len; i++) {
-        automata = concat(automata, visit(expressions[i]));
+        automata = concat(automata, automataForNode(expressions[i]));
       }
       return automata;
     }
     case NodeType.Alternation: {
       const node = expression as AlternationNode;
-      return union(visit(node.left), visit(node.right));
+      return union(automataForNode(node.left), automataForNode(node.right));
     }
     case NodeType.CharacterSet:
       return Automata.fromMatcher(
@@ -207,7 +204,7 @@ function visit(expression: Node | null): Automata {
       );
     case NodeType.Group: {
       const node = expression as GroupNode;
-      return group(visit(node.expression));
+      return group(automataForNode(node.expression));
     }
     case NodeType.Assertion:
       return Automata.fromEpsilon();
