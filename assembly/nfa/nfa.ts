@@ -71,7 +71,9 @@ export class MatcherState<T extends Matcher> extends State {
 }
 
 export class Automata {
-  constructor(public start: State, public end: State) {}
+  static toNFA(ast: AST): Automata {
+    return visit(ast.body);
+  }
 
   static fromEpsilon(): Automata {
     const start = new State();
@@ -85,6 +87,8 @@ export class Automata {
     const start = new MatcherState<T>(matcher, end);
     return new Automata(start, end);
   }
+
+  constructor(public start: State, public end: State) {}
 }
 
 function concat(first: Automata, second: Automata): Automata {
@@ -152,22 +156,22 @@ function group(nfa: Automata): Automata {
 }
 
 // recursively builds an automata for the given AST
-function automataForNode(expression: Node | null): Automata {
+function visit(expression: Node | null): Automata {
   if (expression == null) {
     return Automata.fromEpsilon();
   }
 
   switch (expression.type) {
     case NodeType.Repetition: {
-      const repNode = expression as RepetitionNode;
-      const auto = automataForNode(repNode.expression);
-      const quantifier = repNode.quantifier;
+      const node = expression as RepetitionNode;
+      const automata = visit(node.expression);
+      const quantifier = node.quantifier;
       if (quantifier == Char.Question) {
-        return zeroOrOne(auto);
+        return zeroOrOne(automata);
       } else if (quantifier == Char.Plus) {
-        return oneOrMore(auto);
+        return oneOrMore(automata);
       } else if (quantifier == Char.Asterisk) {
-        return closure(auto);
+        return closure(automata);
       } else {
         throw new Error(
           "unsupported quantifier - " + String.fromCharCode(quantifier)
@@ -183,15 +187,15 @@ function automataForNode(expression: Node | null): Automata {
       if (expressions.length == 0) {
         return Automata.fromEpsilon();
       }
-      let auto = automataForNode(expressions[0]);
+      let automata = visit(expressions[0]);
       for (let i = 1, len = expressions.length; i < len; i++) {
-        auto = concat(auto, automataForNode(expressions[i]));
+        automata = concat(automata, visit(expressions[i]));
       }
-      return auto;
+      return automata;
     }
     case NodeType.Alternation: {
-      const c = expression as AlternationNode;
-      return union(automataForNode(c.left), automataForNode(c.right));
+      const node = expression as AlternationNode;
+      return union(visit(node.left), visit(node.right));
     }
     case NodeType.CharacterSet:
       return Automata.fromMatcher(
@@ -202,17 +206,12 @@ function automataForNode(expression: Node | null): Automata {
         Matcher.fromCharacterClassNode(expression as CharacterClassNode)
       );
     case NodeType.Group: {
-      const c = expression as GroupNode;
-      const auto = automataForNode(c.expression);
-      return group(auto);
+      const node = expression as GroupNode;
+      return group(visit(node.expression));
     }
     case NodeType.Assertion:
       return Automata.fromEpsilon();
     default:
       throw new Error("un-recognised AST node");
   }
-}
-
-export function toNFAFromAST(ast: AST): Automata {
-  return automataForNode(ast.body);
 }
