@@ -19,13 +19,17 @@ export function expectNotMatch(regex: string, arr: string[]): void {
   }
 }
 
-export function exec<T = string>(regex: T, value: string): Match {
+export function exec<T = string>(
+  regex: T,
+  value: string,
+  flags: string = ""
+): Match {
   let regexp: RegExp;
   if (regex instanceof RegExp) {
     regexp = regex;
   } else if (isString<T>()) {
     // @ts-ignore
-    regexp = new RegExp(<string>regex);
+    regexp = new RegExp(<string>regex, flags);
   } else {
     ERROR("Only RegExp and string are valid types");
   }

@@ -93,7 +93,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 
 - [x] global
 - [ ] sticky
-- [ ] case insensitive
+- [x] case insensitive
 - [ ] multiline
 
 ### Development

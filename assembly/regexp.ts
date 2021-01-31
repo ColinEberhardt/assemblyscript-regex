@@ -68,6 +68,7 @@ let gm = new Array<GroupEndMarkerState>();
 export class RegExp {
   lastIndex: i32 = 0;
   global: bool = false;
+  ignoreCase: bool = false;
 
   private nfa: Automata;
   private endOfInput: bool = false;
@@ -77,8 +78,9 @@ export class RegExp {
   constructor(private regex: string, public flags: string | null = null) {
     const ast = Parser.toAST(regex);
 
-    if (flags && flags.includes("g")) {
-      this.global = true;
+    if (flags) {
+      this.global = flags.includes("g");
+      this.ignoreCase = flags.includes("i");
     }
 
     // look for start / end assertions
@@ -91,7 +93,7 @@ export class RegExp {
 
     astWalker(ast, expandRepetitions);
 
-    this.nfa = Automata.toNFA(ast);
+    this.nfa = Automata.toNFA(ast, this.ignoreCase);
 
     // find all the group marker states
     gm = new Array<GroupEndMarkerState>();

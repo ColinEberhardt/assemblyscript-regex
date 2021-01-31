@@ -62,6 +62,8 @@ export class GroupEndMarkerState extends State {
 }
 
 export class MatcherState<T extends Matcher> extends State {
+  ignoreCase: bool = false;
+
   constructor(private matcher: T, next: State) {
     super();
     this.transitions.push(next);
@@ -75,8 +77,8 @@ export class MatcherState<T extends Matcher> extends State {
 }
 
 export class Automata {
-  static toNFA(ast: AST): Automata {
-    return automataForNode(ast.body);
+  static toNFA(ast: AST, ignoreCase: bool): Automata {
+    return new AutomataFactor(ignoreCase).automataForNode(ast.body);
   }
 
   static fromEpsilon(): Automata {
@@ -152,63 +154,76 @@ function group(nfa: Automata): Automata {
   return new Automata(startMarker, end);
 }
 
-// recursively builds an automata for the given AST
-function automataForNode(expression: Node | null): Automata {
-  if (expression == null) {
-    return Automata.fromEpsilon();
-  }
+class AutomataFactor {
+  constructor(private ignoreCase: bool = false) {}
 
-  switch (expression.type) {
-    case NodeType.Repetition: {
-      const node = expression as RepetitionNode;
-      const automata = automataForNode(node.expression);
-      const quantifier = node.quantifier;
-      if (quantifier == Char.Question) {
-        return zeroOrOne(automata);
-      } else if (quantifier == Char.Plus) {
-        return oneOrMore(automata);
-      } else if (quantifier == Char.Asterisk) {
-        return closure(automata);
-      } else {
-        throw new Error(
-          "unsupported quantifier - " + String.fromCharCode(quantifier)
+  // recursively builds an automata for the given AST
+  automataForNode(expression: Node | null): Automata {
+    if (expression == null) {
+      return Automata.fromEpsilon();
+    }
+
+    switch (expression.type) {
+      case NodeType.Repetition: {
+        const node = expression as RepetitionNode;
+        const automata = this.automataForNode(node.expression);
+        const quantifier = node.quantifier;
+        if (quantifier == Char.Question) {
+          return zeroOrOne(automata);
+        } else if (quantifier == Char.Plus) {
+          return oneOrMore(automata);
+        } else if (quantifier == Char.Asterisk) {
+          return closure(automata);
+        } else {
+          throw new Error(
+            "unsupported quantifier - " + String.fromCharCode(quantifier)
+          );
+        }
+      }
+      case NodeType.Character:
+        return Automata.fromMatcher(
+          Matcher.fromCharacterNode(
+            expression as CharacterNode,
+            this.ignoreCase
+          )
+        );
+      case NodeType.Concatenation: {
+        const expressions = (expression as ConcatenationNode).expressions;
+        if (expressions.length == 0) {
+          return Automata.fromEpsilon();
+        }
+        let automata = this.automataForNode(expressions[0]);
+        for (let i = 1, len = expressions.length; i < len; i++) {
+          automata = concat(automata, this.automataForNode(expressions[i]));
+        }
+        return automata;
+      }
+      case NodeType.Alternation: {
+        const node = expression as AlternationNode;
+        return union(
+          this.automataForNode(node.left),
+          this.automataForNode(node.right)
         );
       }
-    }
-    case NodeType.Character:
-      return Automata.fromMatcher(
-        Matcher.fromCharacterNode(expression as CharacterNode)
-      );
-    case NodeType.Concatenation: {
-      const expressions = (expression as ConcatenationNode).expressions;
-      if (expressions.length == 0) {
+      case NodeType.CharacterSet:
+        return Automata.fromMatcher(
+          Matcher.fromCharacterSetNode(
+            expression as CharacterSetNode,
+            this.ignoreCase
+          )
+        );
+      case NodeType.CharacterClass:
+        return Automata.fromMatcher(
+          Matcher.fromCharacterClassNode(expression as CharacterClassNode)
+        );
+      case NodeType.Group: {
+        const node = expression as GroupNode;
+        return group(this.automataForNode(node.expression));
+      }
+      case NodeType.Assertion:
         return Automata.fromEpsilon();
-      }
-      let automata = automataForNode(expressions[0]);
-      for (let i = 1, len = expressions.length; i < len; i++) {
-        automata = concat(automata, automataForNode(expressions[i]));
-      }
-      return automata;
+      default:
+        throw new Error("un-recognised AST node");
     }
-    case NodeType.Alternation: {
-      const node = expression as AlternationNode;
-      return union(automataForNode(node.left), automataForNode(node.right));
-    }
-    case NodeType.CharacterSet:
-      return Automata.fromMatcher(
-        Matcher.fromCharacterSetNode(expression as CharacterSetNode)
-      );
-    case NodeType.CharacterClass:
-      return Automata.fromMatcher(
-        Matcher.fromCharacterClassNode(expression as CharacterClassNode)
-      );
-    case NodeType.Group: {
-      const node = expression as GroupNode;
-      return group(automataForNode(node.expression));
-    }
-    case NodeType.Assertion:
-      return Automata.fromEpsilon();
-    default:
-      throw new Error("un-recognised AST node");
   }
 }

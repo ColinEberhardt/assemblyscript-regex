@@ -8,6 +8,25 @@ it("match returns correct substring", () => {
   expect(match.matches[0]).toStrictEqual("1");
 });
 
+describe("case insensitive", () => {
+  it("supports characters", () => {
+    const regex = new RegExp("AbC", "i");
+    const match = exec(regex, "aBc");
+    expect(match.matches[0]).toBe("aBc");
+  });
+
+  it("supports character ranges", () => {
+    const regex = new RegExp("[a-c][A-C]", "i");
+    const match = exec(regex, "Ac");
+    expect(match.matches[0]).toBe("Ac");
+  });
+
+  it("sets ignoreCase flag", () => {
+    expect(new RegExp("\\d+", "i").ignoreCase).toBeTruthy();
+    expect(new RegExp("\\d+", "g").ignoreCase).toBeFalsy();
+  });
+});
+
 describe("global mode", () => {
   it("sets global flag", () => {
     expect(new RegExp("\\d+", "g").global).toBeTruthy();

@@ -32,7 +32,6 @@ it("zero or more is greedy", () => {
 
 it("one or more is greedy", () => {
   let match = exec("a+", "aaaaa");
-  log(match);
   expect(match).not.toBeNull();
   expect(match.matches[0]).toStrictEqual("aaaaa");
 });

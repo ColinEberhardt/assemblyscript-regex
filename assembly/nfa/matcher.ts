@@ -15,6 +15,8 @@ const enum MatcherType {
   CharacterSet,
 }
 
+let _ignore: bool;
+
 export class Matcher {
   constructor(readonly type: MatcherType) {}
 
@@ -29,18 +31,26 @@ export class Matcher {
   }
 
   static fromCharacterRangeNode(
-    node: CharacterRangeNode
+    node: CharacterRangeNode,
+    ignoreCase: bool
   ): CharacterRangeMatcher {
-    return new CharacterRangeMatcher(node.from, node.to);
+    return new CharacterRangeMatcher(node.from, node.to, ignoreCase);
   }
 
-  static fromCharacterSetNode(node: CharacterSetNode): CharacterSetMatcher {
+  static fromCharacterSetNode(
+    node: CharacterSetNode,
+    ignoreCase: bool
+  ): CharacterSetMatcher {
+    _ignore = ignoreCase;
     const matchers = node.expressions.map<Matcher>((exp) => {
       switch (exp.type) {
         case NodeType.CharacterRange:
-          return Matcher.fromCharacterRangeNode(exp as CharacterRangeNode);
+          return Matcher.fromCharacterRangeNode(
+            exp as CharacterRangeNode,
+            _ignore
+          );
         case NodeType.Character:
-          return Matcher.fromCharacterNode(exp as CharacterNode);
+          return Matcher.fromCharacterNode(exp as CharacterNode, _ignore);
         case NodeType.CharacterClass:
           return Matcher.fromCharacterClassNode(exp as CharacterClassNode);
         default:
@@ -50,27 +60,43 @@ export class Matcher {
     return new CharacterSetMatcher(matchers, node.negated);
   }
 
-  static fromCharacterNode(node: CharacterNode): CharacterMatcher {
-    return new CharacterMatcher(node.char);
+  static fromCharacterNode(
+    node: CharacterNode,
+    ignoreCase: bool
+  ): CharacterMatcher {
+    return new CharacterMatcher(node.char, ignoreCase);
   }
 }
 
 export class CharacterMatcher extends Matcher {
-  constructor(public character: Char) {
+  constructor(private character: Char, private ignoreCase: bool) {
     super(MatcherType.Character);
+    if (ignoreCase) {
+      this.character |= 0x20;
+    }
   }
 
   matches(code: u32): bool {
+    if (this.ignoreCase) {
+      code |= 0x20;
+    }
     return this.character == code;
   }
 }
 
 export class CharacterRangeMatcher extends Matcher {
-  constructor(public from: u32, public to: u32) {
+  constructor(private from: u32, private to: u32, private ignoreCase: bool) {
     super(MatcherType.CharacterRange);
+    if (ignoreCase) {
+      this.from |= 0x20;
+      this.to |= 0x20;
+    }
   }
 
   matches(code: u32): bool {
+    if (this.ignoreCase) {
+      code |= 0x20;
+    }
     return code >= this.from && code <= this.to;
   }
 }

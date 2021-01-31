@@ -11,7 +11,6 @@ const knownIssues = {
   "issue that require triage": [
     20,
     35,
-    48,
     72,
     76,
     133,
@@ -69,6 +68,7 @@ lines.forEach((line, index) => {
 
     const regex = escape(parts[1]);
     const str = parts[2] !== "NULL" ? parts[2] : "";
+    const flags = parts[0] == "Ei" ? "i" : "";
 
     nextCase += `${knownIssueCode}("line: ${index} - matches ${regex} against '${escape(
       str
@@ -77,7 +77,9 @@ lines.forEach((line, index) => {
     if (parts[3] == "BADBR") {
       nextCase += ` expect(() => new RegExp("${regex}")).toThrow();`;
     } else {
-      nextCase += ` const match = exec("${regex}", "${escape(str)}");`;
+      nextCase += ` const match = exec("${regex}", "${escape(
+        str
+      )}", "${flags}");`;
 
       // create an expect for each capture group
       const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
