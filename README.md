@@ -92,6 +92,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 **RegExp**
 
 - [x] global
+- [ ] sticky
 - [ ] case insensitive
 - [ ] multiline
 

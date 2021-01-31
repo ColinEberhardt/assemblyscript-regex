@@ -67,6 +67,7 @@ let gm = new Array<GroupEndMarkerState>();
 
 export class RegExp {
   lastIndex: i32 = 0;
+  global: bool = false;
 
   private nfa: Automata;
   private endOfInput: bool = false;
@@ -75,6 +76,10 @@ export class RegExp {
 
   constructor(private regex: string, public flags: string | null = null) {
     const ast = Parser.toAST(regex);
+
+    if (flags && flags.includes("g")) {
+      this.global = true;
+    }
 
     // look for start / end assertions
     const body = ast.body;
@@ -132,7 +137,7 @@ export class RegExp {
         // return this match (checking end of input condition)
         const matchEndIndex = match.index + match.matches[0].length;
         if (!this.endOfInput || (this.endOfInput && matchEndIndex == len)) {
-          if (this.flags == "g") {
+          if (this.global) {
             this.lastIndex = matchEndIndex;
           }
           return match;

@@ -9,6 +9,11 @@ it("match returns correct substring", () => {
 });
 
 describe("global mode", () => {
+  it("sets global flag", () => {
+    expect(new RegExp("\\d+", "g").global).toBeTruthy();
+    expect(new RegExp("\\d+", "").global).toBeFalsy();
+  });
+
   it("increments lastIndex", () => {
     const regex = new RegExp("\\d+", "g");
     const match = exec(regex, "dog 23 fish 45 cat");
