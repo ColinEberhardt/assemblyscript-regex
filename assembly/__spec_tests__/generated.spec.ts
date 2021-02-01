@@ -337,7 +337,7 @@ it("line: 71 - matches ((((((((((((((((((((((((((((((x))))))))))))))))))))))))))
   expect(match.matches[1]).toBe("x");
   expect(match.matches[2]).toBe("x");
 });
-xit("line: 72 - matches a?(ab|ba)* against 'ababababababababababababababababababababababababababababababababababababababababa'", () => {
+it("line: 72 - matches a?(ab|ba)* against 'ababababababababababababababababababababababababababababababababababababababababa'", () => {
   const match = exec(
     "a?(ab|ba)*",
     "ababababababababababababababababababababababababababababababababababababababababa",
