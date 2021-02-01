@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("^(([^!]+!)?([^!]+)|.+!([^!]+!)([^!]+))$");
-const match = regexObj.exec("foo!bar!bas");
+const regexObj = new RegExp("((a)(b)c)(d)");
+const match = regexObj.exec("abcd");
 
 console.log(match);

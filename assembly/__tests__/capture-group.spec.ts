@@ -27,7 +27,7 @@ it("supports capture groups", () => {
   expect(match.matches[2]).toBe("aaa");
 });
 
-xit("should not return captured values for non-matching alternations", () => {
+it("should not return captured values for non-matching alternations", () => {
   const match = exec("(a|b)c|a(b|c)", "ab");
   expect(match.matches[0]).toBe("ab");
   expect(match.matches[1]).toBe("");

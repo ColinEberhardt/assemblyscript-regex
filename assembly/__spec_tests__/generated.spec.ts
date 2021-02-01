@@ -163,7 +163,7 @@ it("line: 34 - matches (a|b)c|a(b|c) against 'ac'", () => {
   expect(match.matches[0]).toBe("ac");
   expect(match.matches[1]).toBe("a");
 });
-xit("line: 35 - matches (a|b)c|a(b|c) against 'ab'", () => {
+it("line: 35 - matches (a|b)c|a(b|c) against 'ab'", () => {
   const match = exec("(a|b)c|a(b|c)", "ab", "");
   expect(match.matches[0]).toBe("ab");
   expect(match.matches[1]).toBe("");

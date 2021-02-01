@@ -49,6 +49,8 @@ export class GroupStartMarkerState extends State {
 export class GroupEndMarkerState extends State {
   // a bit yucky - storing transient state in the state machine!
   capture: string = "";
+  // captures from the path through the NFA that reaches the end are flagged
+  flagged: bool = false;
 
   constructor(next: State, public startMarker: GroupStartMarkerState) {
     super();

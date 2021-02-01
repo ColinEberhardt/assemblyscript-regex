@@ -45,6 +45,10 @@ function recursiveBacktrackingSearch(
       position
     );
     if (match != null) {
+      // when unwinding the stack after a successful match, flag the captured values
+      if (state instanceof GroupEndMarkerState) {
+        (state as GroupEndMarkerState).flagged = true;
+      }
       return match;
     }
   }
@@ -132,7 +136,9 @@ export class RegExp {
       // we have found a match
       if (matchStr != null) {
         const match = new Match(
-          [matchStr!].concat(groupMarkers.map<string>((m) => m.capture)),
+          [matchStr!].concat(
+            groupMarkers.map<string>((m) => (m.flagged ? m.capture : ""))
+          ),
           matchIndex,
           str
         );

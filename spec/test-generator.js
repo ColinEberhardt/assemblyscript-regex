@@ -14,7 +14,6 @@ const knownIssues = {
   "BUG: doesn't support anchors within capture groups": [20],
   // https://github.com/ColinEberhardt/assemblyscript-regex/issues/2
   "BUG: Should not return captured values for non-matching alternations": [
-    35,
     133,
     150,
     187,
