@@ -9,18 +9,9 @@ const knownIssues = {
   "issue with parsing the test itself": [28, 58, 59, 78, 212, 213],
   "issue with generating the test": [61, 62, 64, 76, 209, 210],
   "unsupported POSIX regex syntax": [54, 55, 56],
-  "issue that require triage": [199, 202, 204, 205, 206, 207],
+  "issue that require triage": [133, 199, 202, 204, 205, 206, 207],
   // I can't find a good reference that describes this behaviour!
   "BUG: doesn't support anchors within capture groups": [20],
-  // https://github.com/ColinEberhardt/assemblyscript-regex/issues/2
-  "BUG: Should not return captured values for non-matching alternations": [
-    133,
-    150,
-    187,
-    188,
-    190,
-    191,
-  ],
 };
 
 const hasKnownIssue = (index) => {

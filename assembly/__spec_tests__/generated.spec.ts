@@ -692,7 +692,7 @@ it("line: 149 - matches (ab|a)b*c against 'abc'", () => {
   expect(match.matches[0]).toBe("abc");
   expect(match.matches[1]).toBe("ab");
 });
-xit("line: 150 - matches ((a)(b)c)(d) against 'abcd'", () => {
+it("line: 150 - matches ((a)(b)c)(d) against 'abcd'", () => {
   const match = exec("((a)(b)c)(d)", "abcd", "");
   expect(match.matches[0]).toBe("abcd");
   expect(match.matches[1]).toBe("abc");
@@ -974,14 +974,14 @@ it("line: 186 - matches ^.+!([^!]+!)([^!]+)$ against 'foo!bar!bas'", () => {
   expect(match.matches[1]).toBe("bar!");
   expect(match.matches[2]).toBe("bas");
 });
-xit("line: 187 - matches ((foo)|(bar))!bas against 'bar!bas'", () => {
+it("line: 187 - matches ((foo)|(bar))!bas against 'bar!bas'", () => {
   const match = exec("((foo)|(bar))!bas", "bar!bas", "");
   expect(match.matches[0]).toBe("bar!bas");
   expect(match.matches[1]).toBe("bar");
   expect(match.matches[2]).toBe("");
   expect(match.matches[3]).toBe("bar");
 });
-xit("line: 188 - matches ((foo)|(bar))!bas against 'foo!bar!bas'", () => {
+it("line: 188 - matches ((foo)|(bar))!bas against 'foo!bar!bas'", () => {
   const match = exec("((foo)|(bar))!bas", "foo!bar!bas", "");
   expect(match.matches[0]).toBe("bar!bas");
   expect(match.matches[1]).toBe("bar");
@@ -994,12 +994,12 @@ it("line: 189 - matches ((foo)|(bar))!bas against 'foo!bas'", () => {
   expect(match.matches[1]).toBe("foo");
   expect(match.matches[2]).toBe("foo");
 });
-xit("line: 190 - matches ((foo)|bar)!bas against 'bar!bas'", () => {
+it("line: 190 - matches ((foo)|bar)!bas against 'bar!bas'", () => {
   const match = exec("((foo)|bar)!bas", "bar!bas", "");
   expect(match.matches[0]).toBe("bar!bas");
   expect(match.matches[1]).toBe("bar");
 });
-xit("line: 191 - matches ((foo)|bar)!bas against 'foo!bar!bas'", () => {
+it("line: 191 - matches ((foo)|bar)!bas against 'foo!bar!bas'", () => {
   const match = exec("((foo)|bar)!bas", "foo!bar!bas", "");
   expect(match.matches[0]).toBe("bar!bas");
   expect(match.matches[1]).toBe("bar");

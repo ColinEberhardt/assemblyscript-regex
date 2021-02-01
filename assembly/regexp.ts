@@ -1,4 +1,4 @@
-import { State, Automata, GroupEndMarkerState, MatchResult } from "./nfa/nfa";
+import { State, Automata, GroupStartMarkerState, MatchResult } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
 import { Char } from "./char";
@@ -46,8 +46,8 @@ function recursiveBacktrackingSearch(
     );
     if (match != null) {
       // when unwinding the stack after a successful match, flag the captured values
-      if (state instanceof GroupEndMarkerState) {
-        (state as GroupEndMarkerState).flagged = true;
+      if (state instanceof GroupStartMarkerState) {
+        (state as GroupStartMarkerState).flagged = true;
       }
       return match;
     }
@@ -67,7 +67,7 @@ export class Match {
   }
 }
 
-let gm = new Array<GroupEndMarkerState>();
+let gm = new Array<GroupStartMarkerState>();
 
 export class RegExp {
   lastIndex: i32 = 0;
@@ -77,7 +77,7 @@ export class RegExp {
   private nfa: Automata;
   private endOfInput: bool = false;
   private startOfInput: bool = false;
-  private groupMarkers: GroupEndMarkerState[];
+  private groupMarkers: GroupStartMarkerState[];
 
   constructor(private regex: string, public flags: string | null = null) {
     const ast = Parser.toAST(regex);
@@ -100,10 +100,10 @@ export class RegExp {
     this.nfa = Automata.toNFA(ast, this.ignoreCase);
 
     // find all the group marker states
-    gm = new Array<GroupEndMarkerState>();
+    gm = new Array<GroupStartMarkerState>();
     nfaWalker(this.nfa.start, (state) => {
-      if (state instanceof GroupEndMarkerState) {
-        gm.push(state as GroupEndMarkerState);
+      if (state instanceof GroupStartMarkerState) {
+        gm.push(state as GroupStartMarkerState);
       }
     });
     this.groupMarkers = gm;
