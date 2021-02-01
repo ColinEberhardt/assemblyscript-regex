@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1612132588774,
+  "lastUpdate": 1612180666415,
   "repoUrl": "https://github.com/ColinEberhardt/assemblyscript-regex",
   "entries": {
     "Benchmark": [
@@ -869,6 +869,79 @@ window.BENCHMARK_DATA = {
             "range": "±1.05%",
             "unit": "ops/sec",
             "extra": "90 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin E",
+            "username": "ColinEberhardt"
+          },
+          "committer": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin E",
+            "username": "ColinEberhardt"
+          },
+          "distinct": true,
+          "id": "3c4ee3c7a37a81bcb4100d2b4a23f39e83040157",
+          "message": "ensure capture groups are returned in the correct order",
+          "timestamp": "2021-02-01T11:56:23Z",
+          "tree_id": "358f5655991b8516b1d7f631d0e00e68b6f02963",
+          "url": "https://github.com/ColinEberhardt/assemblyscript-regex/commit/3c4ee3c7a37a81bcb4100d2b4a23f39e83040157"
+        },
+        "date": 1612180665890,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "baseline",
+            "value": 98969,
+            "range": "±0.89%",
+            "unit": "ops/sec",
+            "extra": "84 samples"
+          },
+          {
+            "name": "character class",
+            "value": 33620,
+            "range": "±0.98%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "concatenation",
+            "value": 7805,
+            "range": "±1.42%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "quantifiers",
+            "value": 13223,
+            "range": "±1.90%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "range quantifiers",
+            "value": 4485,
+            "range": "±0.90%",
+            "unit": "ops/sec",
+            "extra": "88 samples"
+          },
+          {
+            "name": "alternation",
+            "value": 15737,
+            "range": "±0.84%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "multiple regex matches",
+            "value": 1653,
+            "range": "±1.17%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
           }
         ]
       }
