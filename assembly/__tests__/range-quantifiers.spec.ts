@@ -25,3 +25,11 @@ it("handles quantifiers within alternates", () => {
   expectMatch("a{2}|b{2}", ["bb", "aa"]);
   expectNotMatch("a{2}|b{2}", ["cc"]);
 });
+
+it("handles imcomplete quantifier ", () => {
+  expectMatch("a{2", ["a{2"]);
+  expectMatch("a{2,", ["a{2,"]);
+  expectMatch("a{2,3", ["a{2,3"]);
+  expectMatch("a{2,3a", ["a{2,3a"]);
+  expectMatch("a{2,3a}", ["a{2,3a}"]);
+});

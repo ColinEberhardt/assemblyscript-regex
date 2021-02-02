@@ -6,8 +6,8 @@
   "scripts": {
     "test": "npm run test:generate && npm run asbuild:untouched && npm run prettier && npm run eslint && npm run asp",
     "test:generate": "node spec/test-generator.js",
-    "asp": "asp --verbose",
-    "asp:ci": "asp",
+    "asp": "asp --verbose --nologo",
+    "asp:ci": "asp --nologo",
     "prettier": "prettier --check .",
     "prettier:write": "prettier --write .",
     "eslint:write": "npm run eslint -- --fix ",

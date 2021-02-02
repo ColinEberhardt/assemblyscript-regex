@@ -136,7 +136,7 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
-  private maybeParseRepetitionRange(): Range {
+  private maybeParseRepetitionRange(): Range | null {
     // snapshot
     const iteratorCopy = this.iterator.copy();
     this.eatToken(Char.LeftCurlyBrace);
@@ -191,7 +191,7 @@ export class Parser {
     // repetition not found - reset state
     this.iterator = iteratorCopy;
 
-    return range;
+    return null;
   }
 
   // parses a sequence of chars
@@ -213,12 +213,12 @@ export class Parser {
         // @ts-ignore
       } else if (token == Char.LeftCurlyBrace) {
         const range = this.maybeParseRepetitionRange();
-        if (range.from == -1) {
-          // this is not the start of a repetition, it's just a char!
-          nodes.push(this.parseCharacter());
-        } else {
+        if (range != null) {
           const expression = nodes.pop();
           nodes.push(new RangeRepetitionNode(expression, range.from, range.to));
+        } else {
+          // this is not the start of a repetition, it's just a char!
+          nodes.push(this.parseCharacter());
         }
       } else if (isQuantifier(token)) {
         const expression = nodes.pop();
