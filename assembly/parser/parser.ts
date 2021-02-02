@@ -29,6 +29,25 @@ function isCharacterSetSpecialChar(code: Char): bool {
   );
 }
 
+function isCharacterClass(code: u32): bool {
+  switch (code) {
+    case Char.d:
+    case Char.D:
+    case Char.Dot:
+    case Char.w:
+    case Char.W:
+    case Char.s:
+    case Char.S:
+    case Char.t:
+    case Char.r:
+    case Char.n:
+    case Char.v:
+    case Char.f:
+      return true;
+  }
+  return false;
+}
+
 function isAssertion(code: u32): bool {
   return code == Char.Dollar || code == Char.Caret; // "$" or "^"
 }
@@ -119,8 +138,10 @@ export class Parser {
         return this.parseCharacterCode(Char.x);
       } else if (token == Char.u) {
         return this.parseCharacterCode(Char.u);
-      } else {
+      } else if (isCharacterClass(token)) {
         return new CharacterClassNode(this.eatToken());
+      } else {
+        return new CharacterNode(this.eatToken());
       }
     }
 

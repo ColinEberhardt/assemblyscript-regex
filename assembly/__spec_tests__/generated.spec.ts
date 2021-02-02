@@ -4,7 +4,10 @@
 import { RegExp, Match } from "..";
 import { expectMatch, expectNotMatch, exec } from "../__tests__/utils";
 
-xit("line: 1 - requires triage", () => {});
+it("line: 1 - matches the quick brown fox against 'the quick brown fox'", () => {
+  const match = exec("the quick brown fox", "the quick brown fox", "");
+  expect(match.matches[0]).toBe("the quick brown fox".substring(0, 19));
+});
 it("line: 2 - matches the quick brown fox against 'The quick brown FOX'", () => {
   expectNotMatch("the quick brown fox", ["The quick brown FOX"]);
 });
@@ -514,7 +517,10 @@ it("line: 111 - matches ^[^]cde] against 'dthing'", () => {
 it("line: 112 - matches ^[^]cde] against 'ething'", () => {
   expectNotMatch("^[^]cde]", ["ething"]);
 });
-xit("line: 113 - requires triage", () => {});
+it("line: 113 - matches ^\\� against '�'", () => {
+  const match = exec("^\\�", "�", "");
+  expect(match.matches[0]).toBe("�".substring(0, 1));
+});
 it("line: 114 - matches ^� against '�'", () => {
   const match = exec("^�", "�", "");
   expect(match.matches[0]).toBe("�".substring(0, 1));
@@ -1260,7 +1266,7 @@ it("line: 1154 - matches ^abc$ against 'abc'", () => {
 xit("line: 1155 - test cases with CRs not supported yet!", () => {});
 xit("line: 1156 - test cases with CRs not supported yet!", () => {});
 xit("line: 1157 - test cases with CRs not supported yet!", () => {});
-xit("line: 1158 - bug: g should not throw unsupported char class", () => {});
+xit("line: 1158 - requires triage", () => {});
 xit("line: 1159 - test cases with CRs not supported yet!", () => {});
 xit("line: 1160 - test cases with CRs not supported yet!", () => {});
 xit("line: 1161 - test cases with CRs not supported yet!", () => {});
@@ -1305,8 +1311,13 @@ it("line: 1178 - matches \\\x5c against '\\'", () => {
   const match = exec("\\\x5c", "\\", "");
   expect(match.matches[0]).toBe("\\".substring(0, 1));
 });
-xit("line: 1179 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1180 - bug: g should not throw unsupported char class", () => {});
+it("line: 1179 - matches \\\x20Z against 'the Zoo'", () => {
+  const match = exec("\\\x20Z", "the Zoo", "");
+  expect(match.matches[0]).toBe("the Zoo".substring(3, 5));
+});
+it("line: 1180 - matches \\\x20Z against 'Zulu'", () => {
+  expectNotMatch("\\\x20Z", ["Zulu"]);
+});
 xit("line: 1181 - back references are not supported", () => {});
 xit("line: 1182 - back references are not supported", () => {});
 xit("line: 1183 - back references are not supported", () => {});
@@ -1355,7 +1366,10 @@ xit("line: 1218 - back references are not supported", () => {});
 xit("line: 1219 - back references are not supported", () => {});
 xit("line: 1220 - back references are not supported", () => {});
 xit("line: 1221 - non capturing groups not supported", () => {});
-xit("line: 1223 - bug: g should not throw unsupported char class", () => {});
+it("line: 1223 - matches ab\\gdef against 'abgdef'", () => {
+  const match = exec("ab\\gdef", "abgdef", "");
+  expect(match.matches[0]).toBe("abgdef".substring(0, 6));
+});
 xit("line: 1224 - requires triage", () => {});
 xit("line: 1225 - lazy quantifiers are not supported", () => {});
 xit("line: 1226 - back references are not supported", () => {});
@@ -1364,13 +1378,15 @@ xit("line: 1228 - back references are not supported", () => {});
 xit("line: 1229 - back references are not supported", () => {});
 xit("line: 1230 - back references are not supported", () => {});
 xit("line: 1231 - test cases with CRs not supported yet!", () => {});
-xit("line: 1232 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1233 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1234 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1235 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1236 - bug: g should not throw unsupported char class", () => {});
+xit("line: 1232 - requires triage", () => {});
+xit("line: 1233 - requires triage", () => {});
+xit("line: 1234 - requires triage", () => {});
+xit("line: 1235 - requires triage", () => {});
+it("line: 1236 - matches ^([^a])([^\\\b])([^c]*)([^d]{3,4}) against 'anything'", () => {
+  expectNotMatch("^([^a])([^\\\b])([^c]*)([^d]{3,4})", ["anything"]);
+});
 xit("line: 1237 - requires triage", () => {});
-xit("line: 1238 - bug: g should not throw unsupported char class", () => {});
+xit("line: 1238 - requires triage", () => {});
 xit("line: 1239 - requires triage", () => {});
 it("line: 1240 - matches [^a] against 'Abc'", () => {
   const match = exec("[^a]", "Abc", "");
@@ -1418,9 +1434,17 @@ it("line: 1251 - matches [^k]{2,3}$ against 'akb'", () => {
 it("line: 1252 - matches [^k]{2,3}$ against 'akk '", () => {
   expectNotMatch("[^k]{2,3}$", ["akk "]);
 });
-xit("line: 1253 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1254 - bug: g should not throw unsupported char class", () => {});
-xit("line: 1255 - bug: g should not throw unsupported char class", () => {});
+it("line: 1253 - matches ^\\d{8,}\\@.+[^k]$ against '12345678@a.b.c.d'", () => {
+  const match = exec("^\\d{8,}\\@.+[^k]$", "12345678@a.b.c.d", "");
+  expect(match.matches[0]).toBe("12345678@a.b.c.d".substring(0, 16));
+});
+it("line: 1254 - matches ^\\d{8,}\\@.+[^k]$ against '123456789@x.y.z'", () => {
+  const match = exec("^\\d{8,}\\@.+[^k]$", "123456789@x.y.z", "");
+  expect(match.matches[0]).toBe("123456789@x.y.z".substring(0, 15));
+});
+it("line: 1255 - matches ^\\d{8,}\\@.+[^k]$ against '12345678@x.y.uk'", () => {
+  expectNotMatch("^\\d{8,}\\@.+[^k]$", ["12345678@x.y.uk"]);
+});
 it("line: 1256 - matches ^\\d{8,}\\@.+[^k]$ against '1234567@a.b.c.d       '", () => {
   expectNotMatch("^\\d{8,}\\@.+[^k]$", ["1234567@a.b.c.d       "]);
 });
@@ -1483,7 +1507,7 @@ xit("line: 1276 - non capturing groups not supported", () => {});
 xit("line: 1277 - non capturing groups not supported", () => {});
 xit("line: 1278 - non capturing groups not supported", () => {});
 xit("line: 1279 - non capturing groups not supported", () => {});
-xit("line: 1280 - bug: g should not throw unsupported char class", () => {});
+xit("line: 1280 - requires triage", () => {});
 it("line: 1281 - matches foo(.*)bar against 'The food is under the bar in the barn.'", () => {
   const match = exec(
     "foo(.*)bar",
@@ -1519,7 +1543,7 @@ it("line: 1287 - matches (.*)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(22, 23));
 });
 xit("line: 1288 - lazy quantifiers are not supported", () => {});
-xit("line: 1289 - bug: g should not throw unsupported char class", () => {});
+xit("line: 1289 - requires triage", () => {});
 it("line: 1290 - matches (.*\\D)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   const match = exec("(.*\\D)(\\d+)$", "I have 2 numbers: 53147", "");
   expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 23));

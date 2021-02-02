@@ -53,3 +53,7 @@ it("escaped dot", () => {
   expectMatch("\\.", ["."]);
   expectNotMatch("\\.", ["", "a"]);
 });
+
+it("unrecognised character classes are treated as characters", () => {
+  expectMatch("\\g\\m", ["gm"]);
+});

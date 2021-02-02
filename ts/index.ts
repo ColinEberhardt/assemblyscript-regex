@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("^12.34");
-const match = regexObj.exec("12\n34");
+const regexObj = new RegExp("\\�");
+const match = regexObj.exec("�");
 
 console.log(match);
