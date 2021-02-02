@@ -1,17 +1,17 @@
 const fs = require("fs");
-const data = fs.readFileSync("./spec/test.dat", "utf8");
+const data = fs.readFileSync("./spec/pcre-1.dat", "utf8");
 const lines = data.split("\n");
 const prettier = require("prettier");
 
 const escape = (str) => str.replace("\\", "\\\\");
 
 const knownIssues = {
-  "issue with parsing the test itself": [28, 58, 59, 78, 212, 213],
-  "issue with generating the test": [61, 62, 64, 76, 209, 210],
-  "unsupported POSIX regex syntax": [54, 55, 56],
-  "issue that require triage": [133, 199, 202, 204, 205, 206, 207],
-  // I can't find a good reference that describes this behaviour!
-  "BUG: doesn't support anchors within capture groups": [20],
+  // "issue with parsing the test itself": [28, 58, 59, 78, 212, 213],
+  // "issue with generating the test": [61, 62, 64, 76, 209, 210],
+  // "unsupported POSIX regex syntax": [54, 55, 56],
+  // "issue that require triage": [133, 199, 202, 204, 205, 206, 207],
+  // // I can't find a good reference that describes this behaviour!
+  // "BUG: doesn't support anchors within capture groups": [20],
 };
 
 const hasKnownIssue = (index) => {
@@ -32,6 +32,7 @@ import { expectMatch, expectNotMatch, exec} from "../__tests__/utils";
 
 `;
 
+let regex = "";
 lines.forEach((line, index) => {
   let nextCase = "";
 
@@ -49,9 +50,11 @@ lines.forEach((line, index) => {
       return;
     }
 
-    const regex = escape(parts[1]);
+    regex = parts[1] == "SAME" ? regex : escape(parts[1]);
     const str = parts[2] !== "NULL" ? parts[2] : "";
     const flags = parts[0] == "Ei" ? "i" : "";
+
+    if (regex.includes("\\") || str.includes("\\") || str.includes('"')) return;
 
     nextCase += `${knownIssueCode}("line: ${index} - matches ${regex} against '${escape(
       str
@@ -59,6 +62,8 @@ lines.forEach((line, index) => {
       `;
     if (parts[3] == "BADBR") {
       nextCase += ` expect(() => new RegExp("${regex}")).toThrow();`;
+    } else if (parts[3] == "NOMATCH") {
+      nextCase += ` expectNotMatch("${regex}", ["${escape(str)}"]);`;
     } else {
       nextCase += ` const match = exec("${regex}", "${escape(
         str
@@ -89,5 +94,6 @@ lines.forEach((line, index) => {
 
 fs.writeFileSync(
   "./assembly/__spec_tests__/generated.spec.ts",
+  // testCase
   prettier.format(testCase, { parser: "babel" })
 );

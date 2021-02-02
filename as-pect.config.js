@@ -3,7 +3,7 @@ module.exports = {
    * A set of globs passed to the glob package that qualify typescript files for testing.
    */
   include: [
-    "assembly/__tests__/**/*.spec.ts",
+    // "assembly/__tests__/**/*.spec.ts",
     "assembly/__spec_tests__/**/*.spec.ts",
   ],
   /**

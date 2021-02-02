@@ -11,6 +11,12 @@
       "runtimeArgs": ["-r", "ts-node/register"],
       "args": ["${workspaceFolder}/ts/index.ts"],
       "env": { "TS_NODE_PROJECT": "${workspaceFolder}/ts/tsconfig.json" }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Test Gen",
+      "args": ["${workspaceFolder}/spec/test-generator.js"]
     }
   ]
 }
