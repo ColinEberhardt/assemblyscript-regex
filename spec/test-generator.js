@@ -5,6 +5,9 @@ const prettier = require("prettier");
 
 const escape = (str) => str.replace("\\", "\\\\");
 
+const range = (from, to) =>
+  Array.from({ length: to - from + 1 }, (_, i) => i + from);
+
 const knownIssues = {
   // "issue with parsing the test itself": [28, 58, 59, 78, 212, 213],
   // "issue with generating the test": [61, 62, 64, 76, 209, 210],
@@ -12,6 +15,8 @@ const knownIssues = {
   // "issue that require triage": [133, 199, 202, 204, 205, 206, 207],
   // // I can't find a good reference that describes this behaviour!
   // "BUG: doesn't support anchors within capture groups": [20],
+  "unsupported lazy match": range(50, 59),
+  "supports malformed ranges": range(1185, 1188),
 };
 
 const hasKnownIssue = (index) => {
