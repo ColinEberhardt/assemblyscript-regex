@@ -9,8 +9,13 @@ const range = (from, to) =>
   Array.from({ length: to - from + 1 }, (_, i) => i + from);
 
 const knownIssues = {
-  "issue with parsing the test itself": range(1185, 1188),
+  "issue with parsing the test itself": [
+    1103,
+    ...range(1185, 1188),
+    ...range(1095, 1098),
+  ],
   "issues with repeated capture groups": [...range(63, 68), 1391, 1392],
+  "bug that needs filing": [1102],
   "bug: \\g should not throw unsupported char class": [
     1223,
     1179,
@@ -36,6 +41,8 @@ const knownIssues = {
     281,
     264,
     263,
+    265,
+    266,
     ...range(289, 291),
     1224,
     1277,
@@ -43,6 +50,22 @@ const knownIssues = {
     1373,
     1376,
     1412,
+    1087,
+    1088,
+    1348,
+    1349,
+    ...range(1351, 1359),
+    1360,
+    1361,
+    1363,
+    1367,
+    1369,
+    1308,
+    1237,
+    1190,
+    1239,
+    1089,
+    1090,
     ...range(1147, 1149),
     ...range(1408, 1410),
     1413,
@@ -50,6 +73,7 @@ const knownIssues = {
   ],
   "as-pect test issue": [1145, 1146],
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
+  "test regex is not supported in JS": [82],
   "test doesn't support NULL": [1411],
   "aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue": [
     153,
@@ -79,6 +103,8 @@ import { expectMatch, expectNotMatch, exec} from "../__tests__/utils";
 let regex = "";
 lines.forEach((line, index) => {
   index += 1;
+
+  // if (index < 1102 || index > 1108) return;
   let nextCase = "";
 
   const knownIssue = hasKnownIssue(index);
@@ -95,11 +121,21 @@ lines.forEach((line, index) => {
     }
 
     regex = parts[1] == "SAME" ? regex : escape(parts[1]);
-    const str = parts[2] !== "NULL" ? parts[2] : "";
+    let str = parts[2] !== "NULL" ? parts[2] : "";
     const flags = parts[0].includes("i") ? "i" : "";
 
-    if (str.includes("\\") || str.includes('"')) {
-      testCase += `xit("line: ${index} - test cases with escape characters are not supported yet!", () => { });`;
+    if (str.includes('"')) {
+      testCase += `xit("line: ${index} - test cases with quotes are not supported yet!", () => { });`;
+      return;
+    }
+
+    if (str.includes("\\n")) {
+      testCase += `xit("line: ${index} - test cases with CRs not supported yet!", () => { });`;
+      return;
+    }
+
+    if (str.includes("\\x{")) {
+      testCase += `xit("line: ${index} - test encoding issue", () => { });`;
       return;
     }
 
@@ -130,23 +166,15 @@ lines.forEach((line, index) => {
     if (parts[3] == "BADBR") {
       nextCase += ` expect(() => { let foo = new RegExp("${regex}") }).toThrow();`;
     } else if (parts[3] == "NOMATCH") {
-      nextCase += ` expectNotMatch("${regex}", ["${escape(str)}"]);`;
+      nextCase += ` expectNotMatch("${regex}", ["${str}"]);`;
     } else {
-      nextCase += ` const match = exec("${regex}", "${escape(
-        str
-      )}", "${flags}");`;
+      nextCase += ` const match = exec("${regex}", "${str}", "${flags}");`;
 
       // create an expect for each capture group
       const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
       captures.forEach((capture, index) => {
         const digits = capture.match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)/);
-        const expected =
-          digits[0] == "?"
-            ? ""
-            : str.substring(Number(digits[1]), Number(digits[2]));
-        nextCase += ` expect(match.matches[${index}]).toBe("${escape(
-          expected
-        )}");`;
+        nextCase += `expect(match.matches[${index}]).toBe("${str}".substring(${digits[1]}, ${digits[2]}));`;
       });
     }
 
