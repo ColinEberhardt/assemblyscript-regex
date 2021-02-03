@@ -7,6 +7,7 @@ import {
   CharacterRangeNode,
   NodeType,
 } from "../parser/node";
+import { Flags } from "../regexp";
 
 const enum MatcherType {
   Character,
@@ -15,7 +16,7 @@ const enum MatcherType {
   CharacterSet,
 }
 
-let _ignore: bool;
+let _flags: Flags;
 
 export class Matcher {
   constructor(readonly type: MatcherType) {}
@@ -25,34 +26,38 @@ export class Matcher {
   }
 
   static fromCharacterClassNode(
-    node: CharacterClassNode
+    node: CharacterClassNode,
+    flags: Flags
   ): CharacterClassMatcher {
-    return new CharacterClassMatcher(node.charClass);
+    return new CharacterClassMatcher(node.charClass, flags.dotAll);
   }
 
   static fromCharacterRangeNode(
     node: CharacterRangeNode,
-    ignoreCase: bool
+    flags: Flags
   ): CharacterRangeMatcher {
-    return new CharacterRangeMatcher(node.from, node.to, ignoreCase);
+    return new CharacterRangeMatcher(node.from, node.to, flags.ignoreCase);
   }
 
   static fromCharacterSetNode(
     node: CharacterSetNode,
-    ignoreCase: bool
+    flags: Flags
   ): CharacterSetMatcher {
-    _ignore = ignoreCase;
+    _flags = flags;
     const matchers = node.expressions.map<Matcher>((exp) => {
       switch (exp.type) {
         case NodeType.CharacterRange:
           return Matcher.fromCharacterRangeNode(
             exp as CharacterRangeNode,
-            _ignore
+            _flags
           );
         case NodeType.Character:
-          return Matcher.fromCharacterNode(exp as CharacterNode, _ignore);
+          return Matcher.fromCharacterNode(exp as CharacterNode, _flags);
         case NodeType.CharacterClass:
-          return Matcher.fromCharacterClassNode(exp as CharacterClassNode);
+          return Matcher.fromCharacterClassNode(
+            exp as CharacterClassNode,
+            _flags
+          );
         default:
           throw new Error("unsupported node type within character set");
       }
@@ -62,9 +67,9 @@ export class Matcher {
 
   static fromCharacterNode(
     node: CharacterNode,
-    ignoreCase: bool
+    flags: Flags
   ): CharacterMatcher {
-    return new CharacterMatcher(node.char, ignoreCase);
+    return new CharacterMatcher(node.char, flags.ignoreCase);
   }
 }
 
@@ -102,7 +107,7 @@ export class CharacterRangeMatcher extends Matcher {
 }
 
 export class CharacterClassMatcher extends Matcher {
-  constructor(public charClass: Char) {
+  constructor(public charClass: Char, private dotAll: bool) {
     super(MatcherType.CharacterClass);
   }
 
@@ -113,12 +118,12 @@ export class CharacterClassMatcher extends Matcher {
       case Char.D:
         return !isDigit(code);
       case Char.Dot:
-        return (
-          code != Char.CarriageReturn &&
-          code != Char.LineFeed &&
-          code != 8232 &&
-          code != 8233
-        );
+        return this.dotAll
+          ? true
+          : code != Char.CarriageReturn &&
+              code != Char.LineFeed &&
+              code != 8232 &&
+              code != 8233;
       case Char.w:
         return isAlpha(code) || code == Char.Underscore || isDigit(code);
       case Char.W:

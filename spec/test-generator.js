@@ -24,6 +24,9 @@ const knownIssues = {
   "test contains an octal escape sequence": [1102],
   "requires triage": [
     1087,
+    1363,
+    1369,
+    1163,
     1088,
     1239,
     ...range(1147, 1149),
@@ -81,7 +84,12 @@ lines.forEach((line, index) => {
 
     regex = parts[1] == "SAME" ? regex : escape(parts[1]);
     let str = parts[2] !== "NULL" ? parts[2] : "";
-    const flags = parts[0].includes("i") ? "i" : "";
+    let flags = parts[0].includes("i") ? "is" : "s";
+
+    if (parts[0].includes("n")) {
+      testCase += `xit("line: ${index} - multi line regex not supported yet!", () => { });`;
+      return;
+    }
 
     if (str.includes('"')) {
       testCase += `xit("line: ${index} - test cases with quotes are not supported yet!", () => { });`;
@@ -95,11 +103,6 @@ lines.forEach((line, index) => {
 
     if (regex.includes("\\b")) {
       testCase += `xit("line: ${index} - word boundary class not supported yet!", () => { });`;
-      return;
-    }
-
-    if (str.includes("\\n") || str.includes("\\r")) {
-      testCase += `xit("line: ${index} - test cases with CRs not supported yet!", () => { });`;
       return;
     }
 

@@ -13,6 +13,7 @@ import {
 
 import { Char } from "../char";
 import { Matcher } from "./matcher";
+import { Flags } from "../regexp";
 
 export enum MatchResult {
   // a match has occurred - which is a signal to consume a character
@@ -81,8 +82,8 @@ export class MatcherState<T extends Matcher> extends State {
 }
 
 export class Automata {
-  static toNFA(ast: AST, ignoreCase: bool): Automata {
-    return new AutomataFactor(ignoreCase).automataForNode(ast.body);
+  static toNFA(ast: AST, flags: Flags): Automata {
+    return new AutomataFactor(flags).automataForNode(ast.body);
   }
 
   static fromEpsilon(): Automata {
@@ -159,7 +160,7 @@ function group(nfa: Automata): Automata {
 }
 
 class AutomataFactor {
-  constructor(private ignoreCase: bool = false) {}
+  constructor(private flags: Flags) {}
 
   // recursively builds an automata for the given AST
   automataForNode(expression: Node | null): Automata {
@@ -186,10 +187,7 @@ class AutomataFactor {
       }
       case NodeType.Character:
         return Automata.fromMatcher(
-          Matcher.fromCharacterNode(
-            expression as CharacterNode,
-            this.ignoreCase
-          )
+          Matcher.fromCharacterNode(expression as CharacterNode, this.flags)
         );
       case NodeType.Concatenation: {
         const expressions = (expression as ConcatenationNode).expressions;
@@ -213,12 +211,15 @@ class AutomataFactor {
         return Automata.fromMatcher(
           Matcher.fromCharacterSetNode(
             expression as CharacterSetNode,
-            this.ignoreCase
+            this.flags
           )
         );
       case NodeType.CharacterClass:
         return Automata.fromMatcher(
-          Matcher.fromCharacterClassNode(expression as CharacterClassNode)
+          Matcher.fromCharacterClassNode(
+            expression as CharacterClassNode,
+            this.flags
+          )
         );
       case NodeType.Group: {
         const node = expression as GroupNode;

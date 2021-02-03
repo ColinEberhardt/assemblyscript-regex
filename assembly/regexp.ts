@@ -69,23 +69,31 @@ export class Match {
 
 let gm = new Array<GroupStartMarkerState>();
 
-export class RegExp {
-  lastIndex: i32 = 0;
+export class Flags {
   global: bool = false;
   ignoreCase: bool = false;
+  dotAll: bool = false;
 
+  constructor(flagString: string | null) {
+    if (flagString) {
+      this.global = flagString.includes("g");
+      this.ignoreCase = flagString.includes("i");
+      this.dotAll = flagString.includes("s");
+    }
+  }
+}
+
+export class RegExp {
+  lastIndex: i32 = 0;
+  private flags: Flags;
   private nfa: Automata;
   private endOfInput: bool = false;
   private startOfInput: bool = false;
   private groupMarkers: GroupStartMarkerState[];
 
-  constructor(private regex: string, public flags: string | null = null) {
+  constructor(private regex: string, public flagsString: string | null = null) {
     const ast = Parser.toAST(regex);
-
-    if (flags) {
-      this.global = flags.includes("g");
-      this.ignoreCase = flags.includes("i");
-    }
+    const flags = new Flags(flagsString);
 
     // look for start / end assertions
     const body = ast.body;
@@ -97,7 +105,7 @@ export class RegExp {
 
     astWalker(ast, expandRepetitions);
 
-    this.nfa = Automata.toNFA(ast, this.ignoreCase);
+    this.nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
     gm = new Array<GroupStartMarkerState>();
@@ -107,6 +115,8 @@ export class RegExp {
       }
     });
     this.groupMarkers = gm;
+
+    this.flags = flags;
   }
 
   exec(str: string): Match | null {
@@ -158,6 +168,18 @@ export class RegExp {
 
   toString(): string {
     return this.regex;
+  }
+
+  get global(): bool {
+    return this.flags.global;
+  }
+
+  get ignoreCase(): bool {
+    return this.flags.ignoreCase;
+  }
+
+  get dotAll(): bool {
+    return this.flags.dotAll;
   }
 }
 

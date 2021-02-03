@@ -8,7 +8,20 @@ it("match returns correct substring", () => {
   expect(match.matches[0]).toStrictEqual("1");
 });
 
-describe("case insensitive", () => {
+describe("dotAll mode", () => {
+  it("sets the dotAll flag", () => {
+    expect(new RegExp("foo", "s").dotAll).toBeTruthy();
+    expect(new RegExp("foo", "").dotAll).toBeFalsy();
+  });
+
+  it("allows dot to match any character", () => {
+    const regex = new RegExp("^12.34", "s");
+    const match = exec(regex, "12\n34");
+    expect(match.matches[0]).toBe("12\n34");
+  });
+});
+
+describe("case insensitive mode", () => {
   it("supports characters", () => {
     const regex = new RegExp("AbC", "i");
     const match = exec(regex, "aBc");

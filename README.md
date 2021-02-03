@@ -95,6 +95,8 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [ ] sticky
 - [x] case insensitive
 - [ ] multiline
+- [x] dotAll
+- [ ] unicode
 
 ### Development
 
