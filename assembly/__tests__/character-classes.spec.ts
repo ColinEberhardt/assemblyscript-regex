@@ -1,10 +1,6 @@
 import { RegExp } from "..";
 import { expectMatch, expectNotMatch, exec } from "./utils";
 
-xit("should throw with un-supported classes", () => {
-  // expect(() => new RegExp("\\o")).toThrow();
-});
-
 it("dot", () => {
   expectMatch(".", [" ", "B", "|", "9"]);
   expectNotMatch(".", ["", "\n"]);

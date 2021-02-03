@@ -1,3 +1,5 @@
+/* eslint-disable no-invalid-regexp */
+import { RegExp } from "..";
 import { expectMatch, expectNotMatch, exec } from "./utils";
 
 it("handles single quantifier", () => {
@@ -36,4 +38,10 @@ it("handles imcomplete quantifier ", () => {
 
 it("handles nested quantifiers", () => {
   expectMatch("(a{3}){2}", ["aaaaaa"]);
+});
+
+it("throws if quantifying a quantifier!", () => {
+  expect(() => {
+    let foo = new RegExp("a{3}{2}");
+  }).toThrow();
 });

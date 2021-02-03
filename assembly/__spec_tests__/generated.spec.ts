@@ -1087,19 +1087,7 @@ it("line: 261 - matches ^From +([^ ]+) +[a-zA-Z][a-zA-Z][a-zA-Z] +[a-zA-Z][a-zA-
     "From abcd  Mon Sep 01 12:33:02 1997".substring(5, 9)
   );
 });
-it("line: 262 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Mon Sep 01 12:33:02 1997'", () => {
-  const match = exec(
-    "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
-    "From abcd  Mon Sep 01 12:33:02 1997",
-    ""
-  );
-  expect(match.matches[0]).toBe(
-    "From abcd  Mon Sep 01 12:33:02 1997".substring(0, 27)
-  );
-  expect(match.matches[1]).toBe(
-    "From abcd  Mon Sep 01 12:33:02 1997".substring(15, 19)
-  );
-});
+xit("line: 262 - requires triage", () => {});
 xit("line: 263 - requires triage", () => {});
 xit("line: 264 - requires triage", () => {});
 xit("line: 265 - test cases with CRs not supported yet!", () => {});
@@ -1112,10 +1100,7 @@ xit("line: 271 - non capturing groups not supported", () => {});
 xit("line: 272 - non capturing groups not supported", () => {});
 xit("line: 273 - non capturing groups not supported", () => {});
 xit("line: 274 - non capturing groups not supported", () => {});
-it("line: 281 - matches ^abcd#rhubarb against 'abcd'", () => {
-  const match = exec("^abcd#rhubarb", "abcd", "");
-  expect(match.matches[0]).toBe("abcd".substring(0, 4));
-});
+xit("line: 281 - requires triage", () => {});
 xit("line: 282 - back references are not supported", () => {});
 xit("line: 283 - back references are not supported", () => {});
 xit("line: 284 - back references are not supported", () => {});
