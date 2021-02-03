@@ -14,48 +14,26 @@ const knownIssues = {
     ...range(1185, 1188),
     ...range(1095, 1098),
   ],
-  "issues with repeated capture groups": [...range(63, 68), 1391, 1392],
-  "bug that needs filing": [1102],
-  "requires triage": [
+  "issues with repeated capture groups": [
     262,
-    281,
-    264,
     263,
-    265,
-    266,
-    1238,
-    ...range(289, 291),
-    1224,
-    1277,
-    1278,
-    1373,
-    1376,
-    1412,
+    ...range(63, 68),
+    1391,
+    1392,
+  ],
+  "test contains an octal escape sequence": [1102],
+  "requires triage": [
     1087,
     1088,
-    1348,
-    1349,
-    ...range(1351, 1359),
-    1360,
-    1361,
-    1363,
-    1367,
-    1369,
-    1308,
-    1237,
-    1190,
     1239,
-    1089,
-    1090,
     ...range(1147, 1149),
-    ...range(1408, 1410),
     1413,
-    ...range(1301, 1307),
+    ...range(1301, 1308),
   ],
   "as-pect test issue": [1145, 1146],
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
-  "test regex contains syntax not supported in JS": [82, 1158],
-  "test doesn't support NULL": [1411],
+  "test regex contains syntax not supported in JS": [82, 1158, 281],
+  "the test behaviour differs between PCRE and JS": [290],
   "aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue": [
     153,
     203,
@@ -110,12 +88,17 @@ lines.forEach((line, index) => {
       return;
     }
 
+    if (regex == "NULL") {
+      testCase += `xit("line: ${index} - test cases for NULL regexes not supported yet", () => { });`;
+      return;
+    }
+
     if (regex.includes("\\b")) {
       testCase += `xit("line: ${index} - word boundary class not supported yet!", () => { });`;
       return;
     }
 
-    if (str.includes("\\n")) {
+    if (str.includes("\\n") || str.includes("\\r")) {
       testCase += `xit("line: ${index} - test cases with CRs not supported yet!", () => { });`;
       return;
     }
