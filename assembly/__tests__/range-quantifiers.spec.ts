@@ -33,3 +33,7 @@ it("handles imcomplete quantifier ", () => {
   expectMatch("a{2,3a", ["a{2,3a"]);
   expectMatch("a{2,3a}", ["a{2,3a}"]);
 });
+
+it("handles nested quantifiers", () => {
+  expectMatch("(a{3}){2}", ["aaaaaa"]);
+});

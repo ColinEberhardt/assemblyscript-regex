@@ -17,16 +17,6 @@ const knownIssues = {
   "issues with repeated capture groups": [...range(63, 68), 1391, 1392],
   "bug that needs filing": [1102],
   "requires triage": [
-    141,
-    153,
-    155,
-    255,
-    1158,
-    ...range(1232, 1235),
-    1280,
-    1289,
-    256,
-    261,
     262,
     281,
     264,
@@ -64,7 +54,7 @@ const knownIssues = {
   ],
   "as-pect test issue": [1145, 1146],
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
-  "test regex is not supported in JS": [82],
+  "test regex contains syntax not supported in JS": [82, 1158],
   "test doesn't support NULL": [1411],
   "aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue": [
     153,
@@ -117,6 +107,11 @@ lines.forEach((line, index) => {
 
     if (str.includes('"')) {
       testCase += `xit("line: ${index} - test cases with quotes are not supported yet!", () => { });`;
+      return;
+    }
+
+    if (regex.includes("\\b")) {
+      testCase += `xit("line: ${index} - word boundary class not supported yet!", () => { });`;
       return;
     }
 

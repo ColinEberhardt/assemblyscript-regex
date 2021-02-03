@@ -411,7 +411,7 @@ xit("line: 78 - lazy quantifiers are not supported", () => {});
 xit("line: 79 - lazy quantifiers are not supported", () => {});
 xit("line: 80 - lazy quantifiers are not supported", () => {});
 xit("line: 81 - lazy quantifiers are not supported", () => {});
-xit("line: 82 - test regex is not supported in JS", () => {});
+xit("line: 82 - test regex contains syntax not supported in JS", () => {});
 it("line: 83 - matches ^[ab\\]cde] against 'athing'", () => {
   const match = exec("^[ab\\]cde]", "athing", "");
   expect(match.matches[0]).toBe("athing".substring(0, 1));
@@ -674,13 +674,17 @@ it("line: 152 - matches ([\\da-f:]+)$ against 'abc'", () => {
   expect(match.matches[0]).toBe("abc".substring(0, 3));
   expect(match.matches[1]).toBe("abc".substring(0, 3));
 });
-xit("line: 153 - requires triage", () => {});
+xit("line: 153 - aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue", () => {});
 it("line: 154 - matches ([\\da-f:]+)$ against 'E'", () => {
   const match = exec("([\\da-f:]+)$", "E", "i");
   expect(match.matches[0]).toBe("E".substring(0, 1));
   expect(match.matches[1]).toBe("E".substring(0, 1));
 });
-xit("line: 155 - requires triage", () => {});
+it("line: 155 - matches ([\\da-f:]+)$ against '::'", () => {
+  const match = exec("([\\da-f:]+)$", "::", "i");
+  expect(match.matches[0]).toBe("::".substring(0, 2));
+  expect(match.matches[1]).toBe("::".substring(0, 2));
+});
 it("line: 156 - matches ([\\da-f:]+)$ against '5f03:12C0::932e'", () => {
   const match = exec("([\\da-f:]+)$", "5f03:12C0::932e", "i");
   expect(match.matches[0]).toBe("5f03:12C0::932e".substring(0, 15));
@@ -1070,8 +1074,32 @@ xit("line: 257 - non capturing groups not supported", () => {});
 xit("line: 258 - back references are not supported", () => {});
 xit("line: 259 - back references are not supported", () => {});
 xit("line: 260 - back references are not supported", () => {});
-xit("line: 261 - requires triage", () => {});
-xit("line: 262 - requires triage", () => {});
+it("line: 261 - matches ^From +([^ ]+) +[a-zA-Z][a-zA-Z][a-zA-Z] +[a-zA-Z][a-zA-Z][a-zA-Z] +[0-9]?[0-9] +[0-9][0-9]:[0-9][0-9] against 'From abcd  Mon Sep 01 12:33:02 1997'", () => {
+  const match = exec(
+    "^From +([^ ]+) +[a-zA-Z][a-zA-Z][a-zA-Z] +[a-zA-Z][a-zA-Z][a-zA-Z] +[0-9]?[0-9] +[0-9][0-9]:[0-9][0-9]",
+    "From abcd  Mon Sep 01 12:33:02 1997",
+    ""
+  );
+  expect(match.matches[0]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(0, 27)
+  );
+  expect(match.matches[1]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(5, 9)
+  );
+});
+it("line: 262 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Mon Sep 01 12:33:02 1997'", () => {
+  const match = exec(
+    "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
+    "From abcd  Mon Sep 01 12:33:02 1997",
+    ""
+  );
+  expect(match.matches[0]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(0, 27)
+  );
+  expect(match.matches[1]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(15, 19)
+  );
+});
 xit("line: 263 - requires triage", () => {});
 xit("line: 264 - requires triage", () => {});
 xit("line: 265 - test cases with CRs not supported yet!", () => {});
@@ -1084,7 +1112,10 @@ xit("line: 271 - non capturing groups not supported", () => {});
 xit("line: 272 - non capturing groups not supported", () => {});
 xit("line: 273 - non capturing groups not supported", () => {});
 xit("line: 274 - non capturing groups not supported", () => {});
-xit("line: 281 - requires triage", () => {});
+it("line: 281 - matches ^abcd#rhubarb against 'abcd'", () => {
+  const match = exec("^abcd#rhubarb", "abcd", "");
+  expect(match.matches[0]).toBe("abcd".substring(0, 4));
+});
 xit("line: 282 - back references are not supported", () => {});
 xit("line: 283 - back references are not supported", () => {});
 xit("line: 284 - back references are not supported", () => {});
@@ -1266,7 +1297,7 @@ it("line: 1154 - matches ^abc$ against 'abc'", () => {
 xit("line: 1155 - test cases with CRs not supported yet!", () => {});
 xit("line: 1156 - test cases with CRs not supported yet!", () => {});
 xit("line: 1157 - test cases with CRs not supported yet!", () => {});
-xit("line: 1158 - requires triage", () => {});
+xit("line: 1158 - test regex contains syntax not supported in JS", () => {});
 xit("line: 1159 - test cases with CRs not supported yet!", () => {});
 xit("line: 1160 - test cases with CRs not supported yet!", () => {});
 xit("line: 1161 - test cases with CRs not supported yet!", () => {});
@@ -1378,15 +1409,13 @@ xit("line: 1228 - back references are not supported", () => {});
 xit("line: 1229 - back references are not supported", () => {});
 xit("line: 1230 - back references are not supported", () => {});
 xit("line: 1231 - test cases with CRs not supported yet!", () => {});
-xit("line: 1232 - requires triage", () => {});
-xit("line: 1233 - requires triage", () => {});
-xit("line: 1234 - requires triage", () => {});
-xit("line: 1235 - requires triage", () => {});
-it("line: 1236 - matches ^([^a])([^\\\b])([^c]*)([^d]{3,4}) against 'anything'", () => {
-  expectNotMatch("^([^a])([^\\\b])([^c]*)([^d]{3,4})", ["anything"]);
-});
-xit("line: 1237 - requires triage", () => {});
-xit("line: 1238 - requires triage", () => {});
+xit("line: 1232 - word boundary class not supported yet!", () => {});
+xit("line: 1233 - word boundary class not supported yet!", () => {});
+xit("line: 1234 - word boundary class not supported yet!", () => {});
+xit("line: 1235 - word boundary class not supported yet!", () => {});
+xit("line: 1236 - word boundary class not supported yet!", () => {});
+xit("line: 1237 - word boundary class not supported yet!", () => {});
+xit("line: 1238 - word boundary class not supported yet!", () => {});
 xit("line: 1239 - requires triage", () => {});
 it("line: 1240 - matches [^a] against 'Abc'", () => {
   const match = exec("[^a]", "Abc", "");
@@ -1507,7 +1536,7 @@ xit("line: 1276 - non capturing groups not supported", () => {});
 xit("line: 1277 - non capturing groups not supported", () => {});
 xit("line: 1278 - non capturing groups not supported", () => {});
 xit("line: 1279 - non capturing groups not supported", () => {});
-xit("line: 1280 - requires triage", () => {});
+xit("line: 1280 - word boundary class not supported yet!", () => {});
 it("line: 1281 - matches foo(.*)bar against 'The food is under the bar in the barn.'", () => {
   const match = exec(
     "foo(.*)bar",
@@ -1543,7 +1572,7 @@ it("line: 1287 - matches (.*)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(22, 23));
 });
 xit("line: 1288 - lazy quantifiers are not supported", () => {});
-xit("line: 1289 - requires triage", () => {});
+xit("line: 1289 - word boundary class not supported yet!", () => {});
 it("line: 1290 - matches (.*\\D)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   const match = exec("(.*\\D)(\\d+)$", "I have 2 numbers: 53147", "");
   expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 23));
@@ -1888,8 +1917,8 @@ it("line: 1406 - matches ab\\d{0}e against 'ab1e   '", () => {
 xit("line: 1407 - test cases with quotes are not supported yet!", () => {});
 xit("line: 1408 - test cases with quotes are not supported yet!", () => {});
 xit("line: 1409 - lazy quantifiers are not supported", () => {});
-xit("line: 1410 - requires triage", () => {});
-xit("line: 1411 - test doesn't support NULL", () => {});
+xit("line: 1410 - word boundary class not supported yet!", () => {});
+xit("line: 1411 - word boundary class not supported yet!", () => {});
 xit("line: 1412 - requires triage", () => {});
 xit("line: 1413 - requires triage", () => {});
 it("line: 1414 - matches a[^a]b against 'acb'", () => {

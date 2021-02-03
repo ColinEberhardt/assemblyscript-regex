@@ -1,6 +1,5 @@
 import { Char } from "../char";
 import {
-  AssertionNode,
   AST,
   ConcatenationNode,
   Node,
@@ -10,13 +9,7 @@ import {
 } from "./node";
 
 export class NodeVisitor {
-  _delete: bool = false;
-
   constructor(public node: Node, public parentNode: Node) {}
-
-  delete(): void {
-    this._delete = true;
-  }
 }
 
 function walkNode(
@@ -31,26 +24,6 @@ function walkNode(
 
   const nodeVisitor = new NodeVisitor(node, parentNode);
   visitor(nodeVisitor);
-
-  // TODO - the delete function is a bit half-baked, it needs to crawl up the tree
-  if (nodeVisitor._delete) {
-    if (parentNode != null && parentNode.type == NodeType.Concatenation) {
-      const _c = parentNode as ConcatenationNode;
-      const expressions = _c.expressions;
-      const index = expressions.indexOf(node);
-      const subset = expressions
-        .slice(0, index)
-        .concat(expressions.slice(index + 1));
-      _c.expressions = subset;
-    } else if (parentNode != null && parentNode.type == NodeType.AST) {
-      const _c = parentNode as AST;
-      // c.body = null;
-    } else {
-      throw new Error(
-        "cannot delete a node that doesn't have a ConcatenationNode parent"
-      );
-    }
-  }
 }
 
 // depth first, right-left walker
@@ -58,21 +31,6 @@ export function walker(ast: AST, visitor: (node: NodeVisitor) => void): void {
   let node = ast.body;
   if (node != null) {
     walkNode(node, ast, visitor);
-  }
-}
-
-export function deleteAssertionNodes(nodeVisitor: NodeVisitor): void {
-  if (AssertionNode.is(nodeVisitor.node)) {
-    nodeVisitor.delete();
-  }
-}
-
-export function deleteEmptyConcatenationNodes(nodeVisitor: NodeVisitor): void {
-  let node = nodeVisitor.node;
-  if (node.type == NodeType.Concatenation) {
-    if ((node as ConcatenationNode).expressions.length == 0) {
-      nodeVisitor.delete();
-    }
   }
 }
 
