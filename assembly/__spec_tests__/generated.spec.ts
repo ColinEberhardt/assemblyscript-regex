@@ -442,7 +442,7 @@ it("line: 89 - matches ^[ab\\]cde] against 'fthing'", () => {
 it("line: 90 - matches ^[ab\\]cde] against '[thing'", () => {
   expectNotMatch("^[ab\\]cde]", ["[thing"]);
 });
-it("line: 91 - matches ^[ab\\]cde] against '\\\thing'", () => {
+it("line: 91 - matches ^[ab\\]cde] against '\\thing'", () => {
   expectNotMatch("^[ab\\]cde]", ["\\thing"]);
 });
 it("line: 92 - matches ^[]cde] against ']thing'", () => {
@@ -475,7 +475,7 @@ it("line: 99 - matches ^[^ab\\]cde] against '[thing'", () => {
   const match = exec("^[^ab\\]cde]", "[thing", "s");
   expect(match.matches[0]).toBe("[thing".substring(0, 1));
 });
-it("line: 100 - matches ^[^ab\\]cde] against '\\\thing'", () => {
+it("line: 100 - matches ^[^ab\\]cde] against '\\thing'", () => {
   const match = exec("^[^ab\\]cde]", "\\thing", "s");
   expect(match.matches[0]).toBe("\\thing".substring(0, 1));
 });
@@ -706,7 +706,7 @@ it("line: 159 - matches ([\\da-f:]+)$ against '0zzz'", () => {
 it("line: 160 - matches ([\\da-f:]+)$ against 'gzzz'", () => {
   expectNotMatch("([\\da-f:]+)$", ["gzzz"]);
 });
-it("line: 161 - matches ([\\da-f:]+)$ against 'fed\\x20'", () => {
+it("line: 161 - matches ([\\da-f:]+)$ against 'fed\x20'", () => {
   expectNotMatch("([\\da-f:]+)$", ["fed\x20"]);
 });
 it("line: 162 - matches ([\\da-f:]+)$ against 'Any old rubbish'", () => {
@@ -915,10 +915,23 @@ it("line: 191 - matches ^[\\da-f](\\.[\\da-f])*$ against 'a.b.c.1.2.3.C'", () =>
   expect(match.matches[0]).toBe("a.b.c.1.2.3.C".substring(0, 13));
   expect(match.matches[1]).toBe("a.b.c.1.2.3.C".substring(11, 13));
 });
-xit("line: 192 - test cases with quotes are not supported yet!", () => {});
-xit("line: 193 - test cases with quotes are not supported yet!", () => {});
-xit("line: 194 - test cases with quotes are not supported yet!", () => {});
-xit("line: 195 - test cases with quotes are not supported yet!", () => {});
+it('line: 192 - matches ^".*"\\s*(;.*)?$ against \'"1234"\'', () => {
+  const match = exec('^".*"\\s*(;.*)?$', '"1234"', "s");
+  expect(match.matches[0]).toBe('"1234"'.substring(0, 6));
+});
+it('line: 193 - matches ^".*"\\s*(;.*)?$ against \'"abcd" ;\'', () => {
+  const match = exec('^".*"\\s*(;.*)?$', '"abcd" ;', "s");
+  expect(match.matches[0]).toBe('"abcd" ;'.substring(0, 8));
+  expect(match.matches[1]).toBe('"abcd" ;'.substring(7, 8));
+});
+it('line: 194 - matches ^".*"\\s*(;.*)?$ against \'"" ; rhubarb\'', () => {
+  const match = exec('^".*"\\s*(;.*)?$', '"" ; rhubarb', "s");
+  expect(match.matches[0]).toBe('"" ; rhubarb'.substring(0, 12));
+  expect(match.matches[1]).toBe('"" ; rhubarb'.substring(3, 12));
+});
+it('line: 195 - matches ^".*"\\s*(;.*)?$ against \'"1234" : things\'', () => {
+  expectNotMatch('^".*"\\s*(;.*)?$', ['"1234" : things']);
+});
 it("line: 196 - matches ^$ against ''", () => {
   const match = exec("^$", "", "s");
   expect(match.matches[0]).toBe("".substring(0, 0));
@@ -1095,11 +1108,11 @@ it("line: 264 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:
     ["From abcd  Sep 01 12:33:02 1997"]
   );
 });
-it("line: 265 - matches ^12.34 against '12\\n34'", () => {
+it("line: 265 - matches ^12.34 against '12\n34'", () => {
   const match = exec("^12.34", "12\n34", "s");
   expect(match.matches[0]).toBe("12\n34".substring(0, 5));
 });
-it("line: 266 - matches ^12.34 against '12\\r34'", () => {
+it("line: 266 - matches ^12.34 against '12\r34'", () => {
   const match = exec("^12.34", "12\r34", "s");
   expect(match.matches[0]).toBe("12\r34".substring(0, 5));
 });
@@ -1126,16 +1139,16 @@ xit("line: 292 - lazy quantifiers are not supported", () => {});
 xit("line: 293 - lazy quantifiers are not supported", () => {});
 xit("line: 488 - lazy quantifiers are not supported", () => {});
 xit("line: 489 - lazy quantifiers are not supported", () => {});
-xit("line: 490 - test cases with quotes are not supported yet!", () => {});
+xit("line: 490 - lazy quantifiers are not supported", () => {});
 xit("line: 491 - lazy quantifiers are not supported", () => {});
-xit("line: 492 - test cases with quotes are not supported yet!", () => {});
+xit("line: 492 - lazy quantifiers are not supported", () => {});
 xit("line: 493 - lazy quantifiers are not supported", () => {});
 xit("line: 494 - lazy quantifiers are not supported", () => {});
 xit("line: 1077 - lazy quantifiers are not supported", () => {});
 xit("line: 1078 - lazy quantifiers are not supported", () => {});
-xit("line: 1079 - test cases with quotes are not supported yet!", () => {});
+xit("line: 1079 - lazy quantifiers are not supported", () => {});
 xit("line: 1080 - lazy quantifiers are not supported", () => {});
-xit("line: 1081 - test cases with quotes are not supported yet!", () => {});
+xit("line: 1081 - lazy quantifiers are not supported", () => {});
 xit("line: 1082 - lazy quantifiers are not supported", () => {});
 xit("line: 1083 - lazy quantifiers are not supported", () => {});
 xit("line: 1084 - back references are not supported", () => {});
@@ -1143,9 +1156,9 @@ xit("line: 1085 - back references are not supported", () => {});
 xit("line: 1086 - test encoding issue", () => {});
 xit("line: 1087 - requires triage", () => {});
 xit("line: 1088 - requires triage", () => {});
-it("line: 1089 - matches abc\\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
+it("line: 1089 - matches abc\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
   const match = exec(
-    "abc\\\x0def\\x00pqr\\x000xyz\\x0000AB",
+    "abc\\x0def\\x00pqr\\x000xyz\\x0000AB",
     "abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE",
     "s"
   );
@@ -1153,9 +1166,9 @@ it("line: 1089 - matches abc\\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 a
     "abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE".substring(7, 27)
   );
 });
-it("line: 1090 - matches abc\\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
+it("line: 1090 - matches abc\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
   const match = exec(
-    "abc\\\x0def\\x00pqr\\x000xyz\\x0000AB",
+    "abc\\x0def\\x00pqr\\x000xyz\\x0000AB",
     "abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE",
     "s"
   );
@@ -1176,23 +1189,23 @@ xit("line: 1100 - back references are not supported", () => {});
 xit("line: 1101 - back references are not supported", () => {});
 xit("line: 1102 - test contains an octal escape sequence", () => {});
 xit("line 1103 - issue with parsing the test itself", () => {});
-it("line: 1104 - matches ^\\s against '\\x0cxyz'", () => {
+it("line: 1104 - matches ^\\s against '\x0cxyz'", () => {
   const match = exec("^\\s", "\x0cxyz", "s");
   expect(match.matches[0]).toBe("\x0cxyz".substring(0, 1));
 });
-it("line: 1105 - matches ^\\s against '\\fabc'", () => {
+it("line: 1105 - matches ^\\s against '\fabc'", () => {
   const match = exec("^\\s", "\fabc", "s");
   expect(match.matches[0]).toBe("\fabc".substring(0, 1));
 });
-it("line: 1106 - matches ^\\s against '\\nabc'", () => {
+it("line: 1106 - matches ^\\s against '\nabc'", () => {
   const match = exec("^\\s", "\nabc", "s");
   expect(match.matches[0]).toBe("\nabc".substring(0, 1));
 });
-it("line: 1107 - matches ^\\s against '\\rabc'", () => {
+it("line: 1107 - matches ^\\s against '\rabc'", () => {
   const match = exec("^\\s", "\rabc", "s");
   expect(match.matches[0]).toBe("\rabc".substring(0, 1));
 });
-it("line: 1108 - matches ^\\s against '\\tabc'", () => {
+it("line: 1108 - matches ^\\s against '\tabc'", () => {
   const match = exec("^\\s", "\tabc", "s");
   expect(match.matches[0]).toBe("\tabc".substring(0, 1));
 });
@@ -1308,13 +1321,13 @@ it("line: 1154 - matches ^abc$ against 'abc'", () => {
   const match = exec("^abc$", "abc", "s");
   expect(match.matches[0]).toBe("abc".substring(0, 3));
 });
-it("line: 1155 - matches ^abc$ against 'qqq\\nabc'", () => {
+it("line: 1155 - matches ^abc$ against 'qqq\nabc'", () => {
   expectNotMatch("^abc$", ["qqq\nabc"]);
 });
-it("line: 1156 - matches ^abc$ against 'abc\\nzzz'", () => {
+it("line: 1156 - matches ^abc$ against 'abc\nzzz'", () => {
   expectNotMatch("^abc$", ["abc\nzzz"]);
 });
-it("line: 1157 - matches ^abc$ against 'qqq\\nabc\nzzz'", () => {
+it("line: 1157 - matches ^abc$ against 'qqq\nabc\nzzz'", () => {
   expectNotMatch("^abc$", ["qqq\nabc\nzzz"]);
 });
 xit("line: 1158 - multi line regex not supported yet!", () => {});
@@ -1358,16 +1371,16 @@ it("line: 1174 - matches [\\d-]+ against '12-34'", () => {
 it("line: 1175 - matches [\\d-]+ against 'aaa'", () => {
   expectNotMatch("[\\d-]+", ["aaa"]);
 });
-it("line: 1178 - matches \\\x5c against '\\'", () => {
-  const match = exec("\\\x5c", "\\", "s");
+it("line: 1178 - matches \\x5c against '\\'", () => {
+  const match = exec("\\x5c", "\\", "s");
   expect(match.matches[0]).toBe("\\".substring(0, 1));
 });
-it("line: 1179 - matches \\\x20Z against 'the Zoo'", () => {
-  const match = exec("\\\x20Z", "the Zoo", "s");
+it("line: 1179 - matches \\x20Z against 'the Zoo'", () => {
+  const match = exec("\\x20Z", "the Zoo", "s");
   expect(match.matches[0]).toBe("the Zoo".substring(3, 5));
 });
-it("line: 1180 - matches \\\x20Z against 'Zulu'", () => {
-  expectNotMatch("\\\x20Z", ["Zulu"]);
+it("line: 1180 - matches \\x20Z against 'Zulu'", () => {
+  expectNotMatch("\\x20Z", ["Zulu"]);
 });
 xit("line: 1181 - back references are not supported", () => {});
 xit("line: 1182 - back references are not supported", () => {});
@@ -1382,11 +1395,11 @@ xit("line 1186 - issue with parsing the test itself", () => {});
 xit("line 1187 - issue with parsing the test itself", () => {});
 xit("line 1188 - issue with parsing the test itself", () => {});
 xit("line: 1189 - test indicates a malformed regex, whereas it appears OK in JS", () => {});
-it("line: 1190 - matches ^a.b against 'a\\rb'", () => {
+it("line: 1190 - matches ^a.b against 'a\rb'", () => {
   const match = exec("^a.b", "a\rb", "s");
   expect(match.matches[0]).toBe("a\rb".substring(0, 3));
 });
-it("line: 1191 - matches ^a.b against 'a\\nb'", () => {
+it("line: 1191 - matches ^a.b against 'a\nb'", () => {
   const match = exec("^a.b", "a\nb", "s");
   expect(match.matches[0]).toBe("a\nb".substring(0, 3));
 });
@@ -1394,11 +1407,11 @@ it("line: 1192 - matches abc$ against 'abc'", () => {
   const match = exec("abc$", "abc", "s");
   expect(match.matches[0]).toBe("abc".substring(0, 3));
 });
-it("line: 1193 - matches abc$ against 'abc\\n'", () => {
+it("line: 1193 - matches abc$ against 'abc\n'", () => {
   expectNotMatch("abc$", ["abc\n"]);
 });
 xit("line: 1194 - multi line regex not supported yet!", () => {});
-it("line: 1195 - matches abc$ against 'abc\\ndef'", () => {
+it("line: 1195 - matches abc$ against 'abc\ndef'", () => {
   expectNotMatch("abc$", ["abc\ndef"]);
 });
 xit("line: 1196 - multi line regex not supported yet!", () => {});
@@ -1466,7 +1479,7 @@ it("line: 1243 - matches [^a]+ against 'AAAaAbc '", () => {
   const match = exec("[^a]+", "AAAaAbc ", "is");
   expect(match.matches[0]).toBe("AAAaAbc ".substring(5, 8));
 });
-it("line: 1244 - matches [^a]+ against 'bbb\\nccc'", () => {
+it("line: 1244 - matches [^a]+ against 'bbb\nccc'", () => {
   const match = exec("[^a]+", "bbb\nccc", "s");
   expect(match.matches[0]).toBe("bbb\nccc".substring(0, 7));
 });
@@ -1812,41 +1825,41 @@ it("line: 1347 - matches ^(a){1,} against 'aaaaaaaa    '", () => {
   expect(match.matches[0]).toBe("aaaaaaaa    ".substring(0, 8));
   expect(match.matches[1]).toBe("aaaaaaaa    ".substring(7, 8));
 });
-it("line: 1348 - matches .{0,}\\.gif against 'borfle\\nbib.gif\nno'", () => {
+it("line: 1348 - matches .{0,}\\.gif against 'borfle\nbib.gif\nno'", () => {
   const match = exec(".{0,}\\.gif", "borfle\nbib.gif\nno", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno".substring(0, 14));
 });
-it("line: 1349 - matches .*\\.gif against 'borfle\\nbib.gif\nno'", () => {
+it("line: 1349 - matches .*\\.gif against 'borfle\nbib.gif\nno'", () => {
   const match = exec(".*\\.gif", "borfle\nbib.gif\nno", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno".substring(0, 14));
 });
 xit("line: 1350 - multi line regex not supported yet!", () => {});
-it("line: 1351 - matches .*\\.gif against 'borfle\\nbib.gif\nno'", () => {
+it("line: 1351 - matches .*\\.gif against 'borfle\nbib.gif\nno'", () => {
   const match = exec(".*\\.gif", "borfle\nbib.gif\nno", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno".substring(0, 14));
 });
 xit("line: 1352 - multi line regex not supported yet!", () => {});
-it("line: 1353 - matches .*$ against 'borfle\\nbib.gif\nno'", () => {
+it("line: 1353 - matches .*$ against 'borfle\nbib.gif\nno'", () => {
   const match = exec(".*$", "borfle\nbib.gif\nno", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno".substring(0, 17));
 });
 xit("line: 1354 - multi line regex not supported yet!", () => {});
-it("line: 1355 - matches .*$ against 'borfle\\nbib.gif\nno'", () => {
+it("line: 1355 - matches .*$ against 'borfle\nbib.gif\nno'", () => {
   const match = exec(".*$", "borfle\nbib.gif\nno", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno".substring(0, 17));
 });
 xit("line: 1356 - multi line regex not supported yet!", () => {});
-it("line: 1357 - matches .*$ against 'borfle\\nbib.gif\nno\n'", () => {
+it("line: 1357 - matches .*$ against 'borfle\nbib.gif\nno\n'", () => {
   const match = exec(".*$", "borfle\nbib.gif\nno\n", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno\n".substring(0, 18));
 });
 xit("line: 1358 - multi line regex not supported yet!", () => {});
-it("line: 1359 - matches .*$ against 'borfle\\nbib.gif\nno\n'", () => {
+it("line: 1359 - matches .*$ against 'borfle\nbib.gif\nno\n'", () => {
   const match = exec(".*$", "borfle\nbib.gif\nno\n", "s");
   expect(match.matches[0]).toBe("borfle\nbib.gif\nno\n".substring(0, 18));
 });
 xit("line: 1360 - multi line regex not supported yet!", () => {});
-it("line: 1361 - matches (.*X|^B) against 'abcde\\n1234Xyz'", () => {
+it("line: 1361 - matches (.*X|^B) against 'abcde\n1234Xyz'", () => {
   const match = exec("(.*X|^B)", "abcde\n1234Xyz", "s");
   expect(match.matches[0]).toBe("abcde\n1234Xyz".substring(0, 11));
   expect(match.matches[1]).toBe("abcde\n1234Xyz".substring(0, 11));
@@ -1860,7 +1873,7 @@ xit("line: 1363 - requires triage", () => {});
 xit("line: 1364 - multi line regex not supported yet!", () => {});
 xit("line: 1365 - multi line regex not supported yet!", () => {});
 xit("line: 1366 - multi line regex not supported yet!", () => {});
-it("line: 1367 - matches (.*X|^B) against 'abcde\\n1234Xyz'", () => {
+it("line: 1367 - matches (.*X|^B) against 'abcde\n1234Xyz'", () => {
   const match = exec("(.*X|^B)", "abcde\n1234Xyz", "s");
   expect(match.matches[0]).toBe("abcde\n1234Xyz".substring(0, 11));
   expect(match.matches[1]).toBe("abcde\n1234Xyz".substring(0, 11));
@@ -1880,7 +1893,7 @@ xit("line: 1375 - non capturing groups not supported", () => {});
 xit("line: 1376 - non capturing groups not supported", () => {});
 xit("line: 1377 - non capturing groups not supported", () => {});
 xit("line: 1378 - non capturing groups not supported", () => {});
-it("line: 1379 - matches ^.*B against 'abc\\nB'", () => {
+it("line: 1379 - matches ^.*B against 'abc\nB'", () => {
   const match = exec("^.*B", "abc\nB", "s");
   expect(match.matches[0]).toBe("abc\nB".substring(0, 5));
 });
@@ -1974,8 +1987,24 @@ it("line: 1405 - matches ab\\d{0}e against 'abe'", () => {
 it("line: 1406 - matches ab\\d{0}e against 'ab1e   '", () => {
   expectNotMatch("ab\\d{0}e", ["ab1e   "]);
 });
-xit("line: 1407 - test cases with quotes are not supported yet!", () => {});
-xit("line: 1408 - test cases with quotes are not supported yet!", () => {});
+it('line: 1407 - matches "([^\\\\"]+|\\\\.)*" against \'the "quick" brown fox\'', () => {
+  const match = exec('"([^\\\\"]+|\\\\.)*"', 'the "quick" brown fox', "s");
+  expect(match.matches[0]).toBe('the "quick" brown fox'.substring(4, 11));
+  expect(match.matches[1]).toBe('the "quick" brown fox'.substring(5, 10));
+});
+it('line: 1408 - matches "([^\\\\"]+|\\\\.)*" against \'"the \\"quick\\" brown fox" \'', () => {
+  const match = exec(
+    '"([^\\\\"]+|\\\\.)*"',
+    '"the \\"quick\\" brown fox" ',
+    "s"
+  );
+  expect(match.matches[0]).toBe(
+    '"the \\"quick\\" brown fox" '.substring(0, 25)
+  );
+  expect(match.matches[1]).toBe(
+    '"the \\"quick\\" brown fox" '.substring(14, 24)
+  );
+});
 xit("line: 1409 - lazy quantifiers are not supported", () => {});
 xit("line: 1410 - word boundary class not supported yet!", () => {});
 xit("line: 1411 - word boundary class not supported yet!", () => {});
@@ -1985,7 +2014,7 @@ it("line: 1414 - matches a[^a]b against 'acb'", () => {
   const match = exec("a[^a]b", "acb", "s");
   expect(match.matches[0]).toBe("acb".substring(0, 3));
 });
-it("line: 1415 - matches a[^a]b against 'a\\nb'", () => {
+it("line: 1415 - matches a[^a]b against 'a\nb'", () => {
   const match = exec("a[^a]b", "a\nb", "s");
   expect(match.matches[0]).toBe("a\nb".substring(0, 3));
 });
@@ -1993,7 +2022,7 @@ it("line: 1416 - matches a.b against 'acb'", () => {
   const match = exec("a.b", "acb", "s");
   expect(match.matches[0]).toBe("acb".substring(0, 3));
 });
-it("line: 1417 - matches a.b against 'a\\nb   '", () => {
+it("line: 1417 - matches a.b against 'a\nb   '", () => {
   const match = exec("a.b", "a\nb   ", "s");
   expect(match.matches[0]).toBe("a\nb   ".substring(0, 3));
 });
@@ -2001,7 +2030,7 @@ it("line: 1418 - matches a[^a]b against 'acb'", () => {
   const match = exec("a[^a]b", "acb", "s");
   expect(match.matches[0]).toBe("acb".substring(0, 3));
 });
-it("line: 1419 - matches a[^a]b against 'a\\nb  '", () => {
+it("line: 1419 - matches a[^a]b against 'a\nb  '", () => {
   const match = exec("a[^a]b", "a\nb  ", "s");
   expect(match.matches[0]).toBe("a\nb  ".substring(0, 3));
 });
@@ -2009,7 +2038,7 @@ it("line: 1420 - matches a.b against 'acb'", () => {
   const match = exec("a.b", "acb", "s");
   expect(match.matches[0]).toBe("acb".substring(0, 3));
 });
-it("line: 1421 - matches a.b against 'a\\nb  '", () => {
+it("line: 1421 - matches a.b against 'a\nb  '", () => {
   const match = exec("a.b", "a\nb  ", "s");
   expect(match.matches[0]).toBe("a\nb  ".substring(0, 3));
 });
