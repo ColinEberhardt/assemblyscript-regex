@@ -155,7 +155,12 @@ export class RepetitionNode extends Node {
 }
 
 export class RangeRepetitionNode extends Node {
-  constructor(public expression: Node, public from: i32, public to: i32) {
+  constructor(
+    public expression: Node,
+    public from: i32,
+    public to: i32,
+    public greedy: bool = true
+  ) {
     super(NodeType.RangeRepetition);
     if (expression.type == NodeType.RangeRepetition) {
       throw new Error("The preceding token is not quantifiable");

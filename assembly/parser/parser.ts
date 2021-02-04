@@ -236,7 +236,14 @@ export class Parser {
         const range = this.maybeParseRepetitionRange();
         if (range != null) {
           const expression = nodes.pop();
-          nodes.push(new RangeRepetitionNode(expression, range.from, range.to));
+          let greedy = true;
+          if (this.iterator.current == Char.Question) {
+            greedy = false;
+            this.eatToken();
+          }
+          nodes.push(
+            new RangeRepetitionNode(expression, range.from, range.to, greedy)
+          );
         } else {
           // this is not the start of a repetition, it's just a char!
           nodes.push(this.parseCharacter());

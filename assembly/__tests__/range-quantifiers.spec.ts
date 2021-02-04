@@ -40,6 +40,11 @@ it("handles nested quantifiers", () => {
   expectMatch("(a{3}){2}", ["aaaaaa"]);
 });
 
+it("handles nongreedy quantifiers", () => {
+  const match = exec("a{2,4}?", "aaaaaaaaaa");
+  expect(match.matches[0]).toBe("aa");
+});
+
 it("throws if quantifying a quantifier!", () => {
   expect(() => {
     let foo = new RegExp("a{3}{2}");

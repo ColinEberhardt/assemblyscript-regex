@@ -13,6 +13,7 @@ export class StringIterator {
   next(): bool {
     this.cursor++;
     if (this.cursor >= u32(this.sourceString.length)) {
+      this.current = -1;
       return false;
     }
     this.current = this.sourceString.charCodeAt(this.cursor);

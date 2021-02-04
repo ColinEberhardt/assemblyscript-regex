@@ -134,11 +134,16 @@ function closure(nfa: Automata, greedy: bool): Automata {
   return new Automata(start, end);
 }
 
-function zeroOrOne(nfa: Automata): Automata {
+function zeroOrOne(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
-  start.transitions.push(nfa.start);
-  start.transitions.push(end);
+  if (greedy) {
+    start.transitions.push(nfa.start);
+    start.transitions.push(end);
+  } else {
+    start.transitions.push(end);
+    start.transitions.push(nfa.start);
+  }
   nfa.end.transitions.push(end);
   return new Automata(start, end);
 }
@@ -182,7 +187,7 @@ class AutomataFactor {
         const automata = this.automataForNode(node.expression);
         const quantifier = node.quantifier;
         if (quantifier == Char.Question) {
-          return zeroOrOne(automata);
+          return zeroOrOne(automata, node.greedy);
         } else if (quantifier == Char.Plus) {
           return oneOrMore(automata, node.greedy);
         } else if (quantifier == Char.Asterisk) {

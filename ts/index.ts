@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp(".*?");
-const match = regexObj.exec("abc");
+const regexObj = new RegExp("a?");
+const match = regexObj.exec("a");
 
 console.log(match);

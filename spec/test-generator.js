@@ -22,6 +22,12 @@ const knownIssues = {
     ...range(63, 68),
     1391,
     1392,
+    ...range(52, 55),
+    57,
+    58,
+    72,
+    73,
+    78,
   ],
   "lazy quantifiers should still yield the longest overall regex match": [
     ...range(141, 143),
@@ -109,10 +115,10 @@ lines.forEach((line, index) => {
       return;
     }
 
-    if (["}?"].some((f) => regex.includes(f))) {
-      testCase += `xit("line: ${index} - lazy range repitition quantifiers are not supported", () => { });`;
-      return;
-    }
+    // if (["}?"].some((f) => regex.includes(f))) {
+    //   testCase += `xit("line: ${index} - lazy range repitition quantifiers are not supported", () => { });`;
+    //   return;
+    // }
 
     if (["(?"].some((f) => regex.includes(f))) {
       testCase += `xit("line: ${index} - non capturing groups not supported", () => {});`;

@@ -81,12 +81,24 @@ export function expandRepetitions(visitor: NodeVisitor): void {
 
     if (rangeRepNode.to == -1) {
       // a{4,} => aaaaa*
-      clones.push(new RepetitionNode(expression.clone(), Char.Asterisk));
+      clones.push(
+        new RepetitionNode(
+          expression.clone(),
+          Char.Asterisk,
+          rangeRepNode.greedy
+        )
+      );
     } else {
       // a{4,6} => aaaaa?a?
       const count = rangeRepNode.to - rangeRepNode.from;
       for (let i = 0; i < count; i++) {
-        clones.push(new RepetitionNode(expression.clone(), Char.Question));
+        clones.push(
+          new RepetitionNode(
+            expression.clone(),
+            Char.Question,
+            rangeRepNode.greedy
+          )
+        );
       }
     }
 
