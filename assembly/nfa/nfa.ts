@@ -117,15 +117,20 @@ function union(first: Automata, second: Automata): Automata {
   return new Automata(start, end);
 }
 
-function closure(nfa: Automata): Automata {
+function closure(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
-  // to ensure greedy matches, the epsilon transitions that loop-back
-  // need to be first in the list
-  start.transitions.push(nfa.start);
-  start.transitions.push(end);
-  nfa.end.transitions.push(nfa.start);
-  nfa.end.transitions.push(end);
+  if (greedy) {
+    nfa.end.transitions.push(nfa.start);
+    nfa.end.transitions.push(end);
+    start.transitions.push(nfa.start);
+    start.transitions.push(end);
+  } else {
+    nfa.end.transitions.push(end);
+    nfa.end.transitions.push(nfa.start);
+    start.transitions.push(end);
+    start.transitions.push(nfa.start);
+  }
   return new Automata(start, end);
 }
 
@@ -138,14 +143,17 @@ function zeroOrOne(nfa: Automata): Automata {
   return new Automata(start, end);
 }
 
-function oneOrMore(nfa: Automata): Automata {
+function oneOrMore(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
   start.transitions.push(nfa.start);
-  // to ensure greedy matches, the epsilon transitions that loop-back
-  // need to be first in the list
-  nfa.end.transitions.push(nfa.start);
-  nfa.end.transitions.push(end);
+  if (greedy) {
+    nfa.end.transitions.push(nfa.start);
+    nfa.end.transitions.push(end);
+  } else {
+    nfa.end.transitions.push(end);
+    nfa.end.transitions.push(nfa.start);
+  }
   return new Automata(start, end);
 }
 
@@ -176,9 +184,9 @@ class AutomataFactor {
         if (quantifier == Char.Question) {
           return zeroOrOne(automata);
         } else if (quantifier == Char.Plus) {
-          return oneOrMore(automata);
+          return oneOrMore(automata, node.greedy);
         } else if (quantifier == Char.Asterisk) {
-          return closure(automata);
+          return closure(automata, node.greedy);
         } else {
           throw new Error(
             "unsupported quantifier - " + String.fromCharCode(quantifier)

@@ -7,7 +7,9 @@ it("matches empty strings", () => {
 
 it("zero or one", () => {
   expectMatch("a?", ["a"]);
-  // expectNotMatch("a?", ["bc"]);
+  let match = exec("a?", "bc");
+  expect(match).not.toBeNull();
+  expect(match.matches[0]).toStrictEqual("");
 });
 
 it("one or more", () => {
@@ -34,4 +36,25 @@ it("one or more is greedy", () => {
   let match = exec("a+", "aaaaa");
   expect(match).not.toBeNull();
   expect(match.matches[0]).toStrictEqual("aaaaa");
+});
+
+describe("non-greedy", () => {
+  it("one or more supports non-greedy mode", () => {
+    let match = exec("[a-c]+?b", "abb");
+    expect(match).not.toBeNull();
+    expect(match.matches[0]).toStrictEqual("ab");
+  });
+
+  it("zero or more supports non-greedy mode", () => {
+    let match = exec("[a-c]*?b", "abb");
+    expect(match).not.toBeNull();
+    expect(match.matches[0]).toStrictEqual("ab");
+  });
+
+  it("zero or one supports non-greedy mode", () => {
+    expectMatch("a?", ["a"]);
+    let match = exec("a?", "bc");
+    expect(match).not.toBeNull();
+    expect(match.matches[0]).toStrictEqual("");
+  });
 });

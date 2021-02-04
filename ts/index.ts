@@ -5,7 +5,7 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("^\\s");
-const match = regexObj.exec("\040abc");
+const regexObj = new RegExp(".*?");
+const match = regexObj.exec("abc");
 
 console.log(match);

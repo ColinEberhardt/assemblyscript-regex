@@ -137,7 +137,11 @@ export class CharacterClassNode extends Node {
 }
 
 export class RepetitionNode extends Node {
-  constructor(public expression: Node, public quantifier: Char) {
+  constructor(
+    public expression: Node,
+    public quantifier: Char,
+    public greedy: bool = true
+  ) {
     super(NodeType.Repetition);
   }
 

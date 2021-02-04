@@ -243,8 +243,13 @@ export class Parser {
         }
       } else if (isQuantifier(token)) {
         const expression = nodes.pop();
-        nodes.push(new RepetitionNode(expression, token));
-        this.eatToken();
+        const quantifier = this.eatToken();
+        let greedy = true;
+        if (this.iterator.current == Char.Question) {
+          greedy = false;
+          this.eatToken();
+        }
+        nodes.push(new RepetitionNode(expression, quantifier, greedy));
         // @ts-ignore
       } else if (token == Char.LeftSquareBracket) {
         nodes.push(this.parseCharacterSet());

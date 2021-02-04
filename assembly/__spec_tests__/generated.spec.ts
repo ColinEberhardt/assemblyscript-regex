@@ -368,16 +368,16 @@ it("line: 49 - matches ^(abc){1,2}zz against 'abcabcabczz'", () => {
 it("line: 50 - matches ^(abc){1,2}zz against '>>abczz'", () => {
   expectNotMatch("^(abc){1,2}zz", [">>abczz"]);
 });
-xit("line: 51 - lazy quantifiers are not supported", () => {});
-xit("line: 52 - lazy quantifiers are not supported", () => {});
-xit("line: 53 - lazy quantifiers are not supported", () => {});
-xit("line: 54 - lazy quantifiers are not supported", () => {});
-xit("line: 55 - lazy quantifiers are not supported", () => {});
-xit("line: 56 - lazy quantifiers are not supported", () => {});
-xit("line: 57 - lazy quantifiers are not supported", () => {});
-xit("line: 58 - lazy quantifiers are not supported", () => {});
-xit("line: 59 - lazy quantifiers are not supported", () => {});
-xit("line: 60 - lazy quantifiers are not supported", () => {});
+xit("line: 51 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 52 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 53 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 54 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 55 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 56 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 57 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 58 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 59 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 60 - lazy range repitition quantifiers are not supported", () => {});
 it("line: 61 - matches ^(b+|a){1,2}c against 'bc'", () => {
   const match = exec("^(b+|a){1,2}c", "bc", "s");
   expect(match.matches[0]).toBe("bc".substring(0, 2));
@@ -400,17 +400,17 @@ it("line: 69 - matches ^(b+|a){1,2}c against 'aaac'", () => {
 it("line: 70 - matches ^(b+|a){1,2}c against 'abbbbbbbbbbbac'", () => {
   expectNotMatch("^(b+|a){1,2}c", ["abbbbbbbbbbbac"]);
 });
-xit("line: 71 - lazy quantifiers are not supported", () => {});
-xit("line: 72 - lazy quantifiers are not supported", () => {});
-xit("line: 73 - lazy quantifiers are not supported", () => {});
-xit("line: 74 - lazy quantifiers are not supported", () => {});
-xit("line: 75 - lazy quantifiers are not supported", () => {});
-xit("line: 76 - lazy quantifiers are not supported", () => {});
-xit("line: 77 - lazy quantifiers are not supported", () => {});
-xit("line: 78 - lazy quantifiers are not supported", () => {});
-xit("line: 79 - lazy quantifiers are not supported", () => {});
-xit("line: 80 - lazy quantifiers are not supported", () => {});
-xit("line: 81 - lazy quantifiers are not supported", () => {});
+xit("line: 71 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 72 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 73 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 74 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 75 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 76 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 77 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 78 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 79 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 80 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 81 - lazy range repitition quantifiers are not supported", () => {});
 xit("line: 82 - test regex contains syntax not supported in JS", () => {});
 it("line: 83 - matches ^[ab\\]cde] against 'athing'", () => {
   const match = exec("^[ab\\]cde]", "athing", "s");
@@ -618,11 +618,17 @@ it("line: 138 - matches ^.+[0-9][0-9][0-9]$ against 'x1234'", () => {
   const match = exec("^.+[0-9][0-9][0-9]$", "x1234", "s");
   expect(match.matches[0]).toBe("x1234".substring(0, 5));
 });
-xit("line: 139 - lazy quantifiers are not supported", () => {});
-xit("line: 140 - lazy quantifiers are not supported", () => {});
-xit("line: 141 - lazy quantifiers are not supported", () => {});
-xit("line: 142 - lazy quantifiers are not supported", () => {});
-xit("line: 143 - lazy quantifiers are not supported", () => {});
+it("line: 139 - matches ^.+?[0-9][0-9][0-9]$ against 'x123'", () => {
+  const match = exec("^.+?[0-9][0-9][0-9]$", "x123", "s");
+  expect(match.matches[0]).toBe("x123".substring(0, 4));
+});
+it("line: 140 - matches ^.+?[0-9][0-9][0-9]$ against 'xx123'", () => {
+  const match = exec("^.+?[0-9][0-9][0-9]$", "xx123", "s");
+  expect(match.matches[0]).toBe("xx123".substring(0, 5));
+});
+xit("line: 141 - lazy quantifiers should still yield the longest overall regex match", () => {});
+xit("line: 142 - lazy quantifiers should still yield the longest overall regex match", () => {});
+xit("line: 143 - lazy quantifiers should still yield the longest overall regex match", () => {});
 it("line: 144 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against 'abc!pqr=apquxz.ixr.zzz.ac.uk'", () => {
   const match = exec(
     "^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$",
@@ -972,7 +978,10 @@ it("line: 207 - matches ^(a(b(c)))(d(e(f)))(h(i(j)))(k(l(m)))$ against 'abcdefhi
 });
 xit("line: 208 - non capturing groups not supported", () => {});
 xit("line: 209 - back references are not supported", () => {});
-xit("line: 210 - lazy quantifiers are not supported", () => {});
+it("line: 210 - matches ^[.^$|()*+?{,}]+ against '.^$(*+)|{?,?}'", () => {
+  const match = exec("^[.^$|()*+?{,}]+", ".^$(*+)|{?,?}", "s");
+  expect(match.matches[0]).toBe(".^$(*+)|{?,?}".substring(0, 13));
+});
 it("line: 211 - matches ^a*\\w against 'z'", () => {
   const match = exec("^a*\\w", "z", "s");
   expect(match.matches[0]).toBe("z".substring(0, 1));
@@ -1005,14 +1014,38 @@ it("line: 218 - matches ^a*\\w against 'aa+'", () => {
   const match = exec("^a*\\w", "aa+", "s");
   expect(match.matches[0]).toBe("aa+".substring(0, 2));
 });
-xit("line: 219 - lazy quantifiers are not supported", () => {});
-xit("line: 220 - lazy quantifiers are not supported", () => {});
-xit("line: 221 - lazy quantifiers are not supported", () => {});
-xit("line: 222 - lazy quantifiers are not supported", () => {});
-xit("line: 223 - lazy quantifiers are not supported", () => {});
-xit("line: 224 - lazy quantifiers are not supported", () => {});
-xit("line: 225 - lazy quantifiers are not supported", () => {});
-xit("line: 226 - lazy quantifiers are not supported", () => {});
+it("line: 219 - matches ^a*?\\w against 'z'", () => {
+  const match = exec("^a*?\\w", "z", "s");
+  expect(match.matches[0]).toBe("z".substring(0, 1));
+});
+it("line: 220 - matches ^a*?\\w against 'az'", () => {
+  const match = exec("^a*?\\w", "az", "s");
+  expect(match.matches[0]).toBe("az".substring(0, 1));
+});
+it("line: 221 - matches ^a*?\\w against 'aaaz'", () => {
+  const match = exec("^a*?\\w", "aaaz", "s");
+  expect(match.matches[0]).toBe("aaaz".substring(0, 1));
+});
+it("line: 222 - matches ^a*?\\w against 'a'", () => {
+  const match = exec("^a*?\\w", "a", "s");
+  expect(match.matches[0]).toBe("a".substring(0, 1));
+});
+it("line: 223 - matches ^a*?\\w against 'aa'", () => {
+  const match = exec("^a*?\\w", "aa", "s");
+  expect(match.matches[0]).toBe("aa".substring(0, 1));
+});
+it("line: 224 - matches ^a*?\\w against 'aaaa'", () => {
+  const match = exec("^a*?\\w", "aaaa", "s");
+  expect(match.matches[0]).toBe("aaaa".substring(0, 1));
+});
+it("line: 225 - matches ^a*?\\w against 'a+'", () => {
+  const match = exec("^a*?\\w", "a+", "s");
+  expect(match.matches[0]).toBe("a+".substring(0, 1));
+});
+it("line: 226 - matches ^a*?\\w against 'aa+'", () => {
+  const match = exec("^a*?\\w", "aa+", "s");
+  expect(match.matches[0]).toBe("aa+".substring(0, 1));
+});
 it("line: 227 - matches ^a+\\w against 'az'", () => {
   const match = exec("^a+\\w", "az", "s");
   expect(match.matches[0]).toBe("az".substring(0, 2));
@@ -1033,11 +1066,26 @@ it("line: 231 - matches ^a+\\w against 'aa+'", () => {
   const match = exec("^a+\\w", "aa+", "s");
   expect(match.matches[0]).toBe("aa+".substring(0, 2));
 });
-xit("line: 232 - lazy quantifiers are not supported", () => {});
-xit("line: 233 - lazy quantifiers are not supported", () => {});
-xit("line: 234 - lazy quantifiers are not supported", () => {});
-xit("line: 235 - lazy quantifiers are not supported", () => {});
-xit("line: 236 - lazy quantifiers are not supported", () => {});
+it("line: 232 - matches ^a+?\\w against 'az'", () => {
+  const match = exec("^a+?\\w", "az", "s");
+  expect(match.matches[0]).toBe("az".substring(0, 2));
+});
+it("line: 233 - matches ^a+?\\w against 'aaaz'", () => {
+  const match = exec("^a+?\\w", "aaaz", "s");
+  expect(match.matches[0]).toBe("aaaz".substring(0, 2));
+});
+it("line: 234 - matches ^a+?\\w against 'aa'", () => {
+  const match = exec("^a+?\\w", "aa", "s");
+  expect(match.matches[0]).toBe("aa".substring(0, 2));
+});
+it("line: 235 - matches ^a+?\\w against 'aaaa'", () => {
+  const match = exec("^a+?\\w", "aaaa", "s");
+  expect(match.matches[0]).toBe("aaaa".substring(0, 2));
+});
+it("line: 236 - matches ^a+?\\w against 'aa+'", () => {
+  const match = exec("^a+?\\w", "aa+", "s");
+  expect(match.matches[0]).toBe("aa+".substring(0, 2));
+});
 it("line: 237 - matches ^\\d{8}\\w{2,} against '1234567890'", () => {
   const match = exec("^\\d{8}\\w{2,}", "1234567890", "s");
   expect(match.matches[0]).toBe("1234567890".substring(0, 10));
@@ -1072,11 +1120,11 @@ it("line: 244 - matches ^[aeiou\\d]{4,5}$ against 'aaaaa'", () => {
 it("line: 245 - matches ^[aeiou\\d]{4,5}$ against '123456'", () => {
   expectNotMatch("^[aeiou\\d]{4,5}$", ["123456"]);
 });
-xit("line: 246 - lazy quantifiers are not supported", () => {});
-xit("line: 247 - lazy quantifiers are not supported", () => {});
-xit("line: 248 - lazy quantifiers are not supported", () => {});
-xit("line: 249 - lazy quantifiers are not supported", () => {});
-xit("line: 250 - lazy quantifiers are not supported", () => {});
+xit("line: 246 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 247 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 248 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 249 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 250 - lazy range repitition quantifiers are not supported", () => {});
 xit("line: 251 - back references are not supported", () => {});
 xit("line: 252 - back references are not supported", () => {});
 xit("line: 253 - back references are not supported", () => {});
@@ -1134,23 +1182,30 @@ xit("line: 287 - non capturing groups not supported", () => {});
 xit("line: 288 - non capturing groups not supported", () => {});
 xit("line: 289 - non capturing groups not supported", () => {});
 xit("line: 290 - the test behaviour differs between PCRE and JS", () => {});
-xit("line: 291 - lazy quantifiers are not supported", () => {});
-xit("line: 292 - lazy quantifiers are not supported", () => {});
-xit("line: 293 - lazy quantifiers are not supported", () => {});
-xit("line: 488 - lazy quantifiers are not supported", () => {});
-xit("line: 489 - lazy quantifiers are not supported", () => {});
-xit("line: 490 - lazy quantifiers are not supported", () => {});
-xit("line: 491 - lazy quantifiers are not supported", () => {});
-xit("line: 492 - lazy quantifiers are not supported", () => {});
-xit("line: 493 - lazy quantifiers are not supported", () => {});
-xit("line: 494 - lazy quantifiers are not supported", () => {});
-xit("line: 1077 - lazy quantifiers are not supported", () => {});
-xit("line: 1078 - lazy quantifiers are not supported", () => {});
-xit("line: 1079 - lazy quantifiers are not supported", () => {});
-xit("line: 1080 - lazy quantifiers are not supported", () => {});
-xit("line: 1081 - lazy quantifiers are not supported", () => {});
-xit("line: 1082 - lazy quantifiers are not supported", () => {});
-xit("line: 1083 - lazy quantifiers are not supported", () => {});
+xit("line: 291 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 292 - lazy range repitition quantifiers are not supported", () => {});
+it("line: 293 - matches ^[ab]{1,3}(ab*?|b) against 'aabbbbb'", () => {
+  const match = exec("^[ab]{1,3}(ab*?|b)", "aabbbbb", "s");
+  expect(match.matches[0]).toBe("aabbbbb".substring(0, 4));
+  expect(match.matches[1]).toBe("aabbbbb".substring(3, 4));
+});
+xit("line 487 - issue with parsing the test itself", () => {});
+xit("line 488 - issue with parsing the test itself", () => {});
+xit("line 489 - issue with parsing the test itself", () => {});
+xit("line 490 - issue with parsing the test itself", () => {});
+xit("line 491 - issue with parsing the test itself", () => {});
+xit("line 492 - issue with parsing the test itself", () => {});
+xit("line 493 - issue with parsing the test itself", () => {});
+xit("line 494 - issue with parsing the test itself", () => {});
+xit("line 1077 - issue with parsing the test itself", () => {});
+xit("line 1078 - issue with parsing the test itself", () => {});
+xit("line 1079 - issue with parsing the test itself", () => {});
+xit("line 1080 - issue with parsing the test itself", () => {});
+xit("line 1081 - issue with parsing the test itself", () => {});
+xit("line 1082 - issue with parsing the test itself", () => {});
+it("line: 1083 - matches ^[ab]{1,3}(ab*?|b) against 'The quick brown fox'", () => {
+  expectNotMatch("^[ab]{1,3}(ab*?|b)", ["The quick brown fox"]);
+});
 xit("line: 1084 - back references are not supported", () => {});
 xit("line: 1085 - back references are not supported", () => {});
 xit("line: 1086 - test encoding issue", () => {});
@@ -1448,7 +1503,7 @@ it("line: 1224 - matches a{0}bc against 'bc'", () => {
   const match = exec("a{0}bc", "bc", "s");
   expect(match.matches[0]).toBe("bc".substring(0, 2));
 });
-xit("line: 1225 - lazy quantifiers are not supported", () => {});
+xit("line: 1225 - lazy range repitition quantifiers are not supported", () => {});
 xit("line: 1226 - back references are not supported", () => {});
 xit("line: 1227 - back references are not supported", () => {});
 xit("line: 1228 - back references are not supported", () => {});
@@ -1562,8 +1617,8 @@ it("line: 1267 - matches [^az] against 'aaAabcd '", () => {
   expect(match.matches[0]).toBe("aaAabcd ".substring(4, 5));
 });
 xit("line: 1268 - back references are not supported", () => {});
-xit("line: 1269 - lazy quantifiers are not supported", () => {});
-xit("line: 1270 - lazy quantifiers are not supported", () => {});
+xit("line: 1269 - lazy range repitition quantifiers are not supported", () => {});
+xit("line: 1270 - lazy range repitition quantifiers are not supported", () => {});
 it("line: 1271 - matches (\\.\\d\\d[1-9]?)\\d+ against '1.230003938'", () => {
   const match = exec("(\\.\\d\\d[1-9]?)\\d+", "1.230003938", "s");
   expect(match.matches[0]).toBe("1.230003938".substring(1, 11));
@@ -1599,7 +1654,19 @@ it("line: 1281 - matches foo(.*)bar against 'The food is under the bar in the ba
     "The food is under the bar in the barn.".substring(7, 33)
   );
 });
-xit("line: 1282 - lazy quantifiers are not supported", () => {});
+it("line: 1282 - matches foo(.*?)bar against 'The food is under the bar in the barn.'", () => {
+  const match = exec(
+    "foo(.*?)bar",
+    "The food is under the bar in the barn.",
+    "s"
+  );
+  expect(match.matches[0]).toBe(
+    "The food is under the bar in the barn.".substring(4, 25)
+  );
+  expect(match.matches[1]).toBe(
+    "The food is under the bar in the barn.".substring(7, 22)
+  );
+});
 it("line: 1283 - matches (.*)(\\d*) against 'I have 2 numbers: 53147'", () => {
   const match = exec("(.*)(\\d*)", "I have 2 numbers: 53147", "s");
   expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 23));
@@ -1612,15 +1679,25 @@ it("line: 1284 - matches (.*)(\\d+) against 'I have 2 numbers: 53147'", () => {
   expect(match.matches[1]).toBe("I have 2 numbers: 53147".substring(0, 22));
   expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(22, 23));
 });
-xit("line: 1285 - lazy quantifiers are not supported", () => {});
-xit("line: 1286 - lazy quantifiers are not supported", () => {});
+it("line: 1285 - matches (.*?)(\\d*) against 'I have 2 numbers: 53147'", () => {
+  const match = exec("(.*?)(\\d*)", "I have 2 numbers: 53147", "s");
+  expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 0));
+  expect(match.matches[1]).toBe("I have 2 numbers: 53147".substring(0, 0));
+  expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(0, 0));
+});
+it("line: 1286 - matches (.*?)(\\d+) against 'I have 2 numbers: 53147'", () => {
+  const match = exec("(.*?)(\\d+)", "I have 2 numbers: 53147", "s");
+  expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 8));
+  expect(match.matches[1]).toBe("I have 2 numbers: 53147".substring(0, 7));
+  expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(7, 8));
+});
 it("line: 1287 - matches (.*)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   const match = exec("(.*)(\\d+)$", "I have 2 numbers: 53147", "s");
   expect(match.matches[0]).toBe("I have 2 numbers: 53147".substring(0, 23));
   expect(match.matches[1]).toBe("I have 2 numbers: 53147".substring(0, 22));
   expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(22, 23));
 });
-xit("line: 1288 - lazy quantifiers are not supported", () => {});
+xit("line: 1288 - lazy quantifiers should still yield the longest overall regex match", () => {});
 xit("line: 1289 - word boundary class not supported yet!", () => {});
 it("line: 1290 - matches (.*\\D)(\\d+)$ against 'I have 2 numbers: 53147'", () => {
   const match = exec("(.*\\D)(\\d+)$", "I have 2 numbers: 53147", "s");
@@ -2005,7 +2082,10 @@ it('line: 1408 - matches "([^\\\\"]+|\\\\.)*" against \'"the \\"quick\\" brown f
     '"the \\"quick\\" brown fox" '.substring(14, 24)
   );
 });
-xit("line: 1409 - lazy quantifiers are not supported", () => {});
+it("line: 1409 - matches .*? against 'abc'", () => {
+  const match = exec(".*?", "abc", "s");
+  expect(match.matches[0]).toBe("abc".substring(0, 0));
+});
 xit("line: 1410 - word boundary class not supported yet!", () => {});
 xit("line: 1411 - word boundary class not supported yet!", () => {});
 it("line: 1412 - matches  against 'abc'", () => {

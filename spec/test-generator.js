@@ -13,6 +13,8 @@ const knownIssues = {
     1103,
     ...range(1185, 1188),
     ...range(1095, 1098),
+    ...range(487, 494),
+    ...range(1077, 1082),
   ],
   "issues with repeated capture groups": [
     262,
@@ -20,6 +22,10 @@ const knownIssues = {
     ...range(63, 68),
     1391,
     1392,
+  ],
+  "lazy quantifiers should still yield the longest overall regex match": [
+    ...range(141, 143),
+    1288,
   ],
   "test contains an octal escape sequence": [1102],
   "requires triage": [
@@ -103,8 +109,8 @@ lines.forEach((line, index) => {
       return;
     }
 
-    if (["*?", "??", "+?", "}?"].some((f) => regex.includes(f))) {
-      testCase += `xit("line: ${index} - lazy quantifiers are not supported", () => { });`;
+    if (["}?"].some((f) => regex.includes(f))) {
+      testCase += `xit("line: ${index} - lazy range repitition quantifiers are not supported", () => { });`;
       return;
     }
 
