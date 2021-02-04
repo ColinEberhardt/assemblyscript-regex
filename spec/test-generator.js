@@ -81,17 +81,15 @@ lines.forEach((line, index) => {
       return;
     }
 
-    regex = parts[1] == "SAME" ? regex : escapeQuote(parts[1]);
+    regex =
+      parts[1] == "SAME"
+        ? regex
+        : escapeQuote(parts[1] == "NULL" ? "" : parts[1]);
     let str = parts[2] !== "NULL" ? escapeQuote(parts[2]) : "";
     let flags = parts[0].includes("i") ? "is" : "s";
 
     if (parts[0].includes("n")) {
       testCase += `xit("line: ${index} - multi line regex not supported yet!", () => { });`;
-      return;
-    }
-
-    if (regex == "NULL") {
-      testCase += `xit("line: ${index} - test cases for NULL regexes not supported yet", () => { });`;
       return;
     }
 
@@ -125,26 +123,20 @@ lines.forEach((line, index) => {
       return;
     }
 
-    nextCase += `it("line: ${index} - matches ${regex} against '${
-      str
-    }'", () => {
+    nextCase += `it("line: ${index} - matches ${regex} against '${str}'", () => {
       `;
     if (parts[3] == "BADBR") {
       nextCase += ` expect(() => { let foo = new RegExp("${regex}") }).toThrow();`;
     } else if (parts[3] == "NOMATCH") {
       nextCase += ` expectNotMatch("${regex}", ["${str}"]);`;
     } else {
-      nextCase += ` const match = exec("${regex}", "${
-        str
-      }", "${flags}");`;
+      nextCase += ` const match = exec("${regex}", "${str}", "${flags}");`;
 
       // create an expect for each capture group
       const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
       captures.forEach((capture, index) => {
         const digits = capture.match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)/);
-        nextCase += `expect(match.matches[${index}]).toBe("${
-          str
-        }".substring(${digits[1]}, ${digits[2]}));`;
+        nextCase += `expect(match.matches[${index}]).toBe("${str}".substring(${digits[1]}, ${digits[2]}));`;
       });
     }
 

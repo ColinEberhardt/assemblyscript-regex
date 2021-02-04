@@ -2008,7 +2008,10 @@ it('line: 1408 - matches "([^\\\\"]+|\\\\.)*" against \'"the \\"quick\\" brown f
 xit("line: 1409 - lazy quantifiers are not supported", () => {});
 xit("line: 1410 - word boundary class not supported yet!", () => {});
 xit("line: 1411 - word boundary class not supported yet!", () => {});
-xit("line: 1412 - test cases for NULL regexes not supported yet", () => {});
+it("line: 1412 - matches  against 'abc'", () => {
+  const match = exec("", "abc", "s");
+  expect(match.matches[0]).toBe("abc".substring(0, 0));
+});
 xit("line: 1413 - requires triage", () => {});
 it("line: 1414 - matches a[^a]b against 'acb'", () => {
   const match = exec("a[^a]b", "acb", "s");
