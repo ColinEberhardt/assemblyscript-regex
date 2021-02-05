@@ -74,8 +74,7 @@ function isSpecialCharacter(code: u32): bool {
 }
 
 class Range {
-  from: i32 = -1;
-  to: i32 = -1;
+  constructor(public from: i32, public to: i32) {}
 }
 
 export class Parser {
@@ -157,62 +156,52 @@ export class Parser {
     return new CharacterNode(this.eatToken());
   }
 
+  private maybeParseDigit(): i32 {
+    let digitStr = "";
+    while (this.iterator.more()) {
+      const token = this.iterator.current;
+      if (isDigit(token)) {
+        digitStr += this.iterator.currentAsString();
+      } else {
+        return digitStr == "" ? -1 : <i32>parseInt(digitStr);
+      }
+      this.eatToken();
+    }
+    return digitStr == "" ? -1 : <i32>parseInt(digitStr);
+  }
+
   private maybeParseRepetitionRange(): Range | null {
     // snapshot
     const iteratorCopy = this.iterator.copy();
     this.eatToken(Char.LeftCurlyBrace);
 
-    let range = new Range();
-
-    let firstDigit = true;
-    let digitStr = "";
-    while (this.iterator.more()) {
-      const token = this.iterator.current;
-      if (token == Char.RightParenthesis) break;
-      if (firstDigit) {
-        if (isDigit(token)) {
-          // if it is a digit, keep eating
-          digitStr += this.iterator.currentAsString();
-        } else {
-          range.from = digitStr.length ? <i32>parseInt(digitStr) : -1;
-          range.to = range.from;
-          if (token == Char.Comma) {
-            // if we meet a comma, start parsing the next digit
-            firstDigit = false;
-            digitStr = "";
-            range.to = -1;
-          } else if (token == Char.RightCurlyBrace) {
-            this.eatToken(Char.RightCurlyBrace);
-            // close brace, this is a single value range
-            return range;
-          } else {
-            // anything else, we got a problem
-            break;
-          }
-        }
-      } else {
-        if (isDigit(token)) {
-          // if it is a digit, keep eating
-          digitStr += this.iterator.currentAsString();
-        } else {
-          range.to = digitStr.length ? <i32>parseInt(digitStr) : -1;
-          if (token == Char.RightCurlyBrace) {
-            this.eatToken(Char.RightCurlyBrace);
-            // close brace, end  of range
-            return range;
-          } else {
-            // anything else, we got a problem
-            break;
-          }
-        }
-      }
+    const from = this.maybeParseDigit();
+    if (from == -1) {
+      return null;
+    }
+    if (this.iterator.current == Char.RightCurlyBrace) {
       this.eatToken();
+      return new Range(from, from);
+    } else if (this.iterator.current == Char.Comma) {
+      this.eatToken();
+      const to = this.maybeParseDigit();
+      // @ts-ignore
+      if (this.iterator.current == Char.RightCurlyBrace) {
+        this.eatToken();
+        return new Range(from, to);
+      }
     }
 
-    // repetition not found - reset state
     this.iterator = iteratorCopy;
-
     return null;
+  }
+
+  private isGreedy(): bool {
+    if (this.iterator.current == Char.Question) {
+      this.eatToken();
+      return false;
+    }
+    return true;
   }
 
   // parses a sequence of chars
@@ -236,13 +225,13 @@ export class Parser {
         const range = this.maybeParseRepetitionRange();
         if (range != null) {
           const expression = nodes.pop();
-          let greedy = true;
-          if (this.iterator.current == Char.Question) {
-            greedy = false;
-            this.eatToken();
-          }
           nodes.push(
-            new RangeRepetitionNode(expression, range.from, range.to, greedy)
+            new RangeRepetitionNode(
+              expression,
+              range.from,
+              range.to,
+              this.isGreedy()
+            )
           );
         } else {
           // this is not the start of a repetition, it's just a char!
@@ -251,12 +240,7 @@ export class Parser {
       } else if (isQuantifier(token)) {
         const expression = nodes.pop();
         const quantifier = this.eatToken();
-        let greedy = true;
-        if (this.iterator.current == Char.Question) {
-          greedy = false;
-          this.eatToken();
-        }
-        nodes.push(new RepetitionNode(expression, quantifier, greedy));
+        nodes.push(new RepetitionNode(expression, quantifier, this.isGreedy()));
         // @ts-ignore
       } else if (token == Char.LeftSquareBracket) {
         nodes.push(this.parseCharacterSet());
