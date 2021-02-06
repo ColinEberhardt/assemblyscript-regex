@@ -166,6 +166,10 @@ export class RegExp {
     return null;
   }
 
+  test(str: string): bool {
+    return this.exec(str) != null;
+  }
+
   toString(): string {
     return this.regex;
   }
