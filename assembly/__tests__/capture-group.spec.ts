@@ -33,3 +33,9 @@ it("should not return captured values for non-matching alternations", () => {
   expect(match.matches[1]).toBe("");
   expect(match.matches[2]).toBe("b");
 });
+
+it("repeated capture groups should return the last match", () => {
+  const match = exec("([a-c])+", "ac");
+  expect(match.matches[0]).toBe("ac");
+  expect(match.matches[1]).toBe("c");
+});

@@ -5,8 +5,8 @@ export function walker(
   visitor: (state: State) => void,
   visited: State[] = []
 ): void {
-  visitor(state);
   if (visited.includes(state)) return;
+  visitor(state);
   visited.push(state);
   const nextStates = state.transitions;
   for (let i = 0, len = nextStates.length; i < len; i++) {
