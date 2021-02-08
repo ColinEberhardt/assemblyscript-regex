@@ -75,8 +75,11 @@ export function expandRepetitions(visitor: NodeVisitor): void {
     // create multiple clones
     const clones = new Array<Node>(from);
     // a{4} => aaaa
-    for (let i = 0; i < from; i++) {
-      clones[i] = expression.clone();
+    if (from > 0) {
+      clones[0] = expression;
+      for (let i = 1; i < from; i++) {
+        clones[i] = expression.clone();
+      }
     }
 
     if (rangeRepNode.to == -1) {

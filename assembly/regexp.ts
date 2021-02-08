@@ -83,6 +83,30 @@ export class Flags {
   }
 }
 
+// capture groups are implemented as GroupStart / GroupEnd states that record (capture)
+// the value of the current state of the string being matched.
+// Repeated capture groups, via rage repetitions (e.g. {2,3}) share the same 'id'. The
+// returned regex should only return the value of the final repetition.
+function filterCaptures(groupMarkers: GroupStartMarkerState[]): string[] {
+  if (!groupMarkers.length) {
+    return [];
+  }
+  const values = [first(groupMarkers).capture];
+  let currrentId = first(groupMarkers).id;
+  for (let i = 0; i < groupMarkers.length; i++) {
+    const gm = groupMarkers[i];
+    if (gm.id != currrentId) {
+      currrentId = gm.id;
+      values.push(gm.capture);
+    } else {
+      if (gm.flagged) {
+        values[values.length - 1] = gm.capture;
+      }
+    }
+  }
+  return values;
+}
+
 export class RegExp {
   lastIndex: i32 = 0;
   private flags: Flags;
@@ -143,15 +167,20 @@ export class RegExp {
         this.nfa.start,
         str.substr(matchIndex)
       );
+
       // we have found a match
       if (matchStr != null) {
+        // remove any non-flagged captures
+        groupMarkers.forEach((gm) => {
+          gm.capture = gm.flagged ? gm.capture : "";
+        });
+
         const match = new Match(
-          [matchStr!].concat(
-            groupMarkers.map<string>((m) => (m.flagged ? m.capture : ""))
-          ),
+          [matchStr!].concat(filterCaptures(groupMarkers)),
           matchIndex,
           str
         );
+
         // return this match (checking end of input condition)
         const matchEndIndex = match.index + match.matches[0].length;
         if (!this.endOfInput || (this.endOfInput && matchEndIndex == len)) {

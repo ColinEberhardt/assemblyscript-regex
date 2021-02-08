@@ -39,3 +39,9 @@ it("repeated capture groups should return the last match", () => {
   expect(match.matches[0]).toBe("ac");
   expect(match.matches[1]).toBe("c");
 });
+
+it("range repitition capture groups should return the last match", () => {
+  const match = exec("([a-c]){2}", "ac");
+  expect(match.matches[0]).toBe("ac");
+  expect(match.matches[1]).toBe("c");
+});

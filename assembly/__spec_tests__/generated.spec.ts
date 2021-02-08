@@ -373,17 +373,41 @@ it("line: 51 - matches ^(b+?|a){1,2}?c against 'bc'", () => {
   expect(match.matches[0]).toBe("bc".substring(0, 2));
   expect(match.matches[1]).toBe("bc".substring(0, 1));
 });
-xit("line: 52 - issues with repeated capture groups", () => {});
-xit("line: 53 - issues with repeated capture groups", () => {});
-xit("line: 54 - issues with repeated capture groups", () => {});
-xit("line: 55 - issues with repeated capture groups", () => {});
+it("line: 52 - matches ^(b+?|a){1,2}?c against 'bbc'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "bbc", "s");
+  expect(match.matches[0]).toBe("bbc".substring(0, 3));
+  expect(match.matches[1]).toBe("bbc".substring(1, 2));
+});
+it("line: 53 - matches ^(b+?|a){1,2}?c against 'bbbc'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "bbbc", "s");
+  expect(match.matches[0]).toBe("bbbc".substring(0, 4));
+  expect(match.matches[1]).toBe("bbbc".substring(1, 3));
+});
+it("line: 54 - matches ^(b+?|a){1,2}?c against 'bac'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "bac", "s");
+  expect(match.matches[0]).toBe("bac".substring(0, 3));
+  expect(match.matches[1]).toBe("bac".substring(1, 2));
+});
+it("line: 55 - matches ^(b+?|a){1,2}?c against 'bbac'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "bbac", "s");
+  expect(match.matches[0]).toBe("bbac".substring(0, 4));
+  expect(match.matches[1]).toBe("bbac".substring(2, 3));
+});
 it("line: 56 - matches ^(b+?|a){1,2}?c against 'aac'", () => {
   const match = exec("^(b+?|a){1,2}?c", "aac", "s");
   expect(match.matches[0]).toBe("aac".substring(0, 3));
   expect(match.matches[1]).toBe("aac".substring(1, 2));
 });
-xit("line: 57 - issues with repeated capture groups", () => {});
-xit("line: 58 - issues with repeated capture groups", () => {});
+it("line: 57 - matches ^(b+?|a){1,2}?c against 'abbbbbbbbbbbc'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "abbbbbbbbbbbc", "s");
+  expect(match.matches[0]).toBe("abbbbbbbbbbbc".substring(0, 13));
+  expect(match.matches[1]).toBe("abbbbbbbbbbbc".substring(1, 12));
+});
+it("line: 58 - matches ^(b+?|a){1,2}?c against 'bbbbbbbbbbbac'", () => {
+  const match = exec("^(b+?|a){1,2}?c", "bbbbbbbbbbbac", "s");
+  expect(match.matches[0]).toBe("bbbbbbbbbbbac".substring(0, 13));
+  expect(match.matches[1]).toBe("bbbbbbbbbbbac".substring(11, 12));
+});
 it("line: 59 - matches ^(b+?|a){1,2}?c against 'aaac'", () => {
   expectNotMatch("^(b+?|a){1,2}?c", ["aaac"]);
 });
@@ -400,12 +424,36 @@ it("line: 62 - matches ^(b+|a){1,2}c against 'bbc'", () => {
   expect(match.matches[0]).toBe("bbc".substring(0, 3));
   expect(match.matches[1]).toBe("bbc".substring(0, 2));
 });
-xit("line: 63 - issues with repeated capture groups", () => {});
-xit("line: 64 - issues with repeated capture groups", () => {});
-xit("line: 65 - issues with repeated capture groups", () => {});
-xit("line: 66 - issues with repeated capture groups", () => {});
-xit("line: 67 - issues with repeated capture groups", () => {});
-xit("line: 68 - issues with repeated capture groups", () => {});
+it("line: 63 - matches ^(b+|a){1,2}c against 'bbbc'", () => {
+  const match = exec("^(b+|a){1,2}c", "bbbc", "s");
+  expect(match.matches[0]).toBe("bbbc".substring(0, 4));
+  expect(match.matches[1]).toBe("bbbc".substring(0, 3));
+});
+it("line: 64 - matches ^(b+|a){1,2}c against 'bac'", () => {
+  const match = exec("^(b+|a){1,2}c", "bac", "s");
+  expect(match.matches[0]).toBe("bac".substring(0, 3));
+  expect(match.matches[1]).toBe("bac".substring(1, 2));
+});
+it("line: 65 - matches ^(b+|a){1,2}c against 'bbac'", () => {
+  const match = exec("^(b+|a){1,2}c", "bbac", "s");
+  expect(match.matches[0]).toBe("bbac".substring(0, 4));
+  expect(match.matches[1]).toBe("bbac".substring(2, 3));
+});
+it("line: 66 - matches ^(b+|a){1,2}c against 'aac'", () => {
+  const match = exec("^(b+|a){1,2}c", "aac", "s");
+  expect(match.matches[0]).toBe("aac".substring(0, 3));
+  expect(match.matches[1]).toBe("aac".substring(1, 2));
+});
+it("line: 67 - matches ^(b+|a){1,2}c against 'abbbbbbbbbbbc'", () => {
+  const match = exec("^(b+|a){1,2}c", "abbbbbbbbbbbc", "s");
+  expect(match.matches[0]).toBe("abbbbbbbbbbbc".substring(0, 13));
+  expect(match.matches[1]).toBe("abbbbbbbbbbbc".substring(1, 12));
+});
+it("line: 68 - matches ^(b+|a){1,2}c against 'bbbbbbbbbbbac'", () => {
+  const match = exec("^(b+|a){1,2}c", "bbbbbbbbbbbac", "s");
+  expect(match.matches[0]).toBe("bbbbbbbbbbbac".substring(0, 13));
+  expect(match.matches[1]).toBe("bbbbbbbbbbbac".substring(11, 12));
+});
 it("line: 69 - matches ^(b+|a){1,2}c against 'aaac'", () => {
   expectNotMatch("^(b+|a){1,2}c", ["aaac"]);
 });
@@ -417,8 +465,16 @@ it("line: 71 - matches ^(b+|a){1,2}?bc against 'bbc'", () => {
   expect(match.matches[0]).toBe("bbc".substring(0, 3));
   expect(match.matches[1]).toBe("bbc".substring(0, 1));
 });
-xit("line: 72 - issues with repeated capture groups", () => {});
-xit("line: 73 - issues with repeated capture groups", () => {});
+it("line: 72 - matches ^(b*|ba){1,2}?bc against 'babc'", () => {
+  const match = exec("^(b*|ba){1,2}?bc", "babc", "s");
+  expect(match.matches[0]).toBe("babc".substring(0, 4));
+  expect(match.matches[1]).toBe("babc".substring(0, 2));
+});
+it("line: 73 - matches ^(b*|ba){1,2}?bc against 'bbabc'", () => {
+  const match = exec("^(b*|ba){1,2}?bc", "bbabc", "s");
+  expect(match.matches[0]).toBe("bbabc".substring(0, 5));
+  expect(match.matches[1]).toBe("bbabc".substring(1, 3));
+});
 it("line: 74 - matches ^(b*|ba){1,2}?bc against 'bababc'", () => {
   const match = exec("^(b*|ba){1,2}?bc", "bababc", "s");
   expect(match.matches[0]).toBe("bababc".substring(0, 6));
@@ -435,7 +491,11 @@ it("line: 77 - matches ^(ba|b*){1,2}?bc against 'babc'", () => {
   expect(match.matches[0]).toBe("babc".substring(0, 4));
   expect(match.matches[1]).toBe("babc".substring(0, 2));
 });
-xit("line: 78 - issues with repeated capture groups", () => {});
+it("line: 78 - matches ^(ba|b*){1,2}?bc against 'bbabc'", () => {
+  const match = exec("^(ba|b*){1,2}?bc", "bbabc", "s");
+  expect(match.matches[0]).toBe("bbabc".substring(0, 5));
+  expect(match.matches[1]).toBe("bbabc".substring(1, 3));
+});
 it("line: 79 - matches ^(ba|b*){1,2}?bc against 'bababc'", () => {
   const match = exec("^(ba|b*){1,2}?bc", "bababc", "s");
   expect(match.matches[0]).toBe("bababc".substring(0, 6));
@@ -1199,8 +1259,32 @@ it("line: 261 - matches ^From +([^ ]+) +[a-zA-Z][a-zA-Z][a-zA-Z] +[a-zA-Z][a-zA-
     "From abcd  Mon Sep 01 12:33:02 1997".substring(5, 9)
   );
 });
-xit("line: 262 - issues with repeated capture groups", () => {});
-xit("line: 263 - issues with repeated capture groups", () => {});
+it("line: 262 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Mon Sep 01 12:33:02 1997'", () => {
+  const match = exec(
+    "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
+    "From abcd  Mon Sep 01 12:33:02 1997",
+    "s"
+  );
+  expect(match.matches[0]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(0, 27)
+  );
+  expect(match.matches[1]).toBe(
+    "From abcd  Mon Sep 01 12:33:02 1997".substring(15, 19)
+  );
+});
+it("line: 263 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Mon Sep  1 12:33:02 1997'", () => {
+  const match = exec(
+    "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
+    "From abcd  Mon Sep  1 12:33:02 1997",
+    "s"
+  );
+  expect(match.matches[0]).toBe(
+    "From abcd  Mon Sep  1 12:33:02 1997".substring(0, 27)
+  );
+  expect(match.matches[1]).toBe(
+    "From abcd  Mon Sep  1 12:33:02 1997".substring(15, 20)
+  );
+});
 it("line: 264 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Sep 01 12:33:02 1997'", () => {
   expectNotMatch(
     "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
@@ -2089,8 +2173,15 @@ it("line: 1390 - matches ^[abc]{12} against 'abcabcabcabc'", () => {
   const match = exec("^[abc]{12}", "abcabcabcabc", "s");
   expect(match.matches[0]).toBe("abcabcabcabc".substring(0, 12));
 });
-xit("line: 1391 - issues with repeated capture groups", () => {});
-xit("line: 1392 - issues with repeated capture groups", () => {});
+it("line: 1391 - matches ^[a-c]{12} against 'abcabcabcabc'", () => {
+  const match = exec("^[a-c]{12}", "abcabcabcabc", "s");
+  expect(match.matches[0]).toBe("abcabcabcabc".substring(0, 12));
+});
+it("line: 1392 - matches ^(a|b|c){12} against 'abcabcabcabc '", () => {
+  const match = exec("^(a|b|c){12}", "abcabcabcabc ", "s");
+  expect(match.matches[0]).toBe("abcabcabcabc ".substring(0, 12));
+  expect(match.matches[1]).toBe("abcabcabcabc ".substring(11, 12));
+});
 it("line: 1393 - matches ^[abcdefghijklmnopqrstuvwxy0123456789] against 'n'", () => {
   const match = exec("^[abcdefghijklmnopqrstuvwxy0123456789]", "n", "s");
   expect(match.matches[0]).toBe("n".substring(0, 1));
