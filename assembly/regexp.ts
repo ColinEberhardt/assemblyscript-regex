@@ -9,14 +9,16 @@ import { walker as astWalker, expandRepetitions } from "./parser/walker";
 function recursiveBacktrackingSearch(
   state: State,
   input: string,
-  visited: State[] = [],
+  visited: u32[] = [],
   position: i32 = 0
 ): string | null {
   // prevent endless loops when following epsilon transitions
-  if (visited.includes(state)) {
-    return null;
+  for (let i = 0, len = visited.length; i < len; i++) {
+    if (visited[i] == state.id) {
+      return null;
+    }
   }
-  visited.push(state);
+  visited.push(state.id);
 
   const matches = state.matches(input, position);
   if (matches == MatchResult.Match) {
@@ -92,11 +94,11 @@ function filterCaptures(groupMarkers: GroupStartMarkerState[]): string[] {
     return [];
   }
   const values = [first(groupMarkers).capture];
-  let currrentId = first(groupMarkers).id;
+  let currrentId = first(groupMarkers).groupId;
   for (let i = 0; i < groupMarkers.length; i++) {
     const gm = groupMarkers[i];
-    if (gm.id != currrentId) {
-      currrentId = gm.id;
+    if (gm.groupId != currrentId) {
+      currrentId = gm.groupId;
       values.push(gm.capture);
     } else {
       if (gm.flagged) {

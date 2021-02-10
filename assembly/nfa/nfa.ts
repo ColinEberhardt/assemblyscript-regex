@@ -24,9 +24,11 @@ export enum MatchResult {
   Ignore,
 }
 
+let _stateId: u32 = 0;
+
 /* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {
-  constructor(public transitions: State[] = []) {}
+  constructor(public transitions: State[] = [], public id: u32 = _stateId++) {}
 
   matches(input: string, position: u32): MatchResult {
     return MatchResult.Ignore;
@@ -40,7 +42,7 @@ export class GroupStartMarkerState extends State {
   // captures from the path through the NFA that reaches the end are flagged
   flagged: bool = false;
 
-  constructor(next: State, public id: i32) {
+  constructor(next: State, public groupId: i32) {
     super();
     this.transitions.push(next);
   }
