@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1612973261304,
+  "lastUpdate": 1613575646528,
   "repoUrl": "https://github.com/ColinEberhardt/assemblyscript-regex",
   "entries": {
     "Benchmark": [
@@ -2110,6 +2110,79 @@ window.BENCHMARK_DATA = {
             "range": "±1.05%",
             "unit": "ops/sec",
             "extra": "85 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin E",
+            "username": "ColinEberhardt"
+          },
+          "committer": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin E",
+            "username": "ColinEberhardt"
+          },
+          "distinct": true,
+          "id": "741b956b1dbf42c51ebb76723d446ad8d91d31c1",
+          "message": "chore: ensure benchmark runs on node v15",
+          "timestamp": "2021-02-17T15:25:52Z",
+          "tree_id": "e4682c96e51c0b42e423229735df923b3fbe91f6",
+          "url": "https://github.com/ColinEberhardt/assemblyscript-regex/commit/741b956b1dbf42c51ebb76723d446ad8d91d31c1"
+        },
+        "date": 1613575645998,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "baseline",
+            "value": 67005,
+            "range": "±0.66%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "character class",
+            "value": 19732,
+            "range": "±0.85%",
+            "unit": "ops/sec",
+            "extra": "88 samples"
+          },
+          {
+            "name": "concatenation",
+            "value": 6071,
+            "range": "±1.11%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "quantifiers",
+            "value": 10384,
+            "range": "±0.79%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "range quantifiers",
+            "value": 3641,
+            "range": "±1.11%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "alternation",
+            "value": 11281,
+            "range": "±0.72%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "multiple regex matches",
+            "value": 1143,
+            "range": "±0.99%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
           }
         ]
       }
