@@ -6,7 +6,7 @@ const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
 wasmModule = loader.instantiateSync(
-  fs.readFileSync("./build/debug/assemblyscript-regex.wasm"),
+  fs.readFileSync("./build/release/assemblyscript-regex.wasm"),
   {
     env: {
       log: () => {

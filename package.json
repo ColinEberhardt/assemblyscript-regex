@@ -12,7 +12,7 @@
     "prettier:write": "prettier --write .",
     "eslint:write": "npm run eslint -- --fix ",
     "asbuild:untouched": "asb --target debug",
-    "asbuild:optimized": "asb",
+    "asbuild:optimized": "asb --exportRuntime",
     "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
     "tsrun": "ts-node ts/index.ts",
     "benchmark": "node benchmark/benchmark.js",
