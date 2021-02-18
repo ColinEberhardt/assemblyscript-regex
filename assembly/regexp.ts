@@ -90,12 +90,18 @@ export class Flags {
 // Repeated capture groups, via rage repetitions (e.g. {2,3}) share the same 'id'. The
 // returned regex should only return the value of the final repetition.
 function filterCaptures(groupMarkers: GroupStartMarkerState[]): string[] {
-  if (!groupMarkers.length) {
+  let len = groupMarkers.length;
+  if (!len) {
     return [];
   }
-  const values = [first(groupMarkers).capture];
-  let currrentId = first(groupMarkers).groupId;
-  for (let i = 0; i < groupMarkers.length; i++) {
+  const values = new Array<string>(len);
+  values.length = 0;
+
+  const firstGroup = first(groupMarkers);
+  values.push(firstGroup.capture);
+  let currrentId = firstGroup.groupId;
+
+  for (let i = 0; i < len; i++) {
     const gm = groupMarkers[i];
     if (gm.groupId != currrentId) {
       currrentId = gm.groupId;
@@ -134,14 +140,16 @@ export class RegExp {
     this.nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
-    gm = new Array<GroupStartMarkerState>();
+    gm = new Array<GroupStartMarkerState>(16);
+    gm.length = 0;
+
     nfaWalker(this.nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
         gm.push(state as GroupStartMarkerState);
       }
     });
-    this.groupMarkers = gm;
 
+    this.groupMarkers = gm;
     this.flags = flags;
   }
 
