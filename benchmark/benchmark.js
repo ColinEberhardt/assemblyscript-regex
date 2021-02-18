@@ -5,17 +5,14 @@ const loader = require("@assemblyscript/loader");
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
-wasmModule = loader.instantiateSync(
-  fs.readFileSync("./build/release/assemblyscript-regex.wasm"),
-  {
-    env: {
-      log: () => {
-        const { __getString } = wasmModule.exports;
-        console.log(__getString(strPtr));
-      },
+wasmModule = loader.instantiateSync(fs.readFileSync("./build/optimized.wasm"), {
+  env: {
+    log: () => {
+      const { __getString } = wasmModule.exports;
+      console.log(__getString(strPtr));
     },
-  }
-);
+  },
+});
 
 // the executeRegExp exported function is ex
 function executeRegex(regexStr, valueStr, untilNull = false) {
