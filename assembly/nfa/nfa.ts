@@ -32,7 +32,7 @@ export class State {
     public transitions: State[] | null = null,
     public id: u32 = _stateId++
   ) {
-    if (transitions == null) {
+    if (transitions === null) {
       this.transitions = new Array(4);
       this.transitions!.length = 0;
     }
