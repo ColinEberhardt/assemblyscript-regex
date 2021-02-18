@@ -8,8 +8,8 @@ export function walker(
   if (visited.includes(state)) return;
   visitor(state);
   visited.push(state);
-  const nextStates = state.transitions;
+  const nextStates = state.transitions!;
   for (let i = 0, len = nextStates.length; i < len; i++) {
-    walker(nextStates[i], visitor, visited);
+    walker(unchecked(nextStates[i]), visitor, visited);
   }
 }

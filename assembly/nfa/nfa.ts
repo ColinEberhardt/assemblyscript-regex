@@ -28,7 +28,15 @@ let _stateId: u32 = 0;
 
 /* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {
-  constructor(public transitions: State[] = [], public id: u32 = _stateId++) {}
+  constructor(
+    public transitions: State[] | null = null,
+    public id: u32 = _stateId++
+  ) {
+    if (transitions == null) {
+      this.transitions = new Array(4);
+      this.transitions!.length = 0;
+    }
+  }
 
   matches(input: string, position: u32): MatchResult {
     return MatchResult.Ignore;
@@ -44,7 +52,7 @@ export class GroupStartMarkerState extends State {
 
   constructor(next: State, public groupId: i32) {
     super();
-    this.transitions.push(next);
+    this.transitions!.push(next);
   }
 
   matches(input: string, position: u32): MatchResult {
@@ -56,7 +64,7 @@ export class GroupStartMarkerState extends State {
 export class GroupEndMarkerState extends State {
   constructor(next: State, public startMarker: GroupStartMarkerState) {
     super();
-    this.transitions.push(next);
+    this.transitions!.push(next);
   }
 
   matches(input: string, position: u32): MatchResult {
@@ -73,7 +81,7 @@ export class MatcherState<T extends Matcher> extends State {
 
   constructor(private matcher: T, next: State) {
     super();
-    this.transitions.push(next);
+    this.transitions!.push(next);
   }
 
   matches(input: string, position: u32): MatchResult {
@@ -91,7 +99,7 @@ export class Automata {
   static fromEpsilon(): Automata {
     const start = new State();
     const end = new State();
-    start.transitions.push(end);
+    start.transitions!.push(end);
     return new Automata(start, end);
   }
 
@@ -105,17 +113,17 @@ export class Automata {
 }
 
 function concat(first: Automata, second: Automata): Automata {
-  first.end.transitions.push(second.start);
+  first.end.transitions!.push(second.start);
   return new Automata(first.start, second.end);
 }
 
 function union(first: Automata, second: Automata): Automata {
   const start = new State();
-  start.transitions.push(first.start);
-  start.transitions.push(second.start);
+  start.transitions!.push(first.start);
+  start.transitions!.push(second.start);
   const end = new State();
-  first.end.transitions.push(end);
-  second.end.transitions.push(end);
+  first.end.transitions!.push(end);
+  second.end.transitions!.push(end);
   return new Automata(start, end);
 }
 
@@ -123,15 +131,15 @@ function closure(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
   if (greedy) {
-    nfa.end.transitions.push(nfa.start);
-    nfa.end.transitions.push(end);
-    start.transitions.push(nfa.start);
-    start.transitions.push(end);
+    nfa.end.transitions!.push(nfa.start);
+    nfa.end.transitions!.push(end);
+    start.transitions!.push(nfa.start);
+    start.transitions!.push(end);
   } else {
-    nfa.end.transitions.push(end);
-    nfa.end.transitions.push(nfa.start);
-    start.transitions.push(end);
-    start.transitions.push(nfa.start);
+    nfa.end.transitions!.push(end);
+    nfa.end.transitions!.push(nfa.start);
+    start.transitions!.push(end);
+    start.transitions!.push(nfa.start);
   }
   return new Automata(start, end);
 }
@@ -140,26 +148,26 @@ function zeroOrOne(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
   if (greedy) {
-    start.transitions.push(nfa.start);
-    start.transitions.push(end);
+    start.transitions!.push(nfa.start);
+    start.transitions!.push(end);
   } else {
-    start.transitions.push(end);
-    start.transitions.push(nfa.start);
+    start.transitions!.push(end);
+    start.transitions!.push(nfa.start);
   }
-  nfa.end.transitions.push(end);
+  nfa.end.transitions!.push(end);
   return new Automata(start, end);
 }
 
 function oneOrMore(nfa: Automata, greedy: bool): Automata {
   const start = new State();
   const end = new State();
-  start.transitions.push(nfa.start);
+  start.transitions!.push(nfa.start);
   if (greedy) {
-    nfa.end.transitions.push(nfa.start);
-    nfa.end.transitions.push(end);
+    nfa.end.transitions!.push(nfa.start);
+    nfa.end.transitions!.push(end);
   } else {
-    nfa.end.transitions.push(end);
-    nfa.end.transitions.push(nfa.start);
+    nfa.end.transitions!.push(end);
+    nfa.end.transitions!.push(nfa.start);
   }
   return new Automata(start, end);
 }
@@ -170,7 +178,7 @@ function group(nfa: Automata, id: i32): Automata {
   const startMarker = new GroupStartMarkerState(nfa.start, id);
   const end = new State();
   const endMarker = new GroupEndMarkerState(end, startMarker);
-  nfa.end.transitions.push(endMarker);
+  nfa.end.transitions!.push(endMarker);
   return new Automata(startMarker, end);
 }
 

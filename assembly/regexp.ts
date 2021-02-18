@@ -33,7 +33,7 @@ function recursiveBacktrackingSearch(
     return null;
   }
 
-  const transitions = state.transitions;
+  const transitions = state.transitions!;
   if (transitions.length == 0) {
     // we've reached the end, so retur the matched string
     return input.substring(0, position);
@@ -140,9 +140,7 @@ export class RegExp {
     this.nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
-    gm = new Array<GroupStartMarkerState>(16);
-    gm.length = 0;
-
+    gm = new Array<GroupStartMarkerState>();
     nfaWalker(this.nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
         gm.push(state as GroupStartMarkerState);
