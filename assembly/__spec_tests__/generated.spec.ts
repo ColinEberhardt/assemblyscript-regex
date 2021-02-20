@@ -1357,7 +1357,7 @@ xit("line: 1084 - back references are not supported", () => {});
 xit("line: 1085 - back references are not supported", () => {});
 xit("line: 1086 - test encoding issue", () => {});
 xit("line: 1087 - test requires a substring function", () => {});
-xit("line: 1088 - requires triage", () => {});
+xit("line: 1088 - test requires a substring function", () => {});
 it("line: 1089 - matches abc\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
   const match = exec(
     "abc\\x0def\\x00pqr\\x000xyz\\x0000AB",
@@ -1517,9 +1517,9 @@ it("line: 1146 - matches ^[W-c]+$ against 'WXY_^abc'", () => {
   const match = exec("^[W-c]+$", "WXY_^abc", "is");
   expect(match.matches[0]).toBe("WXY_^abc".substring(0, 8));
 });
-xit("line: 1147 - requires triage", () => {});
-xit("line: 1148 - requires triage", () => {});
-xit("line: 1149 - requires triage", () => {});
+xit("line: 1147 - does not support hex notification in character sets", () => {});
+xit("line: 1148 - does not support hex notification in character sets", () => {});
+xit("line: 1149 - does not support hex notification in character sets", () => {});
 xit("line: 1150 - multi line regex not supported yet!", () => {});
 xit("line: 1151 - multi line regex not supported yet!", () => {});
 xit("line: 1152 - multi line regex not supported yet!", () => {});
@@ -1542,7 +1542,7 @@ xit("line: 1159 - multi line regex not supported yet!", () => {});
 xit("line: 1160 - multi line regex not supported yet!", () => {});
 xit("line: 1161 - multi line regex not supported yet!", () => {});
 xit("line: 1162 - multi line regex not supported yet!", () => {});
-xit("line: 1163 - requires triage", () => {});
+xit("line: 1163 - JS does not support the A Z syntax for start and end of string", () => {});
 xit("line: 1164 - multi line regex not supported yet!", () => {});
 xit("line: 1165 - non capturing groups not supported", () => {});
 xit("line: 1166 - non capturing groups not supported", () => {});
@@ -1672,7 +1672,9 @@ xit("line: 1235 - word boundary class not supported yet!", () => {});
 xit("line: 1236 - word boundary class not supported yet!", () => {});
 xit("line: 1237 - word boundary class not supported yet!", () => {});
 xit("line: 1238 - word boundary class not supported yet!", () => {});
-xit("line: 1239 - requires triage", () => {});
+it("line: 1239 - matches ^([^a])([^\\f])([^c]*)([^d]{3,4}) against 'b\fc...'", () => {
+  expectNotMatch("^([^a])([^\\f])([^c]*)([^d]{3,4})", ["b\fc..."]);
+});
 it("line: 1240 - matches [^a] against 'Abc'", () => {
   const match = exec("[^a]", "Abc", "s");
   expect(match.matches[0]).toBe("Abc".substring(0, 1));
@@ -2119,7 +2121,7 @@ it("line: 1362 - matches (.*X|^B) against 'BarFoo '", () => {
   expect(match.matches[0]).toBe("BarFoo ".substring(0, 1));
   expect(match.matches[1]).toBe("BarFoo ".substring(0, 1));
 });
-xit("line: 1363 - requires triage", () => {});
+xit("line: 1363 - does not support start of string quantified within an alternation", () => {});
 xit("line: 1364 - multi line regex not supported yet!", () => {});
 xit("line: 1365 - multi line regex not supported yet!", () => {});
 xit("line: 1366 - multi line regex not supported yet!", () => {});
@@ -2133,7 +2135,7 @@ it("line: 1368 - matches (.*X|^B) against 'BarFoo '", () => {
   expect(match.matches[0]).toBe("BarFoo ".substring(0, 1));
   expect(match.matches[1]).toBe("BarFoo ".substring(0, 1));
 });
-xit("line: 1369 - requires triage", () => {});
+xit("line: 1369 - does not support start of string quantified within an alternation", () => {});
 xit("line: 1370 - multi line regex not supported yet!", () => {});
 xit("line: 1371 - multi line regex not supported yet!", () => {});
 xit("line: 1372 - multi line regex not supported yet!", () => {});
