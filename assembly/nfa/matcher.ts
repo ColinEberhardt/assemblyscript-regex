@@ -118,7 +118,7 @@ export class CharacterRangeMatcher extends Matcher {
 
   matches(code: u32): bool {
     for (let i = 0, len = this.ranges.length; i < len; i++) {
-      if (code >= u32(this.ranges[i].from) && code <= u32(this.ranges[i].to)) {
+      if (this.ranges[i].contains(code)) {
         return true;
       }
     }

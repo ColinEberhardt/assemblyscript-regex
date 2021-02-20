@@ -24,4 +24,8 @@ export class Range {
   offset(value: i32): Range {
     return new Range(this.from + value, this.to + value);
   }
+
+  contains(value: i32): bool {
+    return value >= this.from && value <= this.to;
+  }
 }
