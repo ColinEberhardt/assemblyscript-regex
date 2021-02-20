@@ -8,6 +8,7 @@ import {
   NodeType,
 } from "../parser/node";
 import { Flags } from "../regexp";
+import { Range } from "../util";
 
 const enum MatcherType {
   Character,
@@ -36,7 +37,10 @@ export class Matcher {
     node: CharacterRangeNode,
     flags: Flags
   ): CharacterRangeMatcher {
-    return new CharacterRangeMatcher(node.from, node.to, flags.ignoreCase);
+    return new CharacterRangeMatcher(
+      new Range(node.from, node.to),
+      flags.ignoreCase
+    );
   }
 
   static fromCharacterSetNode(
@@ -89,20 +93,36 @@ export class CharacterMatcher extends Matcher {
   }
 }
 
+const LOWERCASE_LETTERS = new Range(Char.a, Char.z);
+const UPPERCASE_LETTERS = new Range(Char.A, Char.Z);
+const UPPER_LOWER_OFFSET = Char.a - Char.A;
+
 export class CharacterRangeMatcher extends Matcher {
-  constructor(private from: u32, private to: u32, private ignoreCase: bool) {
+  private ranges: Range[];
+
+  constructor(private range: Range, ignoreCase: bool) {
     super(MatcherType.CharacterRange);
+    this.ranges = [range];
+
     if (ignoreCase) {
-      this.from |= 0x20;
-      this.to |= 0x20;
+      const lowerIntersect = range.intersection(LOWERCASE_LETTERS);
+      if (lowerIntersect) {
+        this.ranges.push(lowerIntersect.offset(-UPPER_LOWER_OFFSET));
+      }
+      const upperIntersect = range.intersection(UPPERCASE_LETTERS);
+      if (upperIntersect) {
+        this.ranges.push(upperIntersect.offset(UPPER_LOWER_OFFSET));
+      }
     }
   }
 
   matches(code: u32): bool {
-    if (this.ignoreCase) {
-      code |= 0x20;
+    for (let i = 0, len = this.ranges.length; i < len; i++) {
+      if (code >= u32(this.ranges[i].from) && code <= u32(this.ranges[i].to)) {
+        return true;
+      }
     }
-    return code >= this.from && code <= this.to;
+    return false;
   }
 }
 

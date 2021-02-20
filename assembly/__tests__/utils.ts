@@ -1,7 +1,11 @@
 import { RegExp, Match } from "..";
 
-export function expectMatch(regex: string, arr: string[]): void {
-  let regexp = new RegExp(regex);
+export function expectMatch(
+  regex: string,
+  arr: string[],
+  flags: string = ""
+): void {
+  let regexp = new RegExp(regex, flags);
   for (let i = 0; i < arr.length; i++) {
     const value = arr[i];
     const match = exec(regexp, value);
@@ -9,8 +13,12 @@ export function expectMatch(regex: string, arr: string[]): void {
   }
 }
 
-export function expectNotMatch(regex: string, arr: string[]): void {
-  let regexp = new RegExp(regex);
+export function expectNotMatch(
+  regex: string,
+  arr: string[],
+  flags: string = ""
+): void {
+  let regexp = new RegExp(regex, flags);
   for (let i = 0; i < arr.length; i++) {
     const match = regexp.exec(arr[i]);
     expect(match).toBeNull(

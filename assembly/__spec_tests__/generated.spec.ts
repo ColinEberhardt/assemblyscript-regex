@@ -776,7 +776,11 @@ it("line: 152 - matches ([\\da-f:]+)$ against 'abc'", () => {
   expect(match.matches[0]).toBe("abc".substring(0, 3));
   expect(match.matches[1]).toBe("abc".substring(0, 3));
 });
-xit("line: 153 - aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue", () => {});
+it("line: 153 - matches ([\\da-f:]+)$ against 'fed'", () => {
+  const match = exec("([\\da-f:]+)$", "fed", "is");
+  expect(match.matches[0]).toBe("fed".substring(0, 3));
+  expect(match.matches[1]).toBe("fed".substring(0, 3));
+});
 it("line: 154 - matches ([\\da-f:]+)$ against 'E'", () => {
   const match = exec("([\\da-f:]+)$", "E", "is");
   expect(match.matches[0]).toBe("E".substring(0, 1));
@@ -1044,8 +1048,8 @@ xit("line: 199 - non capturing groups not supported", () => {});
 xit("line: 200 - non capturing groups not supported", () => {});
 xit("line: 201 - non capturing groups not supported", () => {});
 xit("line: 202 - non capturing groups not supported", () => {});
-xit("line: 203 - aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue", () => {});
-xit("line: 204 - aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue", () => {});
+xit("line: 203 - test appears to be incorrect?", () => {});
+xit("line: 204 - test appears to be incorrect?", () => {});
 it("line: 205 - matches ^   a\\ b[c ]d       $ against 'abcd'", () => {
   expectNotMatch("^   a\\ b[c ]d       $", ["abcd"]);
 });
@@ -1352,7 +1356,7 @@ it("line: 1083 - matches ^[ab]{1,3}(ab*?|b) against 'The quick brown fox'", () =
 xit("line: 1084 - back references are not supported", () => {});
 xit("line: 1085 - back references are not supported", () => {});
 xit("line: 1086 - test encoding issue", () => {});
-xit("line: 1087 - requires triage", () => {});
+xit("line: 1087 - test requires a substring function", () => {});
 xit("line: 1088 - requires triage", () => {});
 it("line: 1089 - matches abc\\x0def\\x00pqr\\x000xyz\\x0000AB against 'abc456 abc\x0def\x00pqr\x000xyz\x0000ABCDE'", () => {
   const match = exec(
@@ -1506,8 +1510,13 @@ it("line: 1144 - matches ^[W-c]+$ against 'WXY_^abc'", () => {
   const match = exec("^[W-c]+$", "WXY_^abc", "s");
   expect(match.matches[0]).toBe("WXY_^abc".substring(0, 8));
 });
-xit("line: 1145 - as-pect test issue", () => {});
-xit("line: 1146 - as-pect test issue", () => {});
+it("line: 1145 - matches ^[W-c]+$ against 'wxy'", () => {
+  expectNotMatch("^[W-c]+$", ["wxy"]);
+});
+it("line: 1146 - matches ^[W-c]+$ against 'WXY_^abc'", () => {
+  const match = exec("^[W-c]+$", "WXY_^abc", "is");
+  expect(match.matches[0]).toBe("WXY_^abc".substring(0, 8));
+});
 xit("line: 1147 - requires triage", () => {});
 xit("line: 1148 - requires triage", () => {});
 xit("line: 1149 - requires triage", () => {});

@@ -21,8 +21,11 @@ const knownIssues = {
     1288,
   ],
   "test contains an octal escape sequence": [1102],
+  // the test results measure captured groups using character length / locations
+  // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
+  // this is tricky to reproduce
+  "test requires a substring function": [1087],
   "requires triage": [
-    1087,
     1363,
     1369,
     1163,
@@ -32,15 +35,10 @@ const knownIssues = {
     1413,
     ...range(1301, 1308),
   ],
-  "as-pect test issue": [1145, 1146],
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
   "test regex contains syntax not supported in JS": [82, 1158, 281],
   "the test behaviour differs between PCRE and JS": [290],
-  "aspect [Actual]: <Match>null vs [Expected]: Not <Match>null issue": [
-    153,
-    203,
-    204,
-  ],
+  "test appears to be incorrect?": [203, 204],
 };
 
 const hasKnownIssue = (index) => {

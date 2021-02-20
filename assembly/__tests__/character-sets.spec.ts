@@ -43,3 +43,12 @@ it("treats - as a literal in negated sets", () => {
   expectNotMatch("[^-abc]", ["-", "a", "b", "c"]);
   expectMatch("[^-abc]", ["1", "A"]);
 });
+
+it("supports case insensitive matching", () => {
+  // simple ranges
+  expectMatch("[a-c]", ["A", "C", "a", "c"], "i");
+  expectNotMatch("[a-c]", ["D", "d"], "i");
+  // complex
+  expectMatch("[W-c]", ["W", "w", "C", "c"], "i");
+  expectNotMatch("[W-c]", ["V", "v", "D", "d"], "i");
+});
