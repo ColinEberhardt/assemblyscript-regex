@@ -1920,8 +1920,8 @@ it("line: 1309 - matches ^[W-\\]46] against '-46]789'", () => {
 it("line: 1310 - matches ^[W-\\]46] against 'well'", () => {
   expectNotMatch("^[W-\\]46]", ["well"]);
 });
-it("line: 1311 - matches \\d\\d/\\d\\d/\\d\\d\\d\\d against '01/01/2000'", () => {
-  const match = exec("\\d\\d/\\d\\d/\\d\\d\\d\\d", "01/01/2000", "s");
+it("line: 1311 - matches \\d\\d\\/\\d\\d\\/\\d\\d\\d\\d against '01/01/2000'", () => {
+  const match = exec("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d", "01/01/2000", "s");
   expect(match.matches[0]).toBe("01/01/2000".substring(0, 10));
 });
 xit("line: 1312 - non capturing groups not supported", () => {});
@@ -2274,7 +2274,79 @@ it("line: 1412 - matches  against 'abc'", () => {
   const match = exec("", "abc", "s");
   expect(match.matches[0]).toBe("abc".substring(0, 0));
 });
-xit("line: 1413 - requires triage", () => {});
+it("line: 1413 - matches <tr([\\w\\W\\s\\d][^<>]{0,})><TD([\\w\\W\\s\\d][^<>]{0,})>([\\d]{0,}\\.)(.*)((<BR>([\\w\\W\\s\\d][^<>]{0,})|[\\s]{0,}))<\\/a><\\/TD><TD([\\w\\W\\s\\d][^<>]{0,})>([\\w\\W\\s\\d][^<>]{0,})<\\/TD><TD([\\w\\W\\s\\d][^<>]{0,})>([\\w\\W\\s\\d][^<>]{0,})<\\/TD><\\/TR> against '<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>'", () => {
+  const match = exec(
+    "<tr([\\w\\W\\s\\d][^<>]{0,})><TD([\\w\\W\\s\\d][^<>]{0,})>([\\d]{0,}\\.)(.*)((<BR>([\\w\\W\\s\\d][^<>]{0,})|[\\s]{0,}))<\\/a><\\/TD><TD([\\w\\W\\s\\d][^<>]{0,})>([\\w\\W\\s\\d][^<>]{0,})<\\/TD><TD([\\w\\W\\s\\d][^<>]{0,})>([\\w\\W\\s\\d][^<>]{0,})<\\/TD><\\/TR>",
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>",
+    "is"
+  );
+  expect(match.matches[0]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      0,
+      227
+    )
+  );
+  expect(match.matches[1]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      3,
+      21
+    )
+  );
+  expect(match.matches[2]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      25,
+      47
+    )
+  );
+  expect(match.matches[3]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      48,
+      51
+    )
+  );
+  expect(match.matches[4]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      51,
+      122
+    )
+  );
+  expect(match.matches[5]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      122,
+      122
+    )
+  );
+  expect(match.matches[6]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      122,
+      122
+    )
+  );
+  expect(match.matches[8]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      134,
+      156
+    )
+  );
+  expect(match.matches[9]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      157,
+      172
+    )
+  );
+  expect(match.matches[10]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      180,
+      202
+    )
+  );
+  expect(match.matches[11]).toBe(
+    "<TR BGCOLOR='#DBE9E9'><TD align=left valign=top>43.<a href='joblist.cfm?JobID=94 6735&Keyword='>Word Processor<BR>(N-1286)</a></TD><TD align=left valign=top>Lega lstaff.com</TD><TD align=left valign=top>CA - Statewide</TD></TR>".substring(
+      203,
+      217
+    )
+  );
+});
 it("line: 1414 - matches a[^a]b against 'acb'", () => {
   const match = exec("a[^a]b", "acb", "s");
   expect(match.matches[0]).toBe("acb".substring(0, 3));

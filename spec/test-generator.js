@@ -30,7 +30,7 @@ const knownIssues = {
   // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
   // this is tricky to reproduce
   "test requires a substring function": [1087, 1088],
-  "requires triage": [1413, ...range(1301, 1308)],
+  "requires triage": [...range(1301, 1308)],
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
   "JS does not support the \\A \\Z syntax for start and end of string": [
     1163,
@@ -81,7 +81,10 @@ lines.forEach((line, index) => {
     regex =
       parts[1] == "SAME"
         ? regex
-        : escapeQuote(parts[1] == "NULL" ? "" : parts[1]);
+        : escapeQuote(parts[1] == "NULL" ? "" : parts[1]).replaceAll(
+            "/",
+            "\\\\/"
+          );
     let str = parts[2] !== "NULL" ? escapeQuote(parts[2]) : "";
     let flags = parts[0].includes("i") ? "is" : "s";
 
@@ -130,10 +133,12 @@ lines.forEach((line, index) => {
       nextCase += ` const match = exec("${regex}", "${str}", "${flags}");`;
 
       // create an expect for each capture group
-      const captures = parts[3].match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)+/g);
+      const captures = parts[3].match(/\((\d{1,3}|\?),(\d{1,3}|\?)\)+/g);
       captures.forEach((capture, index) => {
-        const digits = capture.match(/\((\d{1,2}|\?),(\d{1,2}|\?)\)/);
-        nextCase += `expect(match.matches[${index}]).toBe("${str}".substring(${digits[1]}, ${digits[2]}));`;
+        const digits = capture.match(/\((\d{1,3}|\?),(\d{1,3}|\?)\)/);
+        if (digits[1] !== "?") {
+          nextCase += `expect(match.matches[${index}]).toBe("${str}".substring(${digits[1]}, ${digits[2]}));`;
+        }
       });
     }
 
