@@ -1906,14 +1906,14 @@ it("line: 1299 - matches ^[W-]46] against '[abcd] '", () => {
 it("line: 1300 - matches ^[W-]46] against ']abcd['", () => {
   expectNotMatch("^[W-]46]", ["]abcd["]);
 });
-xit("line: 1301 - requires triage", () => {});
-xit("line: 1302 - requires triage", () => {});
-xit("line: 1303 - requires triage", () => {});
-xit("line: 1304 - requires triage", () => {});
-xit("line: 1305 - requires triage", () => {});
-xit("line: 1306 - requires triage", () => {});
-xit("line: 1307 - requires triage", () => {});
-xit("line: 1308 - requires triage", () => {});
+xit("line: 1301 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1302 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1303 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1304 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1305 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1306 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1307 - does nto support escaped characters in character ranges", () => {});
+xit("line: 1308 - does nto support escaped characters in character ranges", () => {});
 it("line: 1309 - matches ^[W-\\]46] against '-46]789'", () => {
   expectNotMatch("^[W-\\]46]", ["-46]789"]);
 });

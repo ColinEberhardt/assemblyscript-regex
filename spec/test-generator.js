@@ -9,6 +9,22 @@ const range = (from, to) =>
   Array.from({ length: to - from + 1 }, (_, i) => i + from);
 
 const knownIssues = {
+  /* ------- features  not yet implemented ------- */
+  "does not support start of string quantified within an alternation": [
+    1363,
+    1369,
+  ],
+  "does not support hex notification in character sets": [...range(1147, 1149)],
+  "does nto support escaped characters in character ranges": [
+    ...range(1301, 1308),
+  ],
+  "lazy quantifiers should still yield the longest overall regex match": [
+    ...range(141, 143),
+    1288,
+  ],
+
+  /* -------- issues with the tests ------------  */
+  "test appears to be incorrect?": [203, 204],
   "issue with parsing the test itself": [
     1103,
     ...range(1185, 1188),
@@ -16,21 +32,13 @@ const knownIssues = {
     ...range(487, 494),
     ...range(1077, 1082),
   ],
-  "does not support start of string quantified within an alternation": [
-    1363,
-    1369,
-  ],
-  "does not support hex notification in character sets": [...range(1147, 1149)],
-  "lazy quantifiers should still yield the longest overall regex match": [
-    ...range(141, 143),
-    1288,
-  ],
   "test contains an octal escape sequence": [1102],
   // the test results measure captured groups using character length / locations
   // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
   // this is tricky to reproduce
   "test requires a substring function": [1087, 1088],
-  "requires triage": [...range(1301, 1308)],
+
+  /* -------- differences between PCRE and JS regex ------------  */
   "test indicates a malformed regex, whereas it appears OK in JS": [1189],
   "JS does not support the \\A \\Z syntax for start and end of string": [
     1163,
@@ -38,7 +46,6 @@ const knownIssues = {
   ],
   "test regex contains syntax not supported in JS": [82, 1158, 281],
   "the test behaviour differs between PCRE and JS": [290],
-  "test appears to be incorrect?": [203, 204],
 };
 
 const hasKnownIssue = (index) => {
