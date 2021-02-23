@@ -27,7 +27,6 @@ const knownIssues = {
   "test appears to be incorrect?": [203, 204],
   "issue with parsing the test itself": [
     1103,
-    ...range(1185, 1188),
     ...range(1095, 1098),
     ...range(487, 494),
     ...range(1077, 1082),
@@ -39,7 +38,10 @@ const knownIssues = {
   "test requires a substring function": [1087, 1088],
 
   /* -------- differences between PCRE and JS regex ------------  */
-  "test indicates a malformed regex, whereas it appears OK in JS": [1189],
+  "test indicates a malformed regex, whereas it appears OK in JS": [
+    1189,
+    ...range(1186, 1188),
+  ],
   "JS does not support the \\A \\Z syntax for start and end of string": [
     1163,
     1164,

@@ -1597,10 +1597,14 @@ it("line: 1184 - matches (main(O)?)+ against 'mainmain'", () => {
   expect(match.matches[0]).toBe("mainmain".substring(0, 8));
   expect(match.matches[1]).toBe("mainmain".substring(4, 8));
 });
-xit("line 1185 - issue with parsing the test itself", () => {});
-xit("line 1186 - issue with parsing the test itself", () => {});
-xit("line 1187 - issue with parsing the test itself", () => {});
-xit("line 1188 - issue with parsing the test itself", () => {});
+it("line: 1185 - matches (main(O)?)+ against 'mainOmain'", () => {
+  const match = exec("(main(O)?)+", "mainOmain", "s");
+  expect(match.matches[0]).toBe("mainOmain".substring(0, 9));
+  expect(match.matches[1]).toBe("mainOmain".substring(5, 9));
+});
+xit("line: 1186 - test indicates a malformed regex, whereas it appears OK in JS", () => {});
+xit("line: 1187 - test indicates a malformed regex, whereas it appears OK in JS", () => {});
+xit("line: 1188 - test indicates a malformed regex, whereas it appears OK in JS", () => {});
 xit("line: 1189 - test indicates a malformed regex, whereas it appears OK in JS", () => {});
 it("line: 1190 - matches ^a.b against 'a\rb'", () => {
   const match = exec("^a.b", "a\rb", "s");
