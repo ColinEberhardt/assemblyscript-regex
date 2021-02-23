@@ -95,12 +95,8 @@ lines.forEach((line, index) => {
             "\\\\/"
           );
     let str = parts[2] !== "NULL" ? escapeQuote(parts[2]) : "";
-    let flags = parts[0].includes("i") ? "is" : "s";
-
-    if (parts[0].includes("n")) {
-      testCase += `xit("line: ${index} - multi line regex not supported yet!", () => { });`;
-      return;
-    }
+    let flags = "m" + (parts[0].includes("i") ? "i" : "");
+    flags += parts[0] !== "En$" && parts[0] !== "E$n" ? "s" : "";
 
     if (regex.includes("\\b")) {
       testCase += `xit("line: ${index} - word boundary class not supported yet!", () => { });`;
@@ -111,11 +107,6 @@ lines.forEach((line, index) => {
       testCase += `xit("line: ${index} - test encoding issue", () => { });`;
       return;
     }
-
-    // if (["}?"].some((f) => regex.includes(f))) {
-    //   testCase += `xit("line: ${index} - lazy range repitition quantifiers are not supported", () => { });`;
-    //   return;
-    // }
 
     if (["(?"].some((f) => regex.includes(f))) {
       testCase += `xit("line: ${index} - non capturing groups not supported", () => {});`;

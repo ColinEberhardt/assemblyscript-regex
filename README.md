@@ -94,7 +94,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [x] global
 - [ ] sticky
 - [x] case insensitive
-- [ ] multiline
+- [x] multiline
 - [x] dotAll
 - [ ] unicode
 

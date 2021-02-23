@@ -75,12 +75,14 @@ export class Flags {
   global: bool = false;
   ignoreCase: bool = false;
   dotAll: bool = false;
+  multiline: bool = false;
 
   constructor(flagString: string | null) {
     if (flagString) {
       this.global = flagString.includes("g");
       this.ignoreCase = flagString.includes("i");
       this.dotAll = flagString.includes("s");
+      this.multiline = flagString.includes("m");
     }
   }
 }
@@ -159,9 +161,10 @@ export class RegExp {
     }
 
     // search for a match at each index within the string
+
     for (
       let matchIndex = this.lastIndex;
-      matchIndex < (this.startOfInput ? 1 : len);
+      matchIndex < (this.startOfInput && !this.multiline ? 1 : len);
       matchIndex++
     ) {
       // search for a match in this substring
@@ -185,14 +188,32 @@ export class RegExp {
 
         // return this match (checking end of input condition)
         const matchEndIndex = match.index + match.matches[0].length;
-        if (!this.endOfInput || (this.endOfInput && matchEndIndex == len)) {
-          if (this.global) {
-            this.lastIndex = matchEndIndex;
+
+        // has the start of input criteria been met?
+        if (this.startOfInput) {
+          if (this.flags.multiline && matchIndex != 0) {
+            if (str.charCodeAt(matchIndex - 1) != Char.LineFeed) continue;
+          } else if (matchIndex != 0) {
+            continue;
           }
-          return match;
         }
+
+        // has the enf of input criteria been met?
+        if (this.endOfInput) {
+          if (this.flags.multiline && matchEndIndex != len) {
+            if (str.charCodeAt(matchEndIndex) != Char.LineFeed) continue;
+          } else if (matchEndIndex != len) {
+            continue;
+          }
+        }
+
+        if (this.global) {
+          this.lastIndex = matchEndIndex;
+        }
+        return match;
       }
     }
+
     this.lastIndex = 0;
     return null;
   }
@@ -215,6 +236,10 @@ export class RegExp {
 
   get dotAll(): bool {
     return this.flags.dotAll;
+  }
+
+  get multiline(): bool {
+    return this.flags.multiline;
   }
 }
 

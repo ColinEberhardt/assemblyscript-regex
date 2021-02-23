@@ -69,6 +69,58 @@ describe("global mode", () => {
   });
 });
 
+describe("multi-line mode", () => {
+  it("sets multi-line flag", () => {
+    expect(new RegExp("\\d+", "m").multiline).toBeTruthy();
+    expect(new RegExp("\\d+", "").multiline).toBeFalsy();
+  });
+
+  it("matches across multiple lines", () => {
+    const match = exec("^f\\d{1}$", "f1\nbar\nbaz\nf2", "m");
+    expect(match.matches.length).toBe(1);
+    expect(match.matches[0]).toBe("f1");
+  });
+
+  it("matches across multiple lines with global mode", () => {
+    const regex = new RegExp("^f\\d{1}$", "gm");
+
+    let match = regex.exec("f1\nbar\nbaz\nf2");
+    expect(match!.matches[0]).toBe("f1");
+
+    match = regex.exec("f1\nbar\nbaz\nf2");
+    expect(match!.matches[0]).toBe("f2");
+
+    match = regex.exec("f1\nbar\nbaz\nf2");
+    expect(match).toBeNull();
+  });
+
+  it("matches across multiple lines with global mode", () => {
+    const regex = new RegExp("^[a-c]", "gm");
+
+    let match = regex.exec("a1\nd2\nc3\n");
+    expect(match!.matches[0]).toBe("a");
+
+    match = regex.exec("a1\nd2\nc3\n");
+    expect(match!.matches[0]).toBe("c");
+
+    match = regex.exec("a1\nd2\nc3\n");
+    expect(match).toBeNull();
+  });
+
+  it("matches across multiple lines with global mode", () => {
+    const regex = new RegExp("[a-c]$", "gm");
+
+    let match = regex.exec("1a\n2d\n3c\n");
+    expect(match!.matches[0]).toBe("a");
+
+    match = regex.exec("1a\n2d\n3c\n");
+    expect(match!.matches[0]).toBe("c");
+
+    match = regex.exec("1a\n2d\n3c\n");
+    expect(match).toBeNull();
+  });
+});
+
 describe("non-global mode", () => {
   it("doesn't increment lastIndex", () => {
     const regex = new RegExp("\\d+");

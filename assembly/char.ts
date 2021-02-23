@@ -1,10 +1,10 @@
 export const enum Char {
   None = -1,
   HorizontalTab = 0x09,
+  LineFeed = 0x0a,
   VerticalTab = 0x0b,
   FormFeed = 0x0c,
   CarriageReturn = 0x0d,
-  LineFeed = 0x0a,
   Space = 0x20,
   Dollar = 0x24, // "$"
   LeftParenthesis = 0x28,
