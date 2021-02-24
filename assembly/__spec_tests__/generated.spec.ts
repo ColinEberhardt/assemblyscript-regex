@@ -1003,9 +1003,9 @@ it("line: 185 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d
     ["*.c-a.0-c"]
   );
 });
-xit("line: 186 - non capturing groups not supported", () => {});
-xit("line: 187 - non capturing groups not supported", () => {});
-xit("line: 188 - non capturing groups not supported", () => {});
+xit("line: 186 - lookaheads not supported", () => {});
+xit("line: 187 - lookaheads not supported", () => {});
+xit("line: 188 - lookaheads not supported", () => {});
 it("line: 189 - matches ^[\\da-f](\\.[\\da-f])*$ against 'a.b.c.d'", () => {
   const match = exec("^[\\da-f](\\.[\\da-f])*$", "a.b.c.d", "mis");
   expect(match.matches[0]).toBe("a.b.c.d".substring(0, 7));
@@ -1042,12 +1042,12 @@ it("line: 196 - matches ^$ against ''", () => {
   const match = exec("^$", "", "ms");
   expect(match.matches[0]).toBe("".substring(0, 0));
 });
-xit("line: 197 - non capturing groups not supported", () => {});
-xit("line: 198 - non capturing groups not supported", () => {});
-xit("line: 199 - non capturing groups not supported", () => {});
-xit("line: 200 - non capturing groups not supported", () => {});
-xit("line: 201 - non capturing groups not supported", () => {});
-xit("line: 202 - non capturing groups not supported", () => {});
+xit("line: 197 - JS regex does not support comments", () => {});
+xit("line: 198 - JS regex does not support comments", () => {});
+xit("line: 199 - JS regex does not support comments", () => {});
+xit("line: 200 - JS regex does not support comments", () => {});
+xit("line: 201 - JS regex does not support comments", () => {});
+xit("line: 202 - JS regex does not support comments", () => {});
 xit("line: 203 - test appears to be incorrect?", () => {});
 xit("line: 204 - test appears to be incorrect?", () => {});
 it("line: 205 - matches ^   a\\ b[c ]d       $ against 'abcd'", () => {
@@ -1243,10 +1243,10 @@ it("line: 250 - matches ^[aeiou\\d]{4,5}? against '123456'", () => {
 xit("line: 251 - back references are not supported", () => {});
 xit("line: 252 - back references are not supported", () => {});
 xit("line: 253 - back references are not supported", () => {});
-xit("line: 254 - non capturing groups not supported", () => {});
-xit("line: 255 - non capturing groups not supported", () => {});
-xit("line: 256 - non capturing groups not supported", () => {});
-xit("line: 257 - non capturing groups not supported", () => {});
+xit("line: 254 - JS regex does not support comments", () => {});
+xit("line: 255 - JS regex does not support comments", () => {});
+xit("line: 256 - JS regex does not support comments", () => {});
+xit("line: 257 - JS regex does not support comments", () => {});
 xit("line: 258 - back references are not supported", () => {});
 xit("line: 259 - back references are not supported", () => {});
 xit("line: 260 - back references are not supported", () => {});
@@ -1303,23 +1303,23 @@ it("line: 266 - matches ^12.34 against '12\r34'", () => {
   const match = exec("^12.34", "12\r34", "ms");
   expect(match.matches[0]).toBe("12\r34".substring(0, 5));
 });
-xit("line: 267 - non capturing groups not supported", () => {});
-xit("line: 268 - non capturing groups not supported", () => {});
+xit("line: 267 - lookaheads not supported", () => {});
+xit("line: 268 - lookaheads not supported", () => {});
 xit("line: 269 - non capturing groups not supported", () => {});
 xit("line: 270 - non capturing groups not supported", () => {});
 xit("line: 271 - non capturing groups not supported", () => {});
 xit("line: 272 - non capturing groups not supported", () => {});
-xit("line: 273 - non capturing groups not supported", () => {});
-xit("line: 274 - non capturing groups not supported", () => {});
+xit("line: 273 - lookaheads not supported", () => {});
+xit("line: 274 - lookaheads not supported", () => {});
 xit("line: 281 - test regex contains syntax not supported in JS", () => {});
 xit("line: 282 - back references are not supported", () => {});
 xit("line: 283 - back references are not supported", () => {});
 xit("line: 284 - back references are not supported", () => {});
 xit("line: 285 - back references are not supported", () => {});
-xit("line: 286 - non capturing groups not supported", () => {});
-xit("line: 287 - non capturing groups not supported", () => {});
-xit("line: 288 - non capturing groups not supported", () => {});
-xit("line: 289 - non capturing groups not supported", () => {});
+xit("line: 286 - lookaheads not supported", () => {});
+xit("line: 287 - lookaheads not supported", () => {});
+xit("line: 288 - lookaheads not supported", () => {});
+xit("line: 289 - lookaheads not supported", () => {});
 xit("line: 290 - the test behaviour differs between PCRE and JS", () => {});
 it("line: 291 - matches ^[ab]{1,3}?(ab*|b) against 'aabbbbb'", () => {
   const match = exec("^[ab]{1,3}?(ab*|b)", "aabbbbb", "ms");
@@ -1676,7 +1676,7 @@ xit("line: 1217 - back references are not supported", () => {});
 xit("line: 1218 - back references are not supported", () => {});
 xit("line: 1219 - back references are not supported", () => {});
 xit("line: 1220 - back references are not supported", () => {});
-xit("line: 1221 - non capturing groups not supported", () => {});
+xit("line: 1221 - back references are not supported", () => {});
 it("line: 1223 - matches ab\\gdef against 'abgdef'", () => {
   const match = exec("ab\\gdef", "abgdef", "ms");
   expect(match.matches[0]).toBe("abgdef".substring(0, 6));
@@ -1694,7 +1694,7 @@ xit("line: 1227 - back references are not supported", () => {});
 xit("line: 1228 - back references are not supported", () => {});
 xit("line: 1229 - back references are not supported", () => {});
 xit("line: 1230 - back references are not supported", () => {});
-xit("line: 1231 - non capturing groups not supported", () => {});
+xit("line: 1231 - JS regex does not support mode modifiers", () => {});
 xit("line: 1232 - word boundary class not supported yet!", () => {});
 xit("line: 1233 - word boundary class not supported yet!", () => {});
 xit("line: 1234 - word boundary class not supported yet!", () => {});
@@ -1839,12 +1839,12 @@ it("line: 1273 - matches (\\.\\d\\d[1-9]?)\\d+ against '1.235  '", () => {
   expect(match.matches[0]).toBe("1.235  ".substring(1, 5));
   expect(match.matches[1]).toBe("1.235  ".substring(1, 4));
 });
-xit("line: 1274 - non capturing groups not supported", () => {});
-xit("line: 1275 - non capturing groups not supported", () => {});
-xit("line: 1276 - non capturing groups not supported", () => {});
-xit("line: 1277 - non capturing groups not supported", () => {});
-xit("line: 1278 - non capturing groups not supported", () => {});
-xit("line: 1279 - non capturing groups not supported", () => {});
+xit("line: 1274 - lookaheads not supported", () => {});
+xit("line: 1275 - lookaheads not supported", () => {});
+xit("line: 1276 - lookaheads not supported", () => {});
+xit("line: 1277 - lookaheads not supported", () => {});
+xit("line: 1278 - the test behaviour differs between PCRE and JS", () => {});
+xit("line: 1279 - JS regex does not support comments", () => {});
 xit("line: 1280 - word boundary class not supported yet!", () => {});
 it("line: 1281 - matches foo(.*)bar against 'The food is under the bar in the barn.'", () => {
   const match = exec(
@@ -1910,9 +1910,9 @@ it("line: 1290 - matches (.*\\D)(\\d+)$ against 'I have 2 numbers: 53147'", () =
   expect(match.matches[1]).toBe("I have 2 numbers: 53147".substring(0, 18));
   expect(match.matches[2]).toBe("I have 2 numbers: 53147".substring(18, 23));
 });
-xit("line: 1291 - non capturing groups not supported", () => {});
-xit("line: 1292 - non capturing groups not supported", () => {});
-xit("line: 1293 - non capturing groups not supported", () => {});
+xit("line: 1291 - lookaheads not supported", () => {});
+xit("line: 1292 - lookaheads not supported", () => {});
+xit("line: 1293 - lookaheads not supported", () => {});
 it("line: 1294 - matches ^[W-]46] against 'W46]789 '", () => {
   const match = exec("^[W-]46]", "W46]789 ", "ms");
   expect(match.matches[0]).toBe("W46]789 ".substring(0, 4));
@@ -2211,12 +2211,12 @@ it("line: 1372 - matches (.*X|^B) against 'abcde\nBar  '", () => {
   expect(match.matches[0]).toBe("abcde\nBar  ".substring(6, 7));
   expect(match.matches[1]).toBe("abcde\nBar  ".substring(6, 7));
 });
-xit("line: 1373 - non capturing groups not supported", () => {});
-xit("line: 1374 - non capturing groups not supported", () => {});
-xit("line: 1375 - non capturing groups not supported", () => {});
-xit("line: 1376 - non capturing groups not supported", () => {});
-xit("line: 1377 - non capturing groups not supported", () => {});
-xit("line: 1378 - non capturing groups not supported", () => {});
+xit("line: 1373 - JS regex does not support mode modifiers", () => {});
+xit("line: 1374 - JS regex does not support mode modifiers", () => {});
+xit("line: 1375 - JS regex does not support mode modifiers", () => {});
+xit("line: 1376 - JS regex does not support mode modifiers", () => {});
+xit("line: 1377 - JS regex does not support mode modifiers", () => {});
+xit("line: 1378 - JS regex does not support mode modifiers", () => {});
 it("line: 1379 - matches ^.*B against 'abc\nB'", () => {
   const match = exec("^.*B", "abc\nB", "ms");
   expect(match.matches[0]).toBe("abc\nB".substring(0, 5));
@@ -2225,12 +2225,12 @@ it("line: 1380 - matches ^.*B against 'abc\nB'", () => {
   const match = exec("^.*B", "abc\nB", "m");
   expect(match.matches[0]).toBe("abc\nB".substring(4, 5));
 });
-xit("line: 1381 - non capturing groups not supported", () => {});
-xit("line: 1382 - non capturing groups not supported", () => {});
-xit("line: 1383 - non capturing groups not supported", () => {});
-xit("line: 1384 - non capturing groups not supported", () => {});
-xit("line: 1385 - non capturing groups not supported", () => {});
-xit("line: 1386 - non capturing groups not supported", () => {});
+xit("line: 1381 - JS regex does not support mode modifiers", () => {});
+xit("line: 1382 - JS regex does not support mode modifiers", () => {});
+xit("line: 1383 - JS regex does not support mode modifiers", () => {});
+xit("line: 1384 - JS regex does not support mode modifiers", () => {});
+xit("line: 1385 - JS regex does not support mode modifiers", () => {});
+xit("line: 1386 - JS regex does not support mode modifiers", () => {});
 it("line: 1387 - matches ^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] against '123456654321'", () => {
   const match = exec(
     "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",

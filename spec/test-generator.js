@@ -47,7 +47,7 @@ const knownIssues = {
     1164,
   ],
   "test regex contains syntax not supported in JS": [82, 1158, 281],
-  "the test behaviour differs between PCRE and JS": [290],
+  "the test behaviour differs between PCRE and JS": [290, 1278],
 };
 
 const hasKnownIssue = (index) => {
@@ -108,8 +108,23 @@ lines.forEach((line, index) => {
       return;
     }
 
-    if (["(?"].some((f) => regex.includes(f))) {
+    if (["(?:"].some((f) => regex.includes(f))) {
       testCase += `xit("line: ${index} - non capturing groups not supported", () => {});`;
+      return;
+    }
+
+    if (["(?!", "(?="].some((f) => regex.includes(f))) {
+      testCase += `xit("line: ${index} - lookaheads not supported", () => {});`;
+      return;
+    }
+
+    if (["(?m", "(?s", "(?ms"].some((f) => regex.includes(f))) {
+      testCase += `xit("line: ${index} - JS regex does not support mode modifiers", () => {});`;
+      return;
+    }
+
+    if (["(?#"].some((f) => regex.includes(f))) {
+      testCase += `xit("line: ${index} - JS regex does not support comments", () => {});`;
       return;
     }
 
