@@ -2,8 +2,8 @@ import { isDigit, isAlpha, isWhitespace, Char } from "../char";
 
 import {
   CharacterNode,
-  CharacterSetNode,
   CharacterClassNode,
+  CharacterSetNode,
   CharacterRangeNode,
   NodeType,
 } from "../parser/node";
@@ -13,8 +13,8 @@ import { Range } from "../util";
 const enum MatcherType {
   Character,
   CharacterRange,
-  CharacterClass,
   CharacterSet,
+  CharacterClass,
 }
 
 let _flags: Flags;
@@ -27,10 +27,10 @@ export class Matcher {
   }
 
   static fromCharacterClassNode(
-    node: CharacterClassNode,
+    node: CharacterSetNode,
     flags: Flags
-  ): CharacterClassMatcher {
-    return new CharacterClassMatcher(node.charClass, flags.dotAll);
+  ): CharacterSetMatcher {
+    return new CharacterSetMatcher(node.charClass, flags.dotAll);
   }
 
   static fromCharacterRangeNode(
@@ -44,9 +44,9 @@ export class Matcher {
   }
 
   static fromCharacterSetNode(
-    node: CharacterSetNode,
+    node: CharacterClassNode,
     flags: Flags
-  ): CharacterSetMatcher {
+  ): CharacterClassMatcher {
     _flags = flags;
     const matchers = node.expressions.map<Matcher>((exp) => {
       switch (exp.type) {
@@ -57,16 +57,16 @@ export class Matcher {
           );
         case NodeType.Character:
           return Matcher.fromCharacterNode(exp as CharacterNode, _flags);
-        case NodeType.CharacterClass:
+        case NodeType.CharacterSet:
           return Matcher.fromCharacterClassNode(
-            exp as CharacterClassNode,
+            exp as CharacterSetNode,
             _flags
           );
         default:
           throw new Error("unsupported node type within character set");
       }
     });
-    return new CharacterSetMatcher(matchers, node.negated);
+    return new CharacterClassMatcher(matchers, node.negated);
   }
 
   static fromCharacterNode(
@@ -126,9 +126,9 @@ export class CharacterRangeMatcher extends Matcher {
   }
 }
 
-export class CharacterClassMatcher extends Matcher {
+export class CharacterSetMatcher extends Matcher {
   constructor(public charClass: Char, private dotAll: bool) {
-    super(MatcherType.CharacterClass);
+    super(MatcherType.CharacterSet);
   }
 
   matches(code: u32): bool {
@@ -171,9 +171,9 @@ export class CharacterClassMatcher extends Matcher {
   }
 }
 
-export class CharacterSetMatcher extends Matcher {
+export class CharacterClassMatcher extends Matcher {
   constructor(public matchers: Matcher[], public negated: bool) {
-    super(MatcherType.CharacterSet);
+    super(MatcherType.CharacterClass);
   }
 
   matches(code: u32): bool {
@@ -189,12 +189,12 @@ export class CharacterSetMatcher extends Matcher {
           match = (matcher as CharacterRangeMatcher).matches(code);
           break;
 
-        case MatcherType.CharacterClass:
-          match = (matcher as CharacterClassMatcher).matches(code);
-          break;
-
         case MatcherType.CharacterSet:
           match = (matcher as CharacterSetMatcher).matches(code);
+          break;
+
+        case MatcherType.CharacterClass:
+          match = (matcher as CharacterClassMatcher).matches(code);
           break;
       }
       if (match) break;

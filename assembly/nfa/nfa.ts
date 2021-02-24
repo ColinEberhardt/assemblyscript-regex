@@ -5,8 +5,8 @@ import {
   ConcatenationNode,
   RepetitionNode,
   AlternationNode,
-  CharacterSetNode,
   CharacterClassNode,
+  CharacterSetNode,
   GroupNode,
   NodeType,
 } from "../parser/node";
@@ -222,17 +222,17 @@ class AutomataFactor {
           this.automataForNode(node.right)
         );
       }
-      case NodeType.CharacterSet:
+      case NodeType.CharacterClass:
         return Automata.fromMatcher(
           Matcher.fromCharacterSetNode(
-            expression as CharacterSetNode,
+            expression as CharacterClassNode,
             this.flags
           )
         );
-      case NodeType.CharacterClass:
+      case NodeType.CharacterSet:
         return Automata.fromMatcher(
           Matcher.fromCharacterClassNode(
-            expression as CharacterClassNode,
+            expression as CharacterSetNode,
             this.flags
           )
         );

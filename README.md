@@ -33,7 +33,7 @@ The next phase of development will focussed on more extensive testing and perfor
 
 Based on the classfication within the [MDN cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
 
-**Character classes**
+**Character sets**
 
 - [x] .
 - [x] \d

@@ -5,13 +5,13 @@ import {
   RangeRepetitionNode,
   GroupNode,
   AssertionNode,
-  CharacterClassNode,
+  CharacterSetNode,
   CharacterNode,
   Node,
   AlternationNode,
   ConcatenationNode,
   RepetitionNode,
-  CharacterSetNode,
+  CharacterClassNode,
   CharacterRangeNode,
 } from "./node";
 
@@ -138,7 +138,7 @@ export class Parser {
       } else if (token == Char.u) {
         return this.parseCharacterCode(Char.u);
       } else if (isCharacterClass(token)) {
-        return new CharacterClassNode(this.eatToken());
+        return new CharacterSetNode(this.eatToken());
       } else {
         return new CharacterNode(this.eatToken());
       }
@@ -150,7 +150,7 @@ export class Parser {
 
     if (token == Char.Dot) {
       this.eatToken(Char.Dot);
-      return new CharacterClassNode(Char.Dot);
+      return new CharacterSetNode(Char.Dot);
     }
 
     return new CharacterNode(this.eatToken());
@@ -243,7 +243,7 @@ export class Parser {
         nodes.push(new RepetitionNode(expression, quantifier, this.isGreedy()));
         // @ts-ignore
       } else if (token == Char.LeftSquareBracket) {
-        nodes.push(this.parseCharacterSet());
+        nodes.push(this.parseCharacterClass());
       } else {
         nodes.push(this.parseCharacter());
       }
@@ -259,7 +259,7 @@ export class Parser {
     return new CharacterRangeNode(from, to);
   }
 
-  private parseCharacterSet(): CharacterSetNode {
+  private parseCharacterClass(): CharacterClassNode {
     this.eatToken(Char.LeftSquareBracket);
 
     const negated = this.iterator.current == Char.Caret;
@@ -288,7 +288,7 @@ export class Parser {
             nodes.push(new CharacterNode(this.eatToken()));
           } else {
             // otherwise this is a character class
-            nodes.push(new CharacterClassNode(this.eatToken()));
+            nodes.push(new CharacterSetNode(this.eatToken()));
           }
         } else {
           nodes.push(new CharacterNode(this.eatToken()));
@@ -300,6 +300,6 @@ export class Parser {
       }
     }
     this.eatToken(Char.RightSquareBracket);
-    return new CharacterSetNode(nodes, negated);
+    return new CharacterClassNode(nodes, negated);
   }
 }

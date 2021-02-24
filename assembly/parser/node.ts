@@ -7,8 +7,8 @@ export const enum NodeType {
   Alternation,
   Concatenation,
   Character,
-  CharacterSet,
   CharacterClass,
+  CharacterSet,
   CharacterRange,
   Repetition,
   RangeRepetition,
@@ -72,13 +72,13 @@ export class ConcatenationNode extends Node {
   }
 }
 
-export class CharacterSetNode extends Node {
+export class CharacterClassNode extends Node {
   constructor(public expressions: Node[], public negated: bool) {
-    super(NodeType.CharacterSet);
+    super(NodeType.CharacterClass);
   }
 
   clone(): Node {
-    return new CharacterSetNode(
+    return new CharacterClassNode(
       this.expressions.slice(0).map<Node>((s) => s.clone()),
       this.negated
     );
@@ -126,13 +126,13 @@ export class AssertionNode extends Node {
   }
 }
 
-export class CharacterClassNode extends Node {
+export class CharacterSetNode extends Node {
   constructor(public charClass: Char) {
-    super(NodeType.CharacterClass);
+    super(NodeType.CharacterSet);
   }
 
   clone(): Node {
-    return new CharacterClassNode(this.charClass);
+    return new CharacterSetNode(this.charClass);
   }
 }
 

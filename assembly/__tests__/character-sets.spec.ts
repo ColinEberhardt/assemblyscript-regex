@@ -1,54 +1,55 @@
-import { expectMatch, expectNotMatch } from "./utils";
+import { RegExp } from "..";
+import { expectMatch, expectNotMatch, exec } from "./utils";
 
-it("throws an error if no closing bracket is found", () => {
-  // expect(() => new RegExp("[abce")).toThrow();
+it("dot", () => {
+  expectMatch(".", [" ", "B", "|", "9"]);
+  expectNotMatch(".", ["", "\n"]);
 });
 
-it("matches discrete characters", () => {
-  expectMatch("[abce]", ["a", "b", "c", "e"]);
-  expectNotMatch("[abce]", ["", "f", "h"]);
+it("digit", () => {
+  expectMatch("\\d", ["0", "9"]);
+  expectNotMatch("\\d", ["", "b"]);
 });
 
-it("matches character ranges", () => {
-  expectMatch("[a-c]", ["a", "b", "c"]);
-  expectNotMatch("[a-c]", ["d", "e", ""]);
-  expectMatch("[K-M]", ["K", "L", "M"]);
-  expectNotMatch("[K-M]", ["9", "J"]);
-  expectMatch("[0-9]", ["0", "9"]);
-  expectNotMatch("[0-9]", ["a", "A"]);
+it("non-digit", () => {
+  expectNotMatch("\\D", ["0", "9", ""]);
+  expectMatch("\\D", ["b", "|"]);
 });
 
-it("matches multiple ranges", () => {
-  expectMatch("[a-ce-f]", ["a", "b", "c", "e", "f"]);
-  expectNotMatch("[a-ce-f]", ["d"]);
+it("word", () => {
+  expectMatch("\\w", ["A", "a", "Z", "z", "0", "9", "_"]);
+  expectNotMatch("\\w", ["", "$"]);
 });
 
-it("supports closing brackets", () => {
-  expectMatch("[]a]", ["]", "a"]);
+it("not word", () => {
+  expectNotMatch("\\W", ["A", "a", "Z", "z", "0", "9", "_", ""]);
+  expectMatch("\\W", ["&", "$"]);
 });
 
-it("supports negated sets", () => {
-  expectNotMatch("[^a-c]", ["a", "b", "c"]);
-  expectMatch("[^a-c]", ["d", "e"]);
-  expectNotMatch("[^a-ce-f]", ["a", "b", "c", "e", "f"]);
-  expectMatch("[^a-ce-f]", ["d"]);
+it("whitespace", () => {
+  expectMatch("\\s", ["\f", "\n", "\r", "\t", "\v"]);
+  expectNotMatch("\\s", ["", "a", "0"]);
 });
 
-it("treats - as a literal", () => {
-  expectMatch("[-abc]", ["-", "a", "b", "c"]);
-  expectMatch("[abc-]", ["-", "a", "b", "c"]);
+it("not whitespace", () => {
+  expectNotMatch("\\S", ["", "\f", "\n", "\r", "\t", "\v"]);
+  expectMatch("\\S", ["a", "0"]);
 });
 
-it("treats - as a literal in negated sets", () => {
-  expectNotMatch("[^-abc]", ["-", "a", "b", "c"]);
-  expectMatch("[^-abc]", ["1", "A"]);
+it("tab, cr, lf, vt, ff", () => {
+  expectMatch("\\t", ["\t"]);
+  expectMatch("\\r", ["\r"]);
+  expectMatch("\\n", ["\n"]);
+  expectMatch("\\v", ["\v"]);
+  expectMatch("\\f", ["\f"]);
+  expectNotMatch("\\t", ["a", " ", ""]);
 });
 
-it("supports case insensitive matching", () => {
-  // simple ranges
-  expectMatch("[a-c]", ["A", "C", "a", "c"], "i");
-  expectNotMatch("[a-c]", ["D", "d"], "i");
-  // complex
-  expectMatch("[W-c]", ["W", "w", "C", "c"], "i");
-  expectNotMatch("[W-c]", ["V", "v", "D", "d"], "i");
+it("escaped dot", () => {
+  expectMatch("\\.", ["."]);
+  expectNotMatch("\\.", ["", "a"]);
+});
+
+it("unrecognised character classes are treated as characters", () => {
+  expectMatch("\\g\\m", ["gm"]);
 });
