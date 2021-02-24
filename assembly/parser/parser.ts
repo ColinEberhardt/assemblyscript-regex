@@ -251,6 +251,10 @@ export class Parser {
           nodes.push(this.parseCharacter());
         }
       } else if (isQuantifier(token)) {
+        if (nodes.length === 0) {
+          throw new Error("Invalid regular expression: Nothing to repeat");
+        }
+
         const expression = nodes.pop();
         const quantifier = this.eatToken();
         nodes.push(new RepetitionNode(expression, quantifier, this.isGreedy()));
