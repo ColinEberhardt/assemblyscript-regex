@@ -1076,7 +1076,22 @@ it("line: 207 - matches ^(a(b(c)))(d(e(f)))(h(i(j)))(k(l(m)))$ against 'abcdefhi
   expect(match.matches[11]).toBe("abcdefhijklm".substring(10, 12));
   expect(match.matches[12]).toBe("abcdefhijklm".substring(11, 12));
 });
-xit("line: 208 - non capturing groups not supported", () => {});
+it("line: 208 - matches ^(?:a(b(c)))(?:d(e(f)))(?:h(i(j)))(?:k(l(m)))$ against 'abcdefhijklm'", () => {
+  const match = exec(
+    "^(?:a(b(c)))(?:d(e(f)))(?:h(i(j)))(?:k(l(m)))$",
+    "abcdefhijklm",
+    "ms"
+  );
+  expect(match.matches[0]).toBe("abcdefhijklm".substring(0, 12));
+  expect(match.matches[1]).toBe("abcdefhijklm".substring(1, 3));
+  expect(match.matches[2]).toBe("abcdefhijklm".substring(2, 3));
+  expect(match.matches[3]).toBe("abcdefhijklm".substring(4, 6));
+  expect(match.matches[4]).toBe("abcdefhijklm".substring(5, 6));
+  expect(match.matches[5]).toBe("abcdefhijklm".substring(7, 9));
+  expect(match.matches[6]).toBe("abcdefhijklm".substring(8, 9));
+  expect(match.matches[7]).toBe("abcdefhijklm".substring(10, 12));
+  expect(match.matches[8]).toBe("abcdefhijklm".substring(11, 12));
+});
 xit("line: 209 - back references are not supported", () => {});
 it("line: 210 - matches ^[.^$|()*+?{,}]+ against '.^$(*+)|{?,?}'", () => {
   const match = exec("^[.^$|()*+?{,}]+", ".^$(*+)|{?,?}", "ms");
@@ -1305,10 +1320,10 @@ it("line: 266 - matches ^12.34 against '12\r34'", () => {
 });
 xit("line: 267 - lookaheads not supported", () => {});
 xit("line: 268 - lookaheads not supported", () => {});
-xit("line: 269 - non capturing groups not supported", () => {});
-xit("line: 270 - non capturing groups not supported", () => {});
-xit("line: 271 - non capturing groups not supported", () => {});
-xit("line: 272 - non capturing groups not supported", () => {});
+xit("line: 269 - lookaheads not supported", () => {});
+xit("line: 270 - lookaheads not supported", () => {});
+xit("line: 271 - lookaheads not supported", () => {});
+xit("line: 272 - lookaheads not supported", () => {});
 xit("line: 273 - lookaheads not supported", () => {});
 xit("line: 274 - lookaheads not supported", () => {});
 xit("line: 281 - test regex contains syntax not supported in JS", () => {});
@@ -1564,8 +1579,14 @@ it("line: 1162 - matches \\Aabc\\Z against 'qqq\nabc\nzzz'", () => {
 });
 xit("line: 1163 - JS does not support the A Z syntax for start and end of string", () => {});
 xit("line: 1164 - JS does not support the A Z syntax for start and end of string", () => {});
-xit("line: 1165 - non capturing groups not supported", () => {});
-xit("line: 1166 - non capturing groups not supported", () => {});
+it("line: 1165 - matches (?:b)|(?::+) against 'b::c'", () => {
+  const match = exec("(?:b)|(?::+)", "b::c", "ms");
+  expect(match.matches[0]).toBe("b::c".substring(0, 1));
+});
+it("line: 1166 - matches (?:b)|(?::+) against 'c::b'", () => {
+  const match = exec("(?:b)|(?::+)", "c::b", "ms");
+  expect(match.matches[0]).toBe("c::b".substring(1, 3));
+});
 it("line: 1167 - matches [-az]+ against 'az-'", () => {
   const match = exec("[-az]+", "az-", "ms");
   expect(match.matches[0]).toBe("az-".substring(0, 3));
@@ -1954,9 +1975,21 @@ it("line: 1311 - matches \\d\\d\\/\\d\\d\\/\\d\\d\\d\\d against '01/01/2000'", (
   const match = exec("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d", "01/01/2000", "ms");
   expect(match.matches[0]).toBe("01/01/2000".substring(0, 10));
 });
-xit("line: 1312 - non capturing groups not supported", () => {});
-xit("line: 1313 - non capturing groups not supported", () => {});
-xit("line: 1314 - non capturing groups not supported", () => {});
+it("line: 1312 - matches word (?:[a-zA-Z0-9]+ ){0,10}otherword against 'word cat dog elephant mussel cow horse canary baboon snake shark otherword'", () => {
+  const match = exec(
+    "word (?:[a-zA-Z0-9]+ ){0,10}otherword",
+    "word cat dog elephant mussel cow horse canary baboon snake shark otherword",
+    "ms"
+  );
+  expect(match.matches[0]).toBe(
+    "word cat dog elephant mussel cow horse canary baboon snake shark otherword".substring(
+      0,
+      74
+    )
+  );
+});
+xit("line: 1313 - peformance issue", () => {});
+xit("line: 1314 - peformance issue", () => {});
 it("line: 1315 - matches ^(a){0,0} against 'bcd'", () => {
   const match = exec("^(a){0,0}", "bcd", "ms");
   expect(match.matches[0]).toBe("bcd".substring(0, 0));

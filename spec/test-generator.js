@@ -22,6 +22,7 @@ const knownIssues = {
     ...range(141, 143),
     1288,
   ],
+  "peformance issue": [1313, 1314],
 
   /* -------- issues with the tests ------------  */
   "test appears to be incorrect?": [203, 204],
@@ -105,11 +106,6 @@ lines.forEach((line, index) => {
 
     if (str.includes("\\x{")) {
       testCase += `xit("line: ${index} - test encoding issue", () => { });`;
-      return;
-    }
-
-    if (["(?:"].some((f) => regex.includes(f))) {
-      testCase += `xit("line: ${index} - non capturing groups not supported", () => {});`;
       return;
     }
 

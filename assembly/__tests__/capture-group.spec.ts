@@ -45,3 +45,9 @@ it("range repitition capture groups should return the last match", () => {
   expect(match.matches[0]).toBe("ac");
   expect(match.matches[1]).toBe("c");
 });
+
+it("non-capturing groups should not capture", () => {
+  const match = exec("(?:foo)bar(baz)", "foobarbaz");
+  expect(match.matches[0]).toBe("foobarbaz");
+  expect(match.matches[1]).toBe("baz");
+});

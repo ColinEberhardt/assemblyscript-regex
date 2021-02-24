@@ -42,7 +42,7 @@ export class GroupStartMarkerState extends State {
   // captures from the path through the NFA that reaches the end are flagged
   flagged: bool = false;
 
-  constructor(next: State, public groupId: i32) {
+  constructor(next: State, public capturing: bool, public groupId: i32) {
     super();
     this.transitions.push(next);
   }
@@ -60,10 +60,12 @@ export class GroupEndMarkerState extends State {
   }
 
   matches(input: string, position: u32): MatchResult {
-    this.startMarker.capture = input.substring(
-      this.startMarker.location,
-      position
-    );
+    if (this.startMarker.capturing) {
+      this.startMarker.capture = input.substring(
+        this.startMarker.location,
+        position
+      );
+    }
     return MatchResult.Ignore;
   }
 }
@@ -164,10 +166,10 @@ function oneOrMore(nfa: Automata, greedy: bool): Automata {
   return new Automata(start, end);
 }
 
-function group(nfa: Automata, id: i32): Automata {
+function group(nfa: Automata, capturing: bool, id: i32): Automata {
   // groups are implemented by wrapping the automata with
   // a pair of markers that record matches
-  const startMarker = new GroupStartMarkerState(nfa.start, id);
+  const startMarker = new GroupStartMarkerState(nfa.start, capturing, id);
   const end = new State();
   const endMarker = new GroupEndMarkerState(end, startMarker);
   nfa.end.transitions.push(endMarker);
@@ -238,7 +240,11 @@ class AutomataFactor {
         );
       case NodeType.Group: {
         const node = expression as GroupNode;
-        return group(this.automataForNode(node.expression), node.id);
+        return group(
+          this.automataForNode(node.expression),
+          node.capturing,
+          node.id
+        );
       }
       case NodeType.Assertion:
         return Automata.fromEpsilon();

@@ -204,6 +204,18 @@ export class Parser {
     return true;
   }
 
+  private isCapturing(): bool {
+    if (
+      this.iterator.current == Char.Question &&
+      this.iterator.lookahead(1) == Char.Colon
+    ) {
+      this.eatToken(Char.Question);
+      this.eatToken(Char.Colon);
+      return false;
+    }
+    return true;
+  }
+
   // parses a sequence of chars
   private parseSequence(): Node {
     let nodes = new Array<Node>();
@@ -218,7 +230,8 @@ export class Parser {
         // @ts-ignore
       } else if (token == Char.LeftParenthesis) {
         this.eatToken(Char.LeftParenthesis);
-        nodes.push(new GroupNode(this.parseSequence()));
+        const capturing = this.isCapturing();
+        nodes.push(new GroupNode(this.parseSequence(), capturing));
         this.eatToken(Char.RightParenthesis);
         // @ts-ignore
       } else if (token == Char.LeftCurlyBrace) {

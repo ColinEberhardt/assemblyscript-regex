@@ -77,7 +77,7 @@ Based on the classfication within the [MDN cheatsheet](https://developer.mozilla
 - [x] (x) capturing group
 - [ ] \n back reference
 - [ ] (?<Name>x) named capturing group
-- [ ] (?:x) Non-capturing group
+- [x] (?:x) Non-capturing group
 
 **Quantifiers**
 

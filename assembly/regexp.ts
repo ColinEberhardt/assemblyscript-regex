@@ -89,9 +89,9 @@ export class Flags {
 
 // capture groups are implemented as GroupStart / GroupEnd states that record (capture)
 // the value of the current state of the string being matched.
-// Repeated capture groups, via rage repetitions (e.g. {2,3}) share the same 'id'. The
+// Repeated capture groups, via range repetitions (e.g. {2,3}) share the same 'id'. The
 // returned regex should only return the value of the final repetition.
-function filterCaptures(groupMarkers: GroupStartMarkerState[]): string[] {
+function lastCapturesForGroup(groupMarkers: GroupStartMarkerState[]): string[] {
   if (!groupMarkers.length) {
     return [];
   }
@@ -139,7 +139,10 @@ export class RegExp {
     gm = new Array<GroupStartMarkerState>();
     nfaWalker(this.nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
-        gm.push(state as GroupStartMarkerState);
+        const startMarker = state as GroupStartMarkerState;
+        if (startMarker.capturing) {
+          gm.push(state as GroupStartMarkerState);
+        }
       }
     });
     this.groupMarkers = gm;
@@ -181,7 +184,7 @@ export class RegExp {
         });
 
         const match = new Match(
-          [matchStr!].concat(filterCaptures(groupMarkers)),
+          [matchStr!].concat(lastCapturesForGroup(groupMarkers)),
           matchIndex,
           str
         );

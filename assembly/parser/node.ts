@@ -209,7 +209,11 @@ export class AlternationNode extends Node {
 let _id = 0;
 
 export class GroupNode extends Node {
-  constructor(public expression: Node, public id: i32 = -1) {
+  constructor(
+    public expression: Node,
+    public capturing: bool,
+    public id: i32 = -1
+  ) {
     super(NodeType.Group);
     if (id == -1) {
       this.id = _id++;
@@ -221,7 +225,7 @@ export class GroupNode extends Node {
   }
 
   clone(): Node {
-    return new GroupNode(this.expression.clone(), this.id);
+    return new GroupNode(this.expression.clone(), this.capturing, this.id);
   }
 
   replace(node: Node, replacement: Node): void {

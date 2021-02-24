@@ -5,13 +5,8 @@ globalAny.log = console.log;
 
 import { RegExp } from "../assembly/regexp";
 
-const regexObj = new RegExp("abc$", "m");
-let match = regexObj.exec("abc\n");
+const regexObj = new RegExp("word (?:[a-zA-Z0-9]+ ){0,300}otherword", "");
+let match = regexObj.exec(
+  "word cat dog elephant mussel cow horse canary baboon snake shark the quick brown fox and the lazy dog and several other words getting close to thirty by now I hope"
+);
 console.log(JSON.stringify(match, null, 2));
-// match = regexObj.exec("f1\nbar\nbaz\nf2");
-// console.log(JSON.stringify(match, null, 2));
-
-// const regex = new RegExp("^f\\d{1}$", "gm");
-
-//     let match = regex.exec("f1\nbar\nbaz\nf2");
-//     expect(match!.matches[0]).toBe("f1");

@@ -16,6 +16,7 @@ export const enum Char {
   Dot = 0x2e, // "."
   Zero = 0x30,
   Nine = 0x39,
+  Colon = 0x3a,
   Question = 0x3f, // "?"
   A = 0x41,
   D = 0x44,
