@@ -155,3 +155,11 @@ describe("use cases", () => {
     expect(match.matches[3]).toBe("com");
   });
 });
+
+describe("error cases", () => {
+  it("throws an explicit error when there is nothing to repeat", () => {
+    expect(() => {
+      let foo = new RegExp("*m", ""); // eslint-disable-line no-invalid-regexp
+    }).toThrow("Invalid regular expression: Nothing to repeat");
+  });
+});
