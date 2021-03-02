@@ -152,6 +152,10 @@ export class RepetitionNode extends Node {
   replace(node: Node, replacement: Node): void {
     this.expression = replacement;
   }
+
+  children(): Node[] {
+    return [this.expression];
+  }
 }
 
 export class RangeRepetitionNode extends Node {
