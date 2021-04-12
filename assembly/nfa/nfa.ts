@@ -15,6 +15,9 @@ import { Char } from "../char";
 import { Matcher } from "./matcher";
 import { Flags } from "../regexp";
 
+// @ts-ignore
+// prettier-ignore
+@lazy
 export enum MatchResult {
   // a match has occurred - which is a signal to consume a character
   Match,
@@ -24,7 +27,10 @@ export enum MatchResult {
   Ignore,
 }
 
-let _stateId: u32 = 0;
+// @ts-ignore
+// prettier-ignore
+@lazy
+  let _stateId: u32 = 0;
 
 /* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {

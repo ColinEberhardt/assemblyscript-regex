@@ -69,7 +69,10 @@ export class Match {
   }
 }
 
-let gm = new Array<GroupStartMarkerState>();
+// @ts-ignore
+// prettier-ignore
+@lazy
+  let gm = new Array<GroupStartMarkerState>();
 
 export class Flags {
   global: bool = false;

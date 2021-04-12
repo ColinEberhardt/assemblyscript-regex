@@ -1,6 +1,9 @@
 import { Char } from "../char";
 import { replaceAtIndex } from "../util";
 
+// @ts-ignore
+// prettier-ignore
+@lazy
 export const enum NodeType {
   AST,
   Assertion,
@@ -15,7 +18,10 @@ export const enum NodeType {
   Group,
 }
 
-const emptyNodeArray = new Array<Node>();
+// @ts-ignore
+// prettier-ignore
+@lazy
+  const emptyNodeArray = new Array<Node>();
 
 export abstract class Node {
   constructor(public type: NodeType) {}
@@ -210,7 +216,10 @@ export class AlternationNode extends Node {
   }
 }
 
-let _id = 0;
+// @ts-ignore
+// prettier-ignore
+@lazy
+  let _id = 0;
 
 export class GroupNode extends Node {
   constructor(

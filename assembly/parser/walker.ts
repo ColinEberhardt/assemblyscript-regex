@@ -37,7 +37,10 @@ export function walker(ast: AST, visitor: (node: NodeVisitor) => void): void {
 // range quantifiers are implemented via 'expansion', which significantly
 // increases the size of the AST. This imposes a hard limit to prevent
 // memory-related issues
-const QUANTIFIER_LIMIT = 1000;
+// @ts-ignore
+// prettier-ignore
+@lazy
+  const QUANTIFIER_LIMIT = 1000;
 
 function parentAsConcatNode(visitor: NodeVisitor): ConcatenationNode {
   let concatNode: ConcatenationNode | null = null;

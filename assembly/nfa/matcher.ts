@@ -10,6 +10,9 @@ import {
 import { Flags } from "../regexp";
 import { Range } from "../util";
 
+// @ts-ignore
+// prettier-ignore
+@lazy
 const enum MatcherType {
   Character,
   CharacterRange,
@@ -17,7 +20,9 @@ const enum MatcherType {
   CharacterClass,
 }
 
-let _flags: Flags;
+// @ts-ignore
+@lazy
+  let _flags: Flags;
 
 export class Matcher {
   constructor(readonly type: MatcherType) {}
@@ -93,9 +98,20 @@ export class CharacterMatcher extends Matcher {
   }
 }
 
-const LOWERCASE_LETTERS = new Range(Char.a, Char.z);
-const UPPERCASE_LETTERS = new Range(Char.A, Char.Z);
-const UPPER_LOWER_OFFSET = Char.a - Char.A;
+// @ts-ignore
+// prettier-ignore
+@lazy
+  const LOWERCASE_LETTERS = new Range(Char.a, Char.z);
+
+// @ts-ignore
+// prettier-ignore
+@lazy
+  const UPPERCASE_LETTERS = new Range(Char.A, Char.Z);
+
+// @ts-ignore
+// prettier-ignore
+@lazy
+  const UPPER_LOWER_OFFSET = Char.a - Char.A;
 
 export class CharacterRangeMatcher extends Matcher {
   private ranges: Range[];
