@@ -1,3 +1,5 @@
+// @ts-ignore
+@lazy
 export const enum Char {
   None = -1,
   HorizontalTab = 0x09,

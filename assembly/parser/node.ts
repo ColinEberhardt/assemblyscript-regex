@@ -15,13 +15,12 @@ export const enum NodeType {
   Group,
 }
 
-const emptyNodeArray = new Array<Node>();
-
 export abstract class Node {
+  @lazy static readonly emptyArray: Node[] = new Array<Node>();
   constructor(public type: NodeType) {}
 
   children(): Node[] {
-    return emptyNodeArray;
+    return Node.emptyArray;
   }
 
   abstract clone(): Node;
@@ -37,7 +36,7 @@ export class AST extends Node {
   }
 
   children(): Node[] {
-    return this.body != null ? [this.body as Node] : emptyNodeArray;
+    return this.body != null ? [this.body as Node] : Node.emptyArray;
   }
 
   clone(): Node {
@@ -210,9 +209,9 @@ export class AlternationNode extends Node {
   }
 }
 
-let _id = 0;
-
 export class GroupNode extends Node {
+  @lazy static _id: i32 = 0;
+
   constructor(
     public expression: Node,
     public capturing: bool,
@@ -220,7 +219,7 @@ export class GroupNode extends Node {
   ) {
     super(NodeType.Group);
     if (id == -1) {
-      this.id = _id++;
+      this.id = GroupNode._id++;
     }
   }
 

@@ -69,8 +69,6 @@ export class Match {
   }
 }
 
-let gm = new Array<GroupStartMarkerState>();
-
 export class Flags {
   global: bool = false;
   ignoreCase: bool = false;
@@ -112,6 +110,7 @@ function lastCapturesForGroup(groupMarkers: GroupStartMarkerState[]): string[] {
 }
 
 export class RegExp {
+  @lazy static gm: GroupStartMarkerState[] = new Array<GroupStartMarkerState>();
   lastIndex: i32 = 0;
   private flags: Flags;
   private nfa: Automata;
@@ -136,16 +135,16 @@ export class RegExp {
     this.nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
-    gm = new Array<GroupStartMarkerState>();
+    RegExp.gm = new Array<GroupStartMarkerState>();
     nfaWalker(this.nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
         const startMarker = state as GroupStartMarkerState;
         if (startMarker.capturing) {
-          gm.push(state as GroupStartMarkerState);
+          RegExp.gm.push(state as GroupStartMarkerState);
         }
       }
     });
-    this.groupMarkers = gm;
+    this.groupMarkers = RegExp.gm;
 
     this.flags = flags;
   }
