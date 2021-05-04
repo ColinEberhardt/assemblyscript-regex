@@ -14,21 +14,15 @@ import {
 import { Char } from "../char";
 import { Matcher } from "./matcher";
 import { Flags } from "../regexp";
-
-export enum MatchResult {
-  // a match has occurred - which is a signal to consume a character
-  Match,
-  // a match failed, abort this regex
-  Fail,
-  // this state doesn't preform a match
-  Ignore,
-}
-
-let _stateId: u32 = 0;
+import { MatchResult } from "./types";
 
 /* eslint @typescript-eslint/no-empty-function: ["error", { "allow": ["constructors", "methods"] }] */
 export class State {
-  constructor(public transitions: State[] = [], public id: u32 = _stateId++) {}
+  @lazy static _stateId: u32 = 0;
+  constructor(
+    public transitions: State[] = [],
+    public id: u32 = State._stateId++
+  ) {}
 
   matches(input: string, position: u32): MatchResult {
     return MatchResult.Ignore;
@@ -253,3 +247,5 @@ class AutomataFactor {
     }
   }
 }
+
+export { MatchResult } from "./types";

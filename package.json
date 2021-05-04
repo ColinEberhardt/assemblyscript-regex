@@ -4,7 +4,9 @@
   "description": "A regex engine built with AssemblyScript",
   "ascMain": "assembly/index.ts",
   "scripts": {
-    "test": "npm run test:generate && npm run asbuild:untouched && npm run prettier && npm run eslint && npm run asp",
+    "pretest": "npm run test:generate && npm run asbuild:untouched && npm run asbuild:empty",
+    "test": "npm run prettier && npm run eslint && npm run asp && npm run test:empty",
+    "test:empty": "diff build/empty.wat assembly/__tests__/empty.wat",
     "test:generate": "node spec/test-generator.js",
     "asp": "asp --verbose --nologo",
     "asp:ci": "asp --nologo",
@@ -14,6 +16,7 @@
     "asbuild:untouched": "asc assembly/index.ts --target debug",
     "asbuild:optimized": "asc assembly/index.ts --target release",
     "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
+    "asbuild:empty": "asc --config asconfig.empty.json",
     "tsrun": "ts-node ts/index.ts",
     "benchmark": "node benchmark/benchmark.js",
     "eslint": "eslint --max-warnings 0 --ext ts \"assembly/**/*.ts\""

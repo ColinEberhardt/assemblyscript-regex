@@ -1,2 +1,3 @@
 # prettier doesn't support decorators on functions :-(
 assembly/char.ts
+assembly/nfa/types.ts

@@ -16,10 +16,9 @@ const enum MatcherType {
   CharacterSet,
   CharacterClass,
 }
-
-let _flags: Flags;
-
 export class Matcher {
+  @lazy static _flags: Flags;
+
   constructor(readonly type: MatcherType) {}
 
   matches(code: u32): bool {
@@ -47,20 +46,23 @@ export class Matcher {
     node: CharacterClassNode,
     flags: Flags
   ): CharacterClassMatcher {
-    _flags = flags;
+    Matcher._flags = flags;
     const matchers = node.expressions.map<Matcher>((exp) => {
       switch (exp.type) {
         case NodeType.CharacterRange:
           return Matcher.fromCharacterRangeNode(
             exp as CharacterRangeNode,
-            _flags
+            Matcher._flags
           );
         case NodeType.Character:
-          return Matcher.fromCharacterNode(exp as CharacterNode, _flags);
+          return Matcher.fromCharacterNode(
+            exp as CharacterNode,
+            Matcher._flags
+          );
         case NodeType.CharacterSet:
           return Matcher.fromCharacterClassNode(
             exp as CharacterSetNode,
-            _flags
+            Matcher._flags
           );
         default:
           throw new Error("unsupported node type within character set");
@@ -93,9 +95,12 @@ export class CharacterMatcher extends Matcher {
   }
 }
 
-const LOWERCASE_LETTERS = new Range(Char.a, Char.z);
-const UPPERCASE_LETTERS = new Range(Char.A, Char.Z);
-const UPPER_LOWER_OFFSET = Char.a - Char.A;
+// @ts-ignore
+@lazy const LOWERCASE_LETTERS = new Range(Char.a, Char.z);
+// @ts-ignore
+@lazy const UPPERCASE_LETTERS = new Range(Char.A, Char.Z);
+// @ts-ignore
+@lazy const UPPER_LOWER_OFFSET = Char.a - Char.A;
 
 export class CharacterRangeMatcher extends Matcher {
   private ranges: Range[];

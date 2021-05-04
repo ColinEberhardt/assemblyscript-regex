@@ -1,0 +1,8 @@
+{
+  "options": {
+    "runtime": "stub",
+    "textFile": "build/empty.wat",
+    "debug": true
+  },
+  "entries": ["assembly/__tests__/empty.ts"]
+}
