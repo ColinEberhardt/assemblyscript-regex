@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1614723705028,
+  "lastUpdate": 1620122303588,
   "repoUrl": "https://github.com/ColinEberhardt/assemblyscript-regex",
   "entries": {
     "Benchmark": [
@@ -3101,6 +3101,86 @@ window.BENCHMARK_DATA = {
             "range": "±0.90%",
             "unit": "ops/sec",
             "extra": "85 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willem@cs.umd.edu",
+            "name": "Willem Wyndham",
+            "username": "willemneal"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "debec10dbade71785abf0fe58906e53656fc7efc",
+          "message": "fix: make globals static so that they don't pollute downstream libraries (#42)\n\nAlso reorganized top level `let`s into static variables.",
+          "timestamp": "2021-05-04T10:56:34+01:00",
+          "tree_id": "91c9828c852c4bf4c931eb5f5a3452aebc9c070c",
+          "url": "https://github.com/ColinEberhardt/assemblyscript-regex/commit/debec10dbade71785abf0fe58906e53656fc7efc"
+        },
+        "date": 1620122302827,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "baseline",
+            "value": 182493,
+            "range": "±1.13%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "character class",
+            "value": 49811,
+            "range": "±0.69%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "concatenation",
+            "value": 15491,
+            "range": "±0.61%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "quantifiers",
+            "value": 27229,
+            "range": "±0.77%",
+            "unit": "ops/sec",
+            "extra": "85 samples"
+          },
+          {
+            "name": "range quantifiers",
+            "value": 9347,
+            "range": "±1.10%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "alternation",
+            "value": 29277,
+            "range": "±0.65%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "multiple regex matches",
+            "value": 2727,
+            "range": "±0.67%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "complex regex",
+            "value": 2584,
+            "range": "±0.80%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
           }
         ]
       }
