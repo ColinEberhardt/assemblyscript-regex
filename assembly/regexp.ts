@@ -1,3 +1,4 @@
+/// <reference path="../node_modules/assemblyscript/std/assembly/index.d.ts" />
 import { State, Automata, GroupStartMarkerState, MatchResult } from "./nfa/nfa";
 import { walker as nfaWalker } from "./nfa/walker";
 import { ConcatenationNode, AssertionNode, NodeType } from "./parser/node";
@@ -5,7 +6,6 @@ import { Char } from "./char";
 import { Parser } from "./parser/parser";
 import { first, last } from "./util";
 import { walker as astWalker, expandRepetitions } from "./parser/walker";
-
 function recursiveBacktrackingSearch(
   state: State,
   input: string,
@@ -107,6 +107,13 @@ function lastCapturesForGroup(groupMarkers: GroupStartMarkerState[]): string[] {
     }
   }
   return values;
+}
+
+@unmanaged
+class ASONHeader {
+  constructorPtr: i32;
+  regexLength: usize;
+  flagsLength: usize;
 }
 
 export class RegExp {
@@ -242,6 +249,56 @@ export class RegExp {
 
   get multiline(): bool {
     return this.flags.multiline;
+  }
+
+  __asonSerialize(): StaticArray<u8> {
+    let funcPtr = this.constructor.index;
+    let regex = this.regex;
+    let regexLength = String.UTF8.byteLength(regex);
+    let flags = this.flagsString;
+    let flagsLength = flags ? String.UTF8.byteLength(flags) : 0;
+    trace("flags length", 1, <f64>flagsLength);
+    let buffer = new StaticArray<u8>(
+      <i32>offsetof<ASONHeader>() + <i32>regexLength + <i32>flagsLength
+    );
+    let header = changetype<ASONHeader>(buffer);
+
+    // store the constructor pointer
+    header.constructorPtr = funcPtr;
+    header.regexLength = regexLength;
+    String.UTF8.encodeUnsafe(
+      changetype<usize>(regex),
+      regexLength,
+      changetype<usize>(buffer) + offsetof<ASONHeader>()
+    );
+    if (flagsLength > 0) {
+      header.flagsLength = flagsLength;
+      String.UTF8.encodeUnsafe(
+        changetype<usize>(flags),
+        flagsLength,
+        changetype<usize>(buffer) + offsetof<ASONHeader>() + regexLength
+      );
+    }
+    return buffer;
+  }
+
+  __asonDeserialize(buffer: StaticArray<u8>): void {
+    let header = changetype<ASONHeader>(buffer);
+    let regexLength = header.regexLength;
+    let flagsLength = header.flagsLength;
+    let regex = String.UTF8.decodeUnsafe(
+      changetype<usize>(buffer) + offsetof<ASONHeader>(),
+      regexLength
+    );
+    if (flagsLength == 0) {
+      this.constructor(regex);
+    } else {
+      let flags = String.UTF8.decodeUnsafe(
+        changetype<usize>(buffer) + offsetof<ASONHeader>() + regexLength,
+        flagsLength
+      );
+      this.constructor(regex, flags);
+    }
   }
 }
 
