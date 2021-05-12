@@ -111,7 +111,6 @@ function lastCapturesForGroup(groupMarkers: GroupStartMarkerState[]): string[] {
 
 @unmanaged
 class ASONHeader {
-  constructorPtr: i32;
   regexLength: usize;
   flagsLength: usize;
 }
@@ -252,7 +251,6 @@ export class RegExp {
   }
 
   __asonSerialize(): StaticArray<u8> {
-    let funcPtr = this.constructor.index;
     let regex = this.regex;
     let regexLength = String.UTF8.byteLength(regex);
     let flags = this.flagsString;
@@ -263,14 +261,14 @@ export class RegExp {
     );
     let header = changetype<ASONHeader>(buffer);
 
-    // store the constructor pointer
-    header.constructorPtr = funcPtr;
+    // store regex length
     header.regexLength = regexLength;
     String.UTF8.encodeUnsafe(
       changetype<usize>(regex),
       regexLength,
       changetype<usize>(buffer) + offsetof<ASONHeader>()
     );
+    // store flags if they exist
     if (flagsLength > 0) {
       header.flagsLength = flagsLength;
       String.UTF8.encodeUnsafe(
@@ -291,12 +289,14 @@ export class RegExp {
       regexLength
     );
     if (flagsLength == 0) {
+      // @ts-ignore: constructor exists in assemblyscript classes
       this.constructor(regex);
     } else {
       let flags = String.UTF8.decodeUnsafe(
         changetype<usize>(buffer) + offsetof<ASONHeader>() + regexLength,
         flagsLength
       );
+      // @ts-ignore: constructor exists in assemblyscript classes
       this.constructor(regex, flags);
     }
   }
