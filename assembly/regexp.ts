@@ -255,7 +255,8 @@ export class RegExp {
     let regexLength = String.UTF8.byteLength(regex);
     let flags = this.flagsString;
     let flagsLength = flags ? String.UTF8.byteLength(flags) : 0;
-    trace("flags length", 1, <f64>flagsLength);
+
+    // create the buffer
     let buffer = new StaticArray<u8>(
       <i32>offsetof<ASONHeader>() + <i32>regexLength + <i32>flagsLength
     );
@@ -268,6 +269,7 @@ export class RegExp {
       regexLength,
       changetype<usize>(buffer) + offsetof<ASONHeader>()
     );
+
     // store flags if they exist
     if (flagsLength > 0) {
       header.flagsLength = flagsLength;
@@ -277,6 +279,8 @@ export class RegExp {
         changetype<usize>(buffer) + offsetof<ASONHeader>() + regexLength
       );
     }
+
+    // return the serialized buffer
     return buffer;
   }
 
