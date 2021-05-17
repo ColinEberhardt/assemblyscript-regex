@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A regex engine built with AssemblyScript",
   "ascMain": "assembly/index.ts",
+  "main": "assembly/index.ts",
   "scripts": {
     "pretest": "npm run test:generate && npm run asbuild:untouched && npm run asbuild:empty",
     "test": "npm run prettier && npm run eslint && npm run asp && npm run test:empty",
