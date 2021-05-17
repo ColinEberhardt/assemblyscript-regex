@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1620122303588,
+  "lastUpdate": 1621267097914,
   "repoUrl": "https://github.com/ColinEberhardt/assemblyscript-regex",
   "entries": {
     "Benchmark": [
@@ -3181,6 +3181,86 @@ window.BENCHMARK_DATA = {
             "range": "±0.80%",
             "unit": "ops/sec",
             "extra": "90 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "colin.eberhardt@gmail.com",
+            "name": "Colin Eberhardt",
+            "username": "ColinEberhardt"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f217143e7bf2ad0574e77e13e1fa840610696e2c",
+          "message": "fix: also include 'main' module entry point\n\nThis keeps the TypeScript compiler happy as well as the AssemblyScript compiler",
+          "timestamp": "2021-05-17T16:56:40+01:00",
+          "tree_id": "45902271e6609efc23c42e0de51c605c5b7597da",
+          "url": "https://github.com/ColinEberhardt/assemblyscript-regex/commit/f217143e7bf2ad0574e77e13e1fa840610696e2c"
+        },
+        "date": 1621267097432,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "baseline",
+            "value": 232333,
+            "range": "±0.98%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "character class",
+            "value": 55416,
+            "range": "±1.78%",
+            "unit": "ops/sec",
+            "extra": "81 samples"
+          },
+          {
+            "name": "concatenation",
+            "value": 20119,
+            "range": "±0.10%",
+            "unit": "ops/sec",
+            "extra": "99 samples"
+          },
+          {
+            "name": "quantifiers",
+            "value": 31822,
+            "range": "±1.21%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "range quantifiers",
+            "value": 10694,
+            "range": "±1.79%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "alternation",
+            "value": 31916,
+            "range": "±1.14%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "multiple regex matches",
+            "value": 3251,
+            "range": "±1.70%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "complex regex",
+            "value": 2694,
+            "range": "±1.55%",
+            "unit": "ops/sec",
+            "extra": "88 samples"
           }
         ]
       }
