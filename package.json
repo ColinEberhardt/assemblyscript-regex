@@ -26,7 +26,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:ColinEberhardt/assemblyscript-regex"
+    "url": "git+https://github.com/ColinEberhardt/assemblyscript-regex"
   },
   "devDependencies": {
     "@as-pect/cli": "^6.0.0",
