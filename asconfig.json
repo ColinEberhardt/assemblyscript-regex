@@ -20,7 +20,7 @@
     }
   },
   "options": {
-    "transform": [],
+    "transform": ["@ason/transform"],
     "exportRuntime": true
   }
 }

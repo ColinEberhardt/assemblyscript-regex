@@ -8,9 +8,6 @@ it("line: 1 - matches the quick brown fox against 'the quick brown fox'", () => 
   const match = exec("the quick brown fox", "the quick brown fox", "ms");
   expect(match.matches[0]).toBe("the quick brown fox".substring(0, 19));
 });
-it("line: 2 - matches the quick brown fox against 'The quick brown FOX'", () => {
-  expectNotMatch("the quick brown fox", ["The quick brown FOX"]);
-});
 it("line: 3 - matches the quick brown fox against 'What do you know about the quick brown fox?'", () => {
   const match = exec(
     "the quick brown fox",
@@ -20,11 +17,6 @@ it("line: 3 - matches the quick brown fox against 'What do you know about the qu
   expect(match.matches[0]).toBe(
     "What do you know about the quick brown fox?".substring(23, 42)
   );
-});
-it("line: 4 - matches the quick brown fox against 'What do you know about THE QUICK BROWN FOX?'", () => {
-  expectNotMatch("the quick brown fox", [
-    "What do you know about THE QUICK BROWN FOX?",
-  ]);
 });
 it("line: 5 - matches The quick brown fox against 'the quick brown fox'", () => {
   const match = exec("The quick brown fox", "the quick brown fox", "mis");
@@ -319,36 +311,6 @@ it("line: 39 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against '>>>
     ">>>>abcxyzpqrrrabbxyyyypqAzz".substring(4, 28)
   );
 });
-it("line: 40 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'abxyzpqrrabbxyyyypqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "abxyzpqrrabbxyyyypqAzz",
-  ]);
-});
-it("line: 41 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'abxyzpqrrrrabbxyyyypqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "abxyzpqrrrrabbxyyyypqAzz",
-  ]);
-});
-it("line: 42 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'abxyzpqrrrabxyyyypqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "abxyzpqrrrabxyyyypqAzz",
-  ]);
-});
-it("line: 43 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'aaaabcxyzzzzpqrrrabbbxyyyyyypqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "aaaabcxyzzzzpqrrrabbbxyyyyyypqAzz",
-  ]);
-});
-it("line: 44 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'aaaabcxyzzzzpqrrrabbbxyyypqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "aaaabcxyzzzzpqrrrabbbxyyypqAzz",
-  ]);
-});
-it("line: 45 - matches a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz against 'aaabcxyzpqrrrabbxyyyypqqqqqqqAzz'", () => {
-  expectNotMatch("a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz", [
-    "aaabcxyzpqrrrabbxyyyypqqqqqqqAzz",
-  ]);
-});
 it("line: 46 - matches ^(abc){1,2}zz against 'abczz'", () => {
   const match = exec("^(abc){1,2}zz", "abczz", "ms");
   expect(match.matches[0]).toBe("abczz".substring(0, 5));
@@ -358,15 +320,6 @@ it("line: 47 - matches ^(abc){1,2}zz against 'abcabczz'", () => {
   const match = exec("^(abc){1,2}zz", "abcabczz", "ms");
   expect(match.matches[0]).toBe("abcabczz".substring(0, 8));
   expect(match.matches[1]).toBe("abcabczz".substring(3, 6));
-});
-it("line: 48 - matches ^(abc){1,2}zz against 'zz'", () => {
-  expectNotMatch("^(abc){1,2}zz", ["zz"]);
-});
-it("line: 49 - matches ^(abc){1,2}zz against 'abcabcabczz'", () => {
-  expectNotMatch("^(abc){1,2}zz", ["abcabcabczz"]);
-});
-it("line: 50 - matches ^(abc){1,2}zz against '>>abczz'", () => {
-  expectNotMatch("^(abc){1,2}zz", [">>abczz"]);
 });
 it("line: 51 - matches ^(b+?|a){1,2}?c against 'bc'", () => {
   const match = exec("^(b+?|a){1,2}?c", "bc", "ms");
@@ -408,12 +361,6 @@ it("line: 58 - matches ^(b+?|a){1,2}?c against 'bbbbbbbbbbbac'", () => {
   expect(match.matches[0]).toBe("bbbbbbbbbbbac".substring(0, 13));
   expect(match.matches[1]).toBe("bbbbbbbbbbbac".substring(11, 12));
 });
-it("line: 59 - matches ^(b+?|a){1,2}?c against 'aaac'", () => {
-  expectNotMatch("^(b+?|a){1,2}?c", ["aaac"]);
-});
-it("line: 60 - matches ^(b+?|a){1,2}?c against 'abbbbbbbbbbbac'", () => {
-  expectNotMatch("^(b+?|a){1,2}?c", ["abbbbbbbbbbbac"]);
-});
 it("line: 61 - matches ^(b+|a){1,2}c against 'bc'", () => {
   const match = exec("^(b+|a){1,2}c", "bc", "ms");
   expect(match.matches[0]).toBe("bc".substring(0, 2));
@@ -454,12 +401,6 @@ it("line: 68 - matches ^(b+|a){1,2}c against 'bbbbbbbbbbbac'", () => {
   expect(match.matches[0]).toBe("bbbbbbbbbbbac".substring(0, 13));
   expect(match.matches[1]).toBe("bbbbbbbbbbbac".substring(11, 12));
 });
-it("line: 69 - matches ^(b+|a){1,2}c against 'aaac'", () => {
-  expectNotMatch("^(b+|a){1,2}c", ["aaac"]);
-});
-it("line: 70 - matches ^(b+|a){1,2}c against 'abbbbbbbbbbbac'", () => {
-  expectNotMatch("^(b+|a){1,2}c", ["abbbbbbbbbbbac"]);
-});
 it("line: 71 - matches ^(b+|a){1,2}?bc against 'bbc'", () => {
   const match = exec("^(b+|a){1,2}?bc", "bbc", "ms");
   expect(match.matches[0]).toBe("bbc".substring(0, 3));
@@ -480,12 +421,6 @@ it("line: 74 - matches ^(b*|ba){1,2}?bc against 'bababc'", () => {
   expect(match.matches[0]).toBe("bababc".substring(0, 6));
   expect(match.matches[1]).toBe("bababc".substring(2, 4));
 });
-it("line: 75 - matches ^(b*|ba){1,2}?bc against 'bababbc'", () => {
-  expectNotMatch("^(b*|ba){1,2}?bc", ["bababbc"]);
-});
-it("line: 76 - matches ^(b*|ba){1,2}?bc against 'babababc'", () => {
-  expectNotMatch("^(b*|ba){1,2}?bc", ["babababc"]);
-});
 it("line: 77 - matches ^(ba|b*){1,2}?bc against 'babc'", () => {
   const match = exec("^(ba|b*){1,2}?bc", "babc", "ms");
   expect(match.matches[0]).toBe("babc".substring(0, 4));
@@ -500,12 +435,6 @@ it("line: 79 - matches ^(ba|b*){1,2}?bc against 'bababc'", () => {
   const match = exec("^(ba|b*){1,2}?bc", "bababc", "ms");
   expect(match.matches[0]).toBe("bababc".substring(0, 6));
   expect(match.matches[1]).toBe("bababc".substring(2, 4));
-});
-it("line: 80 - matches ^(ba|b*){1,2}?bc against 'bababbc'", () => {
-  expectNotMatch("^(ba|b*){1,2}?bc", ["bababbc"]);
-});
-it("line: 81 - matches ^(ba|b*){1,2}?bc against 'babababc'", () => {
-  expectNotMatch("^(ba|b*){1,2}?bc", ["babababc"]);
 });
 xit("line: 82 - test regex contains syntax not supported in JS", () => {});
 it("line: 83 - matches ^[ab\\]cde] against 'athing'", () => {
@@ -532,15 +461,6 @@ it("line: 88 - matches ^[ab\\]cde] against 'ething'", () => {
   const match = exec("^[ab\\]cde]", "ething", "ms");
   expect(match.matches[0]).toBe("ething".substring(0, 1));
 });
-it("line: 89 - matches ^[ab\\]cde] against 'fthing'", () => {
-  expectNotMatch("^[ab\\]cde]", ["fthing"]);
-});
-it("line: 90 - matches ^[ab\\]cde] against '[thing'", () => {
-  expectNotMatch("^[ab\\]cde]", ["[thing"]);
-});
-it("line: 91 - matches ^[ab\\]cde] against '\\thing'", () => {
-  expectNotMatch("^[ab\\]cde]", ["\\thing"]);
-});
 it("line: 92 - matches ^[]cde] against ']thing'", () => {
   const match = exec("^[]cde]", "]thing", "ms");
   expect(match.matches[0]).toBe("]thing".substring(0, 1));
@@ -557,12 +477,6 @@ it("line: 95 - matches ^[]cde] against 'ething'", () => {
   const match = exec("^[]cde]", "ething", "ms");
   expect(match.matches[0]).toBe("ething".substring(0, 1));
 });
-it("line: 96 - matches ^[]cde] against 'athing'", () => {
-  expectNotMatch("^[]cde]", ["athing"]);
-});
-it("line: 97 - matches ^[]cde] against 'fthing'", () => {
-  expectNotMatch("^[]cde]", ["fthing"]);
-});
 it("line: 98 - matches ^[^ab\\]cde] against 'fthing'", () => {
   const match = exec("^[^ab\\]cde]", "fthing", "ms");
   expect(match.matches[0]).toBe("fthing".substring(0, 1));
@@ -575,24 +489,6 @@ it("line: 100 - matches ^[^ab\\]cde] against '\\thing'", () => {
   const match = exec("^[^ab\\]cde]", "\\thing", "ms");
   expect(match.matches[0]).toBe("\\thing".substring(0, 1));
 });
-it("line: 101 - matches ^[^ab\\]cde] against 'athing'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["athing"]);
-});
-it("line: 102 - matches ^[^ab\\]cde] against 'bthing'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["bthing"]);
-});
-it("line: 103 - matches ^[^ab\\]cde] against ']thing'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["]thing"]);
-});
-it("line: 104 - matches ^[^ab\\]cde] against 'cthing'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["cthing"]);
-});
-it("line: 105 - matches ^[^ab\\]cde] against 'dthing'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["dthing"]);
-});
-it("line: 106 - matches ^[^ab\\]cde] against 'ething'", () => {
-  expectNotMatch("^[^ab\\]cde]", ["ething"]);
-});
 it("line: 107 - matches ^[^]cde] against 'athing'", () => {
   const match = exec("^[^]cde]", "athing", "ms");
   expect(match.matches[0]).toBe("athing".substring(0, 1));
@@ -600,18 +496,6 @@ it("line: 107 - matches ^[^]cde] against 'athing'", () => {
 it("line: 108 - matches ^[^]cde] against 'fthing'", () => {
   const match = exec("^[^]cde]", "fthing", "ms");
   expect(match.matches[0]).toBe("fthing".substring(0, 1));
-});
-it("line: 109 - matches ^[^]cde] against ']thing'", () => {
-  expectNotMatch("^[^]cde]", ["]thing"]);
-});
-it("line: 110 - matches ^[^]cde] against 'cthing'", () => {
-  expectNotMatch("^[^]cde]", ["cthing"]);
-});
-it("line: 111 - matches ^[^]cde] against 'dthing'", () => {
-  expectNotMatch("^[^]cde]", ["dthing"]);
-});
-it("line: 112 - matches ^[^]cde] against 'ething'", () => {
-  expectNotMatch("^[^]cde]", ["ething"]);
 });
 it("line: 113 - matches ^\\� against '�'", () => {
   const match = exec("^\\�", "�", "ms");
@@ -669,9 +553,6 @@ it("line: 126 - matches ^[0-9]+$ against '100'", () => {
   const match = exec("^[0-9]+$", "100", "ms");
   expect(match.matches[0]).toBe("100".substring(0, 3));
 });
-it("line: 127 - matches ^[0-9]+$ against 'abc'", () => {
-  expectNotMatch("^[0-9]+$", ["abc"]);
-});
 it("line: 128 - matches ^.*nter against 'enter'", () => {
   const match = exec("^.*nter", "enter", "ms");
   expect(match.matches[0]).toBe("enter".substring(0, 5));
@@ -692,9 +573,6 @@ it("line: 132 - matches ^xxx[0-9]+$ against 'xxx1234'", () => {
   const match = exec("^xxx[0-9]+$", "xxx1234", "ms");
   expect(match.matches[0]).toBe("xxx1234".substring(0, 7));
 });
-it("line: 133 - matches ^xxx[0-9]+$ against 'xxx'", () => {
-  expectNotMatch("^xxx[0-9]+$", ["xxx"]);
-});
 it("line: 134 - matches ^.+[0-9][0-9][0-9]$ against 'x123'", () => {
   const match = exec("^.+[0-9][0-9][0-9]$", "x123", "ms");
   expect(match.matches[0]).toBe("x123".substring(0, 4));
@@ -706,9 +584,6 @@ it("line: 135 - matches ^.+[0-9][0-9][0-9]$ against 'xx123'", () => {
 it("line: 136 - matches ^.+[0-9][0-9][0-9]$ against '123456'", () => {
   const match = exec("^.+[0-9][0-9][0-9]$", "123456", "ms");
   expect(match.matches[0]).toBe("123456".substring(0, 6));
-});
-it("line: 137 - matches ^.+[0-9][0-9][0-9]$ against '123'", () => {
-  expectNotMatch("^.+[0-9][0-9][0-9]$", ["123"]);
 });
 it("line: 138 - matches ^.+[0-9][0-9][0-9]$ against 'x1234'", () => {
   const match = exec("^.+[0-9][0-9][0-9]$", "x1234", "ms");
@@ -737,34 +612,11 @@ it("line: 144 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against 'abc
   expect(match.matches[1]).toBe("abc!pqr=apquxz.ixr.zzz.ac.uk".substring(0, 3));
   expect(match.matches[2]).toBe("abc!pqr=apquxz.ixr.zzz.ac.uk".substring(4, 7));
 });
-it("line: 145 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against '!pqr=apquxz.ixr.zzz.ac.uk'", () => {
-  expectNotMatch("^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$", [
-    "!pqr=apquxz.ixr.zzz.ac.uk",
-  ]);
-});
-it("line: 146 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against 'abc!=apquxz.ixr.zzz.ac.uk'", () => {
-  expectNotMatch("^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$", [
-    "abc!=apquxz.ixr.zzz.ac.uk",
-  ]);
-});
-it("line: 147 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against 'abc!pqr=apquxz:ixr.zzz.ac.uk'", () => {
-  expectNotMatch("^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$", [
-    "abc!pqr=apquxz:ixr.zzz.ac.uk",
-  ]);
-});
-it("line: 148 - matches ^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$ against 'abc!pqr=apquxz.ixr.zzz.ac.ukk'", () => {
-  expectNotMatch("^([^!]+)!(.+)=apquxz\\.ixr\\.zzz\\.ac\\.uk$", [
-    "abc!pqr=apquxz.ixr.zzz.ac.ukk",
-  ]);
-});
 it("line: 149 - matches : against 'Well, we need a colon: somewhere'", () => {
   const match = exec(":", "Well, we need a colon: somewhere", "ms");
   expect(match.matches[0]).toBe(
     "Well, we need a colon: somewhere".substring(21, 22)
   );
-});
-it("line: 150 - matches : against '*** Fail if we don't'", () => {
-  expectNotMatch(":", ["*** Fail if we don't"]);
 });
 it("line: 151 - matches ([\\da-f:]+)$ against '0abc'", () => {
   const match = exec("([\\da-f:]+)$", "0abc", "mis");
@@ -806,18 +658,6 @@ it("line: 158 - matches ([\\da-f:]+)$ against 'Any old stuff'", () => {
   expect(match.matches[0]).toBe("Any old stuff".substring(11, 13));
   expect(match.matches[1]).toBe("Any old stuff".substring(11, 13));
 });
-it("line: 159 - matches ([\\da-f:]+)$ against '0zzz'", () => {
-  expectNotMatch("([\\da-f:]+)$", ["0zzz"]);
-});
-it("line: 160 - matches ([\\da-f:]+)$ against 'gzzz'", () => {
-  expectNotMatch("([\\da-f:]+)$", ["gzzz"]);
-});
-it("line: 161 - matches ([\\da-f:]+)$ against 'fed\x20'", () => {
-  expectNotMatch("([\\da-f:]+)$", ["fed\x20"]);
-});
-it("line: 162 - matches ([\\da-f:]+)$ against 'Any old rubbish'", () => {
-  expectNotMatch("([\\da-f:]+)$", ["Any old rubbish"]);
-});
 it("line: 163 - matches ^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$ against '.1.2.3'", () => {
   const match = exec(
     "^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$",
@@ -839,15 +679,6 @@ it("line: 164 - matches ^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$ against 'A.1
   expect(match.matches[1]).toBe("A.12.123.0".substring(2, 4));
   expect(match.matches[2]).toBe("A.12.123.0".substring(5, 8));
   expect(match.matches[3]).toBe("A.12.123.0".substring(9, 10));
-});
-it("line: 165 - matches ^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$ against '.1.2.3333'", () => {
-  expectNotMatch("^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", [".1.2.3333"]);
-});
-it("line: 166 - matches ^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$ against '1.2.3'", () => {
-  expectNotMatch("^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", ["1.2.3"]);
-});
-it("line: 167 - matches ^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$ against '1234.2.3'", () => {
-  expectNotMatch("^.*\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$", ["1234.2.3"]);
 });
 it("line: 168 - matches ^(\\d+)\\s+IN\\s+SOA\\s+(\\S+)\\s+(\\S+)\\s*\\(\\s*$ against '1 IN SOA non-sp1 non-sp2('", () => {
   const match = exec(
@@ -878,11 +709,6 @@ it("line: 169 - matches ^(\\d+)\\s+IN\\s+SOA\\s+(\\S+)\\s+(\\S+)\\s*\\(\\s*$ aga
   expect(match.matches[3]).toBe(
     "1    IN    SOA    non-sp1    non-sp2   (".substring(29, 36)
   );
-});
-it("line: 170 - matches ^(\\d+)\\s+IN\\s+SOA\\s+(\\S+)\\s+(\\S+)\\s*\\(\\s*$ against '1IN SOA non-sp1 non-sp2('", () => {
-  expectNotMatch("^(\\d+)\\s+IN\\s+SOA\\s+(\\S+)\\s+(\\S+)\\s*\\(\\s*$", [
-    "1IN SOA non-sp1 non-sp2(",
-  ]);
 });
 it("line: 171 - matches ^[a-zA-Z\\d][a-zA-Z\\d\\-]*(\\.[a-zA-Z\\d][a-zA-z\\d\\-]*)*\\.$ against 'a.'", () => {
   const match = exec(
@@ -935,12 +761,6 @@ it("line: 176 - matches ^[a-zA-Z\\d][a-zA-Z\\d\\-]*(\\.[a-zA-Z\\d][a-zA-z\\d\\-]
   expect(match.matches[0]).toBe("x-.y-.".substring(0, 6));
   expect(match.matches[1]).toBe("x-.y-.".substring(2, 5));
 });
-it("line: 177 - matches ^[a-zA-Z\\d][a-zA-Z\\d\\-]*(\\.[a-zA-Z\\d][a-zA-z\\d\\-]*)*\\.$ against '-abc.peq.'", () => {
-  expectNotMatch(
-    "^[a-zA-Z\\d][a-zA-Z\\d\\-]*(\\.[a-zA-Z\\d][a-zA-z\\d\\-]*)*\\.$",
-    ["-abc.peq."]
-  );
-});
 it("line: 178 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$ against '*.a'", () => {
   const match = exec(
     "^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$",
@@ -979,30 +799,6 @@ it("line: 181 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d
   expect(match.matches[2]).toBe("*.c-a.b-c".substring(5, 9));
   expect(match.matches[3]).toBe("*.c-a.b-c".substring(7, 9));
 });
-it("line: 182 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$ against '*.0'", () => {
-  expectNotMatch(
-    "^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$",
-    ["*.0"]
-  );
-});
-it("line: 183 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$ against '*.a-'", () => {
-  expectNotMatch(
-    "^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$",
-    ["*.a-"]
-  );
-});
-it("line: 184 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$ against '*.a-b.c-'", () => {
-  expectNotMatch(
-    "^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$",
-    ["*.a-b.c-"]
-  );
-});
-it("line: 185 - matches ^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$ against '*.c-a.0-c'", () => {
-  expectNotMatch(
-    "^\\*\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?(\\.[a-z]([a-z\\-\\d]*[a-z\\d]+)?)*$",
-    ["*.c-a.0-c"]
-  );
-});
 xit("line: 186 - lookaheads not supported", () => {});
 xit("line: 187 - lookaheads not supported", () => {});
 xit("line: 188 - lookaheads not supported", () => {});
@@ -1035,9 +831,6 @@ it('line: 194 - matches ^".*"\\s*(;.*)?$ against \'"" ; rhubarb\'', () => {
   expect(match.matches[0]).toBe('"" ; rhubarb'.substring(0, 12));
   expect(match.matches[1]).toBe('"" ; rhubarb'.substring(3, 12));
 });
-it('line: 195 - matches ^".*"\\s*(;.*)?$ against \'"1234" : things\'', () => {
-  expectNotMatch('^".*"\\s*(;.*)?$', ['"1234" : things']);
-});
 it("line: 196 - matches ^$ against ''", () => {
   const match = exec("^$", "", "ms");
   expect(match.matches[0]).toBe("".substring(0, 0));
@@ -1050,12 +843,6 @@ xit("line: 201 - JS regex does not support comments", () => {});
 xit("line: 202 - JS regex does not support comments", () => {});
 xit("line: 203 - test appears to be incorrect?", () => {});
 xit("line: 204 - test appears to be incorrect?", () => {});
-it("line: 205 - matches ^   a\\ b[c ]d       $ against 'abcd'", () => {
-  expectNotMatch("^   a\\ b[c ]d       $", ["abcd"]);
-});
-it("line: 206 - matches ^   a\\ b[c ]d       $ against 'ab d'", () => {
-  expectNotMatch("^   a\\ b[c ]d       $", ["ab d"]);
-});
 it("line: 207 - matches ^(a(b(c)))(d(e(f)))(h(i(j)))(k(l(m)))$ against 'abcdefhijklm'", () => {
   const match = exec(
     "^(a(b(c)))(d(e(f)))(h(i(j)))(k(l(m)))$",
@@ -1213,9 +1000,6 @@ it("line: 239 - matches ^\\d{8}\\w{2,} against '12345678__'", () => {
   const match = exec("^\\d{8}\\w{2,}", "12345678__", "ms");
   expect(match.matches[0]).toBe("12345678__".substring(0, 10));
 });
-it("line: 240 - matches ^\\d{8}\\w{2,} against '1234567'", () => {
-  expectNotMatch("^\\d{8}\\w{2,}", ["1234567"]);
-});
 it("line: 241 - matches ^[aeiou\\d]{4,5}$ against 'uoie'", () => {
   const match = exec("^[aeiou\\d]{4,5}$", "uoie", "ms");
   expect(match.matches[0]).toBe("uoie".substring(0, 4));
@@ -1231,9 +1015,6 @@ it("line: 243 - matches ^[aeiou\\d]{4,5}$ against '12345'", () => {
 it("line: 244 - matches ^[aeiou\\d]{4,5}$ against 'aaaaa'", () => {
   const match = exec("^[aeiou\\d]{4,5}$", "aaaaa", "ms");
   expect(match.matches[0]).toBe("aaaaa".substring(0, 5));
-});
-it("line: 245 - matches ^[aeiou\\d]{4,5}$ against '123456'", () => {
-  expectNotMatch("^[aeiou\\d]{4,5}$", ["123456"]);
 });
 it("line: 246 - matches ^[aeiou\\d]{4,5}? against 'uoie'", () => {
   const match = exec("^[aeiou\\d]{4,5}?", "uoie", "ms");
@@ -1304,12 +1085,6 @@ it("line: 263 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:
     "From abcd  Mon Sep  1 12:33:02 1997".substring(15, 20)
   );
 });
-it("line: 264 - matches ^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d against 'From abcd  Sep 01 12:33:02 1997'", () => {
-  expectNotMatch(
-    "^From\\s+\\S+\\s+([a-zA-Z]{3}\\s+){2}\\d{1,2}\\s+\\d\\d:\\d\\d",
-    ["From abcd  Sep 01 12:33:02 1997"]
-  );
-});
 it("line: 265 - matches ^12.34 against '12\n34'", () => {
   const match = exec("^12.34", "12\n34", "ms");
   expect(match.matches[0]).toBe("12\n34".substring(0, 5));
@@ -1365,9 +1140,6 @@ xit("line 1079 - issue with parsing the test itself", () => {});
 xit("line 1080 - issue with parsing the test itself", () => {});
 xit("line 1081 - issue with parsing the test itself", () => {});
 xit("line 1082 - issue with parsing the test itself", () => {});
-it("line: 1083 - matches ^[ab]{1,3}(ab*?|b) against 'The quick brown fox'", () => {
-  expectNotMatch("^[ab]{1,3}(ab*?|b)", ["The quick brown fox"]);
-});
 xit("line: 1084 - back references are not supported", () => {});
 xit("line: 1085 - back references are not supported", () => {});
 xit("line: 1086 - test encoding issue", () => {});
@@ -1426,9 +1198,6 @@ it("line: 1108 - matches ^\\s against '\tabc'", () => {
   const match = exec("^\\s", "\tabc", "ms");
   expect(match.matches[0]).toBe("\tabc".substring(0, 1));
 });
-it("line: 1109 - matches ^\\s against 'abc'", () => {
-  expectNotMatch("^\\s", ["abc"]);
-});
 xit("line: 1113 - back references are not supported", () => {});
 xit("line: 1114 - back references are not supported", () => {});
 xit("line: 1115 - back references are not supported", () => {});
@@ -1463,12 +1232,6 @@ it("line: 1137 - matches ab{1,3}bc against 'abbbc'", () => {
 it("line: 1138 - matches ab{1,3}bc against 'abbc'", () => {
   const match = exec("ab{1,3}bc", "abbc", "ms");
   expect(match.matches[0]).toBe("abbc".substring(0, 4));
-});
-it("line: 1139 - matches ab{1,3}bc against 'abc'", () => {
-  expectNotMatch("ab{1,3}bc", ["abc"]);
-});
-it("line: 1140 - matches ab{1,3}bc against 'abbbbbc'", () => {
-  expectNotMatch("ab{1,3}bc", ["abbbbbc"]);
 });
 it("line: 1141 - matches ([^.]*)\\.([^:]*):[T ]+(.*) against 'track1.title:TBlah blah blah'", () => {
   const match = exec(
@@ -1525,9 +1288,6 @@ it("line: 1144 - matches ^[W-c]+$ against 'WXY_^abc'", () => {
   const match = exec("^[W-c]+$", "WXY_^abc", "ms");
   expect(match.matches[0]).toBe("WXY_^abc".substring(0, 8));
 });
-it("line: 1145 - matches ^[W-c]+$ against 'wxy'", () => {
-  expectNotMatch("^[W-c]+$", ["wxy"]);
-});
 it("line: 1146 - matches ^[W-c]+$ against 'WXY_^abc'", () => {
   const match = exec("^[W-c]+$", "WXY_^abc", "mis");
   expect(match.matches[0]).toBe("WXY_^abc".substring(0, 8));
@@ -1555,28 +1315,7 @@ it("line: 1154 - matches ^abc$ against 'abc'", () => {
   const match = exec("^abc$", "abc", "ms");
   expect(match.matches[0]).toBe("abc".substring(0, 3));
 });
-it("line: 1155 - matches ^abc$ against 'qqq\nabc'", () => {
-  expectNotMatch("^abc$", ["qqq\nabc"]);
-});
-it("line: 1156 - matches ^abc$ against 'abc\nzzz'", () => {
-  expectNotMatch("^abc$", ["abc\nzzz"]);
-});
-it("line: 1157 - matches ^abc$ against 'qqq\nabc\nzzz'", () => {
-  expectNotMatch("^abc$", ["qqq\nabc\nzzz"]);
-});
 xit("line: 1158 - test regex contains syntax not supported in JS", () => {});
-it("line: 1159 - matches \\Aabc\\Z against 'abc\n '", () => {
-  expectNotMatch("\\Aabc\\Z", ["abc\n "]);
-});
-it("line: 1160 - matches \\Aabc\\Z against 'qqq\nabc'", () => {
-  expectNotMatch("\\Aabc\\Z", ["qqq\nabc"]);
-});
-it("line: 1161 - matches \\Aabc\\Z against 'abc\nzzz'", () => {
-  expectNotMatch("\\Aabc\\Z", ["abc\nzzz"]);
-});
-it("line: 1162 - matches \\Aabc\\Z against 'qqq\nabc\nzzz'", () => {
-  expectNotMatch("\\Aabc\\Z", ["qqq\nabc\nzzz"]);
-});
 xit("line: 1163 - JS does not support the A Z syntax for start and end of string", () => {});
 xit("line: 1164 - JS does not support the A Z syntax for start and end of string", () => {});
 it("line: 1165 - matches (?:b)|(?::+) against 'b::c'", () => {
@@ -1591,22 +1330,13 @@ it("line: 1167 - matches [-az]+ against 'az-'", () => {
   const match = exec("[-az]+", "az-", "ms");
   expect(match.matches[0]).toBe("az-".substring(0, 3));
 });
-it("line: 1168 - matches [-az]+ against 'b'", () => {
-  expectNotMatch("[-az]+", ["b"]);
-});
 it("line: 1169 - matches [az-]+ against 'za-'", () => {
   const match = exec("[az-]+", "za-", "ms");
   expect(match.matches[0]).toBe("za-".substring(0, 3));
 });
-it("line: 1170 - matches [az-]+ against 'b'", () => {
-  expectNotMatch("[az-]+", ["b"]);
-});
 it("line: 1171 - matches [a\\-z]+ against 'a-z'", () => {
   const match = exec("[a\\-z]+", "a-z", "ms");
   expect(match.matches[0]).toBe("a-z".substring(0, 3));
-});
-it("line: 1172 - matches [a\\-z]+ against 'b'", () => {
-  expectNotMatch("[a\\-z]+", ["b"]);
 });
 it("line: 1173 - matches [a-z]+ against 'abcdxyz'", () => {
   const match = exec("[a-z]+", "abcdxyz", "ms");
@@ -1616,9 +1346,6 @@ it("line: 1174 - matches [\\d-]+ against '12-34'", () => {
   const match = exec("[\\d-]+", "12-34", "ms");
   expect(match.matches[0]).toBe("12-34".substring(0, 5));
 });
-it("line: 1175 - matches [\\d-]+ against 'aaa'", () => {
-  expectNotMatch("[\\d-]+", ["aaa"]);
-});
 it("line: 1178 - matches \\x5c against '\\'", () => {
   const match = exec("\\x5c", "\\", "ms");
   expect(match.matches[0]).toBe("\\".substring(0, 1));
@@ -1626,9 +1353,6 @@ it("line: 1178 - matches \\x5c against '\\'", () => {
 it("line: 1179 - matches \\x20Z against 'the Zoo'", () => {
   const match = exec("\\x20Z", "the Zoo", "ms");
   expect(match.matches[0]).toBe("the Zoo".substring(3, 5));
-});
-it("line: 1180 - matches \\x20Z against 'Zulu'", () => {
-  expectNotMatch("\\x20Z", ["Zulu"]);
 });
 xit("line: 1181 - back references are not supported", () => {});
 xit("line: 1182 - back references are not supported", () => {});
@@ -1659,15 +1383,9 @@ it("line: 1192 - matches abc$ against 'abc'", () => {
   const match = exec("abc$", "abc", "ms");
   expect(match.matches[0]).toBe("abc".substring(0, 3));
 });
-it("line: 1193 - matches abc$ against 'abc\n'", () => {
-  expectNotMatch("abc$", ["abc\n"]);
-});
 it("line: 1194 - matches abc$ against 'abc\n'", () => {
   const match = exec("abc$", "abc\n", "m");
   expect(match.matches[0]).toBe("abc\n".substring(0, 3));
-});
-it("line: 1195 - matches abc$ against 'abc\ndef'", () => {
-  expectNotMatch("abc$", ["abc\ndef"]);
 });
 it("line: 1196 - matches abc$ against 'abc\ndef'", () => {
   const match = exec("abc$", "abc\ndef", "m");
@@ -1723,9 +1441,6 @@ xit("line: 1235 - word boundary class not supported yet!", () => {});
 xit("line: 1236 - word boundary class not supported yet!", () => {});
 xit("line: 1237 - word boundary class not supported yet!", () => {});
 xit("line: 1238 - word boundary class not supported yet!", () => {});
-it("line: 1239 - matches ^([^a])([^\\f])([^c]*)([^d]{3,4}) against 'b\fc...'", () => {
-  expectNotMatch("^([^a])([^\\f])([^c]*)([^d]{3,4})", ["b\fc..."]);
-});
 it("line: 1240 - matches [^a] against 'Abc'", () => {
   const match = exec("[^a]", "Abc", "ms");
   expect(match.matches[0]).toBe("Abc".substring(0, 1));
@@ -1766,15 +1481,6 @@ it("line: 1249 - matches [^k]{2,3}$ against 'kabc '", () => {
   const match = exec("[^k]{2,3}$", "kabc ", "ms");
   expect(match.matches[0]).toBe("kabc ".substring(2, 5));
 });
-it("line: 1250 - matches [^k]{2,3}$ against 'abk'", () => {
-  expectNotMatch("[^k]{2,3}$", ["abk"]);
-});
-it("line: 1251 - matches [^k]{2,3}$ against 'akb'", () => {
-  expectNotMatch("[^k]{2,3}$", ["akb"]);
-});
-it("line: 1252 - matches [^k]{2,3}$ against 'akk '", () => {
-  expectNotMatch("[^k]{2,3}$", ["akk "]);
-});
 it("line: 1253 - matches ^\\d{8,}\\@.+[^k]$ against '12345678@a.b.c.d'", () => {
   const match = exec("^\\d{8,}\\@.+[^k]$", "12345678@a.b.c.d", "ms");
   expect(match.matches[0]).toBe("12345678@a.b.c.d".substring(0, 16));
@@ -1782,12 +1488,6 @@ it("line: 1253 - matches ^\\d{8,}\\@.+[^k]$ against '12345678@a.b.c.d'", () => {
 it("line: 1254 - matches ^\\d{8,}\\@.+[^k]$ against '123456789@x.y.z'", () => {
   const match = exec("^\\d{8,}\\@.+[^k]$", "123456789@x.y.z", "ms");
   expect(match.matches[0]).toBe("123456789@x.y.z".substring(0, 15));
-});
-it("line: 1255 - matches ^\\d{8,}\\@.+[^k]$ against '12345678@x.y.uk'", () => {
-  expectNotMatch("^\\d{8,}\\@.+[^k]$", ["12345678@x.y.uk"]);
-});
-it("line: 1256 - matches ^\\d{8,}\\@.+[^k]$ against '1234567@a.b.c.d       '", () => {
-  expectNotMatch("^\\d{8,}\\@.+[^k]$", ["1234567@a.b.c.d       "]);
 });
 xit("line: 1257 - back references are not supported", () => {});
 xit("line: 1258 - back references are not supported", () => {});
@@ -1942,21 +1642,6 @@ it("line: 1295 - matches ^[W-]46] against '-46]789'", () => {
   const match = exec("^[W-]46]", "-46]789", "ms");
   expect(match.matches[0]).toBe("-46]789".substring(0, 4));
 });
-it("line: 1296 - matches ^[W-]46] against 'Wall'", () => {
-  expectNotMatch("^[W-]46]", ["Wall"]);
-});
-it("line: 1297 - matches ^[W-]46] against 'Zebra'", () => {
-  expectNotMatch("^[W-]46]", ["Zebra"]);
-});
-it("line: 1298 - matches ^[W-]46] against '42'", () => {
-  expectNotMatch("^[W-]46]", ["42"]);
-});
-it("line: 1299 - matches ^[W-]46] against '[abcd] '", () => {
-  expectNotMatch("^[W-]46]", ["[abcd] "]);
-});
-it("line: 1300 - matches ^[W-]46] against ']abcd['", () => {
-  expectNotMatch("^[W-]46]", ["]abcd["]);
-});
 xit("line: 1301 - does nto support escaped characters in character ranges", () => {});
 xit("line: 1302 - does nto support escaped characters in character ranges", () => {});
 xit("line: 1303 - does nto support escaped characters in character ranges", () => {});
@@ -1965,12 +1650,6 @@ xit("line: 1305 - does nto support escaped characters in character ranges", () =
 xit("line: 1306 - does nto support escaped characters in character ranges", () => {});
 xit("line: 1307 - does nto support escaped characters in character ranges", () => {});
 xit("line: 1308 - does nto support escaped characters in character ranges", () => {});
-it("line: 1309 - matches ^[W-\\]46] against '-46]789'", () => {
-  expectNotMatch("^[W-\\]46]", ["-46]789"]);
-});
-it("line: 1310 - matches ^[W-\\]46] against 'well'", () => {
-  expectNotMatch("^[W-\\]46]", ["well"]);
-});
 it("line: 1311 - matches \\d\\d\\/\\d\\d\\/\\d\\d\\d\\d against '01/01/2000'", () => {
   const match = exec("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d", "01/01/2000", "ms");
   expect(match.matches[0]).toBe("01/01/2000".substring(0, 10));
@@ -2073,9 +1752,6 @@ it("line: 1332 - matches ^(a){0,} against 'aaaaaaaa    '", () => {
   expect(match.matches[0]).toBe("aaaaaaaa    ".substring(0, 8));
   expect(match.matches[1]).toBe("aaaaaaaa    ".substring(7, 8));
 });
-it("line: 1333 - matches ^(a){1,1} against 'bcd'", () => {
-  expectNotMatch("^(a){1,1}", ["bcd"]);
-});
 it("line: 1334 - matches ^(a){1,1} against 'abc'", () => {
   const match = exec("^(a){1,1}", "abc", "ms");
   expect(match.matches[0]).toBe("abc".substring(0, 1));
@@ -2086,9 +1762,6 @@ it("line: 1335 - matches ^(a){1,1} against 'aab  '", () => {
   expect(match.matches[0]).toBe("aab  ".substring(0, 1));
   expect(match.matches[1]).toBe("aab  ".substring(0, 1));
 });
-it("line: 1336 - matches ^(a){1,2} against 'bcd'", () => {
-  expectNotMatch("^(a){1,2}", ["bcd"]);
-});
 it("line: 1337 - matches ^(a){1,2} against 'abc'", () => {
   const match = exec("^(a){1,2}", "abc", "ms");
   expect(match.matches[0]).toBe("abc".substring(0, 1));
@@ -2098,9 +1771,6 @@ it("line: 1338 - matches ^(a){1,2} against 'aab  '", () => {
   const match = exec("^(a){1,2}", "aab  ", "ms");
   expect(match.matches[0]).toBe("aab  ".substring(0, 2));
   expect(match.matches[1]).toBe("aab  ".substring(1, 2));
-});
-it("line: 1339 - matches ^(a){1,3} against 'bcd'", () => {
-  expectNotMatch("^(a){1,3}", ["bcd"]);
 });
 it("line: 1340 - matches ^(a){1,3} against 'abc'", () => {
   const match = exec("^(a){1,3}", "abc", "ms");
@@ -2116,9 +1786,6 @@ it("line: 1342 - matches ^(a){1,3} against 'aaa   '", () => {
   const match = exec("^(a){1,3}", "aaa   ", "ms");
   expect(match.matches[0]).toBe("aaa   ".substring(0, 3));
   expect(match.matches[1]).toBe("aaa   ".substring(2, 3));
-});
-it("line: 1343 - matches ^(a){1,} against 'bcd'", () => {
-  expectNotMatch("^(a){1,}", ["bcd"]);
 });
 it("line: 1344 - matches ^(a){1,} against 'abc'", () => {
   const match = exec("^(a){1,}", "abc", "ms");
@@ -2305,29 +1972,17 @@ it("line: 1393 - matches ^[abcdefghijklmnopqrstuvwxy0123456789] against 'n'", ()
   const match = exec("^[abcdefghijklmnopqrstuvwxy0123456789]", "n", "ms");
   expect(match.matches[0]).toBe("n".substring(0, 1));
 });
-it("line: 1394 - matches ^[abcdefghijklmnopqrstuvwxy0123456789] against 'z '", () => {
-  expectNotMatch("^[abcdefghijklmnopqrstuvwxy0123456789]", ["z "]);
-});
 it("line: 1395 - matches abcde{0,0} against 'abcd'", () => {
   const match = exec("abcde{0,0}", "abcd", "ms");
   expect(match.matches[0]).toBe("abcd".substring(0, 4));
-});
-it("line: 1396 - matches abcde{0,0} against 'abce  '", () => {
-  expectNotMatch("abcde{0,0}", ["abce  "]);
 });
 it("line: 1397 - matches ab[cd]{0,0}e against 'abe'", () => {
   const match = exec("ab[cd]{0,0}e", "abe", "ms");
   expect(match.matches[0]).toBe("abe".substring(0, 3));
 });
-it("line: 1398 - matches ab[cd]{0,0}e against 'abcde '", () => {
-  expectNotMatch("ab[cd]{0,0}e", ["abcde "]);
-});
 it("line: 1399 - matches ab(c){0,0}d against 'abd'", () => {
   const match = exec("ab(c){0,0}d", "abd", "ms");
   expect(match.matches[0]).toBe("abd".substring(0, 3));
-});
-it("line: 1400 - matches ab(c){0,0}d against 'abcd   '", () => {
-  expectNotMatch("ab(c){0,0}d", ["abcd   "]);
 });
 it("line: 1401 - matches a(b*) against 'a'", () => {
   const match = exec("a(b*)", "a", "ms");
@@ -2344,15 +1999,9 @@ it("line: 1403 - matches a(b*) against 'abbbb'", () => {
   expect(match.matches[0]).toBe("abbbb".substring(0, 5));
   expect(match.matches[1]).toBe("abbbb".substring(1, 5));
 });
-it("line: 1404 - matches a(b*) against 'bbbbb    '", () => {
-  expectNotMatch("a(b*)", ["bbbbb    "]);
-});
 it("line: 1405 - matches ab\\d{0}e against 'abe'", () => {
   const match = exec("ab\\d{0}e", "abe", "ms");
   expect(match.matches[0]).toBe("abe".substring(0, 3));
-});
-it("line: 1406 - matches ab\\d{0}e against 'ab1e   '", () => {
-  expectNotMatch("ab\\d{0}e", ["ab1e   "]);
 });
 it('line: 1407 - matches "([^\\\\"]+|\\\\.)*" against \'the "quick" brown fox\'', () => {
   const match = exec('"([^\\\\"]+|\\\\.)*"', 'the "quick" brown fox', "ms");
