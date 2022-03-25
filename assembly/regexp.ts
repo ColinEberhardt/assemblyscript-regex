@@ -159,7 +159,7 @@ export class RegExp {
     let len = str.length;
     if (!len) {
       const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
-      return matchStr != null ? new Match([matchStr!], 0, str) : null;
+      return matchStr != null ? new Match([matchStr], 0, str) : null;
     }
 
     // search for a match at each index within the string
@@ -182,8 +182,9 @@ export class RegExp {
           gm.capture = gm.flagged ? gm.capture : "";
         });
 
+        const matches: string[] = [matchStr];
         const match = new Match(
-          [matchStr!].concat(lastCapturesForGroup(groupMarkers)),
+          matches.concat(lastCapturesForGroup(groupMarkers)),
           matchIndex,
           str
         );
