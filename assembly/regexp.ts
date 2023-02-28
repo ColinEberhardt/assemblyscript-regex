@@ -132,11 +132,11 @@ export class RegExp {
 
     astWalker(ast, expandRepetitions);
 
-    this.nfa = Automata.toNFA(ast, flags);
+    const nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
     RegExp.gm = new Array<GroupStartMarkerState>();
-    nfaWalker(this.nfa.start, (state) => {
+    nfaWalker(nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
         const startMarker = state as GroupStartMarkerState;
         if (startMarker.capturing) {
@@ -144,6 +144,7 @@ export class RegExp {
         }
       }
     });
+    this.nfa = nfa;
     this.groupMarkers = RegExp.gm;
 
     this.flags = flags;
