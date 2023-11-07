@@ -29,12 +29,12 @@
     "url": "git+https://github.com/ColinEberhardt/assemblyscript-regex"
   },
   "devDependencies": {
-    "@as-pect/cli": "^6.0.0",
-    "@assemblyscript/loader": "^0.18.0",
+    "@as-pect/cli": "^8.0.1",
+    "@assemblyscript/loader": "^0.27.0",
     "@types/node": "^14.14.13",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
-    "assemblyscript": "^0.18.0",
+    "assemblyscript": "^0.25.0",
     "benchmark": "^2.1.4",
     "eslint": "^7.18.0",
     "husky": "^4.2.5",

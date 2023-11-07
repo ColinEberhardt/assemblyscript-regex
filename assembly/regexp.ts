@@ -132,11 +132,11 @@ export class RegExp {
 
     astWalker(ast, expandRepetitions);
 
-    this.nfa = Automata.toNFA(ast, flags);
+    const nfa = Automata.toNFA(ast, flags);
 
     // find all the group marker states
     RegExp.gm = new Array<GroupStartMarkerState>();
-    nfaWalker(this.nfa.start, (state) => {
+    nfaWalker(nfa.start, (state) => {
       if (state instanceof GroupStartMarkerState) {
         const startMarker = state as GroupStartMarkerState;
         if (startMarker.capturing) {
@@ -144,6 +144,7 @@ export class RegExp {
         }
       }
     });
+    this.nfa = nfa;
     this.groupMarkers = RegExp.gm;
 
     this.flags = flags;
@@ -159,7 +160,7 @@ export class RegExp {
     let len = str.length;
     if (!len) {
       const matchStr = recursiveBacktrackingSearch(this.nfa.start, "");
-      return matchStr != null ? new Match([matchStr!], 0, str) : null;
+      return matchStr != null ? new Match([matchStr], 0, str) : null;
     }
 
     // search for a match at each index within the string
@@ -182,8 +183,9 @@ export class RegExp {
           gm.capture = gm.flagged ? gm.capture : "";
         });
 
+        const matches: string[] = [matchStr];
         const match = new Match(
-          [matchStr!].concat(lastCapturesForGroup(groupMarkers)),
+          matches.concat(lastCapturesForGroup(groupMarkers)),
           matchIndex,
           str
         );
