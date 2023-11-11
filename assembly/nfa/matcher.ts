@@ -17,7 +17,7 @@ const enum MatcherType {
   CharacterClass,
 }
 export class Matcher {
-  @lazy static _flags: Flags;
+  @lazy static _flags!: Flags;
 
   constructor(readonly type: MatcherType) {}
 
